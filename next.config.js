@@ -6,6 +6,18 @@ const nextConfig = {
   // Turbopack configuration (empty to silence warning)
   turbopack: {},
 
+  // Performance optimizations
+  experimental: {
+    // Enable optimized package imports
+    optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
+  },
+
+  // Compiler optimizations
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
   // Image optimization configuration
   images: {
     remotePatterns: [
@@ -68,17 +80,25 @@ const nextConfig = {
           { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
         ],
       },
-      // Static asset caching
+      // Static asset caching with prefetch hints
       {
         source: '/audio/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Link', value: '</audio>; rel=prefetch' },
         ],
       },
       {
         source: '/_next/static/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // Prefetch hints for common routes
+      {
+        source: '/',
+        headers: [
+          { key: 'Link', value: '</hijaiyah>; rel=prefetch, </quran>; rel=prefetch, </dhikr>; rel=prefetch, </quiz>; rel=prefetch' },
         ],
       },
     ];

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api, isApiError, getErrorMessage } from "@/lib/api";
+import { AuthError, NetworkError } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -54,31 +56,57 @@ export default function Profile() {
     )
   }
 
-  // Mock data for logged out users
-  const mockUser = {
+  // Fetch user data and bookmarks
+  const {
+    data: userData,
+    isLoading: userLoading,
+    error: userError
+  } = useQuery({
+    queryKey: ['user-profile'],
+    queryFn: () => api.user.getProfile(),
+    enabled: !!session?.user?.id,
+    retry: false
+  });
+
+  const {
+    data: bookmarks = [],
+    isLoading: bookmarksLoading,
+    error: bookmarksError
+  } = useQuery({
+    queryKey: ['user-bookmarks'],
+    queryFn: () => api.bookmarks.getBookmarks(),
+    enabled: !!session?.user?.id,
+    retry: false
+  });
+
+  // Use session data if logged in, otherwise use mock data
+  const user = session?.user ? {
+    username: userData?.name || session.user.name || 'User',
+    email: userData?.email || session.user.email || 'user@example.com',
+    streak: userData?.streak || 0,
+    dailyProgress: userData?.dailyProgress || 0
+  } : {
     username: 'Guest User',
     email: 'Masuk untuk melihat email',
     streak: 0,
     dailyProgress: 0
   }
 
-  const mockBookmarks: any[] = []
-
-  // Use session data if logged in, otherwise use mock data
-  const user = session?.user ? {
-    username: session.user.name || 'User',
-    email: session.user.email || 'user@example.com',
-    streak: 7, // This would come from API in real app
-    dailyProgress: 3 // This would come from API in real app
-  } : mockUser
-
-  const bookmarks = session ? [] : mockBookmarks // Would fetch from API if logged in
-
   const handleSignOut = async () => {
     await signOut({
       callbackUrl: '/',
       redirect: true
     })
+  }
+
+  // Handle authentication errors
+  if (session && userError && isApiError(userError) && userError.status === 401) {
+    return <AuthError />
+  }
+
+  // Handle network errors
+  if (session && userError && isApiError(userError) && userError.status === 0) {
+    return <NetworkError onRetry={() => window.location.reload()} />
   }
 
   const userStats = [

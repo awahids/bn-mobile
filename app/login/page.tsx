@@ -1,8 +1,9 @@
 'use client'
 
+import Image from 'next/image'
 import { getSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, Suspense } from 'react'
+import { useEffect, Suspense, useState } from 'react'
 import { LoginForm } from '@/components/auth/login-form'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
@@ -11,8 +12,10 @@ function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     // Check if user is already logged in
     const checkSession = async () => {
       const session = await getSession()
@@ -43,7 +46,19 @@ function LoginContent() {
       <div className="flex-1 px-4 pb-10">
         <div className="text-center mt-2 mb-6">
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl font-bold text-primary">بن</span>
+            {mounted ? (
+              <Image
+                src="/images/logo/image.png"
+                alt="Belajar Ngaji"
+                width={64}
+                height={64}
+                className="h-full w-full object-cover rounded-full"
+                priority
+                unoptimized
+              />
+            ) : (
+              <span className="text-2xl font-bold text-primary">ن</span>
+            )}
           </div>
           <h2 className="text-2xl font-semibold text-foreground mb-2">
             Mulai Perjalanan Ngaji

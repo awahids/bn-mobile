@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, BookOpen, Users, TrendingUp, User } from "lucide-react";
 
@@ -13,7 +14,6 @@ const navItems = [
 
 export function BottomNavigation() {
   const pathname = usePathname();
-  const router = useRouter();
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -26,9 +26,10 @@ export function BottomNavigation() {
     <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-card border-t border-border safe-area-bottom">
       <div className="flex items-center justify-between py-2 px-4">
         {navItems.map(({ path, label, icon: Icon }) => (
-          <button
+          <Link
             key={path}
-            onClick={() => router.push(path)}
+            href={path}
+            prefetch={true} // Explicit prefetching for common routes
             className={cn(
               "flex flex-col items-center py-2 px-3 transition-colors touch-target",
               isActive(path)
@@ -39,7 +40,7 @@ export function BottomNavigation() {
           >
             <Icon className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">{label}</span>
-          </button>
+          </Link>
         ))}
       </div>
     </nav>

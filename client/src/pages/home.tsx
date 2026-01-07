@@ -82,8 +82,13 @@ export default function Home() {
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <Moon className="text-primary-foreground w-5 h-5" />
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-card border border-border flex items-center justify-center">
+              <img
+                src="/images/logo/image.png"
+                alt="Belajar Ngaji"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
             </div>
             <div>
               <h1 className="text-lg font-semibold text-foreground">Belajar Ngaji</h1>

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { BottomNavigation } from "@/client/src/components/bottom-navigation";
-import { AudioPlayer } from "@/client/src/components/audio-player";
-import { WritingCanvas, WritingCanvasRef } from "@/client/src/components/writing-canvas";
 import { ProgressRing } from "@/client/src/components/progress-ring";
 import { useProgress, useUpdateProgress } from "@/client/src/hooks/use-progress";
 import { useAudio } from "@/client/src/hooks/use-audio";
@@ -13,6 +12,7 @@ import { Button } from "@/client/src/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
 import { Badge } from "@/client/src/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/client/src/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft,
   RotateCcw,
@@ -23,6 +23,28 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
+
+// Dynamic imports for heavy components with loading fallbacks
+const AudioPlayer = dynamic(
+  () => import("@/client/src/components/audio-player").then(mod => ({ default: mod.AudioPlayer })),
+  {
+    loading: () => <Skeleton className="h-20 w-full" />,
+    ssr: false
+  }
+);
+
+const WritingCanvas = dynamic(
+  () => import("@/client/src/components/writing-canvas").then(mod => ({
+    default: mod.WritingCanvas
+  })),
+  {
+    loading: () => <Skeleton className="h-64 w-full" />,
+    ssr: false
+  }
+);
+
+// Import the ref type separately since it's needed for typing
+import type { WritingCanvasRef } from "@/client/src/components/writing-canvas";
 
 export default function Hijaiyah() {
   const router = useRouter();

@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BottomNavigation } from "@/client/src/components/bottom-navigation";
+import { api, isApiError } from "@/lib/api";
+import { NetworkError } from "@/components/error-boundary";
+import { BottomNavigation } from "@/components/bottom-navigation";
 import { quizCategories, getRandomQuestions, QuizQuestion } from "@/client/src/data/quiz";
 import { Button } from "@/client/src/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
@@ -22,22 +24,6 @@ import {
   Globe,
   MapPin
 } from "lucide-react";
-
-// API helper function
-async function apiRequest(method: string, url: string, data?: unknown): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
-  }
-  return res;
-}
 
 const CategoryIcon = ({ icon, className }: { icon: string, className?: string }) => {
   switch (icon) {
@@ -68,13 +54,15 @@ export default function Quiz() {
 
   // Submit quiz attempt mutation
   const submitQuiz = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/quiz/attempts", data);
-      return response.json();
-    },
+    mutationFn: (data: any) => api.quiz.createAttempt(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/quiz"] });
+      queryClient.invalidateQueries({ queryKey: ['quiz-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] });
     },
+    onError: (error) => {
+      console.error('Quiz submission failed:', error);
+      // Handle error - could show a toast or error message
+    }
   });
 
   // Timer countdown

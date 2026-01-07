@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { api, isApiError, getErrorMessage } from "@/lib/api";
+import { NetworkError } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { ProgressRing } from "@/components/progress-ring";
+import { usePrefetchByContext } from "@/lib/prefetch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -20,11 +25,17 @@ import {
   Bookmark,
   Trophy,
   Check,
-  Star
+  Star,
+  MapPin
 } from "lucide-react";
+
+const DEFAULT_COORDS = { lat: -6.2, lng: 106.8167 }; // Jakarta fallback
 
 export default function Home() {
   const router = useRouter();
+
+  // Prefetch learning routes since users are likely to navigate to them from home
+  usePrefetchByContext('home');
 
   // Mock stats data
   const stats = {
@@ -33,6 +44,9 @@ export default function Home() {
 
   // Simple theme state without provider dependency
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [coords, setCoords] = useState(DEFAULT_COORDS);
+  const [locationLabel, setLocationLabel] = useState("Jakarta (default)");
+  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "denied" | "unsupported" | "error">("idle");
 
   const toggleTheme = () => {
     setIsDarkMode(prev => !prev);
@@ -43,58 +57,104 @@ export default function Home() {
   };
 
   // Prayer times query
-  const { data: prayerTimes } = useQuery<{
-    date: string;
-    location: string;
-    times: {
-      fajr: string;
-      dhuhr: string;
-      asr: string;
-      maghrib: string;
-      isha: string;
-    };
-  }>({
-    queryKey: ["/api/prayer-times"],
+  const {
+    data: prayerTimes,
+    isLoading: prayerTimesLoading,
+    error: prayerTimesError
+  } = useQuery({
+    queryKey: ['prayer-times', coords.lat, coords.lng],
+    queryFn: () => api.utility.getPrayerTimes(coords),
+    staleTime: 1000 * 60 * 60, // 1 hour
+    retry: 1
   });
 
   // User data query
-  const { data: user } = useQuery<{
-    id: string;
-    username: string;
-    email: string;
-    streak: number;
-    dailyProgress: number;
-    lastActive: Date;
-    preferences: Record<string, any>;
-  }>({
-    queryKey: ["/api/user"],
+  const {
+    data: user,
+    isLoading: userLoading,
+    error: userError
+  } = useQuery({
+    queryKey: ['user-profile'],
+    queryFn: () => api.user.getProfile(),
+    retry: false
   });
 
-  const getCurrentPrayerInfo = () => {
-    if (!prayerTimes) return { next: "Dhuhur", timeLeft: "2h 15m" };
+  const [nextPrayer, setNextPrayer] = useState<{ name: string; timeLeft: string }>({
+    name: "—",
+    timeLeft: "--"
+  });
 
-    // Only calculate on client side to avoid hydration mismatch
-    if (typeof window === 'undefined') {
-      return { next: "Dhuhur", timeLeft: "2h 15m" };
-    }
+  useEffect(() => {
+    if (!prayerTimes || typeof window === 'undefined') return;
+
+    const toMinutes = (time: string) => {
+      const [h, m] = time.split(' ')[0].split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const formatTimeLeft = (minutes: number) => {
+      const hours = Math.floor(minutes / 60);
+      const mins = Math.round(minutes % 60);
+      if (hours <= 0) return `${mins}m`;
+      if (mins === 0) return `${hours}j`;
+      return `${hours}j ${mins}m`;
+    };
 
     const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-    const times = prayerTimes.times;
-    const prayerList = [
-      { name: "Subuh", time: times.fajr },
-      { name: "Dhuhur", time: times.dhuhr },
-      { name: "Ashar", time: times.asr },
-      { name: "Maghrib", time: times.maghrib },
-      { name: "Isya", time: times.isha }
+    const list = [
+      { name: "Subuh", time: prayerTimes.fajr },
+      { name: "Dhuhur", time: prayerTimes.dhuhr },
+      { name: "Ashar", time: prayerTimes.asr },
+      { name: "Maghrib", time: prayerTimes.maghrib },
+      { name: "Isya", time: prayerTimes.isha }
     ];
 
-    // Find next prayer (simplified logic)
-    return { next: "Dhuhur", timeLeft: "2h 15m" };
-  };
+    const next = list.find((item) => toMinutes(item.time) > currentMinutes) || list[0];
+    const minutesUntil = ((toMinutes(next.time) - currentMinutes) + 1440) % 1440;
 
-  const { next: nextPrayer, timeLeft } = getCurrentPrayerInfo();
+    setNextPrayer({
+      name: next.name,
+      timeLeft: formatTimeLeft(minutesUntil)
+    });
+  }, [prayerTimes]);
+
+  useEffect(() => {
+    if (prayerTimes?.location?.city || prayerTimes?.location?.country) {
+      const place = [prayerTimes.location.city, prayerTimes.location.country].filter(Boolean).join(", ");
+      setLocationLabel(place || "Lokasi terkini");
+    } else if (coords) {
+      setLocationLabel(`Lat ${coords.lat.toFixed(2)}, Lng ${coords.lng.toFixed(2)}`);
+    }
+  }, [prayerTimes, coords]);
+
+  const requestLocation = useCallback(() => {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      setLocationStatus("unsupported");
+      return;
+    }
+
+    setLocationStatus("loading");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCoords({ lat: latitude, lng: longitude });
+        setLocationLabel(`Lokasi aktif (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`);
+        setLocationStatus("idle");
+      },
+      () => {
+        setLocationStatus("denied");
+      },
+      { timeout: 10000 }
+    );
+  }, []);
+
+  // Handle critical errors (user data is not critical, prayer times are not critical)
+  // Only show error if there's a network issue that affects core functionality
+  if (userError && isApiError(userError) && userError.status === 0) {
+    return <NetworkError onRetry={() => window.location.reload()} />
+  }
 
   return (
     <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
@@ -102,8 +162,15 @@ export default function Home() {
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <Moon className="text-primary-foreground w-5 h-5" />
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-card border border-border flex items-center justify-center">
+              <Image
+                src="/images/logo/image.png"
+                alt="Belajar Ngaji"
+                width={40}
+                height={40}
+                className="h-full w-full object-cover"
+                priority
+              />
             </div>
             <div>
               <h1 className="text-lg font-semibold text-foreground">Belajar Ngaji</h1>
@@ -178,94 +245,86 @@ export default function Home() {
 
         <div className="grid grid-cols-2 gap-3 mb-6">
           {/* Hijaiyah Module */}
-          <Card
-            className="card-hover cursor-pointer"
-            onClick={() => router.push('/hijaiyah')}
-            data-testid="module-hijaiyah"
-          >
-            <CardContent className="p-4">
-              <div className="w-12 h-12 bg-chart-1/20 rounded-xl flex items-center justify-center mb-3">
-                <Languages className="text-chart-1 w-6 h-6" />
-              </div>
-              <h4 className="font-semibold text-card-foreground mb-1">Hijaiyah</h4>
-              <p className="text-xs text-muted-foreground mb-2">28 Huruf Arab</p>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-chart-1 font-medium">
-                  {stats.hijaiyah.completed}/{stats.hijaiyah.total}
+          <Link href="/hijaiyah" prefetch={true} data-testid="module-hijaiyah">
+            <Card className="card-hover cursor-pointer">
+              <CardContent className="p-4">
+                <div className="w-12 h-12 bg-chart-1/20 rounded-xl flex items-center justify-center mb-3">
+                  <Languages className="text-chart-1 w-6 h-6" />
                 </div>
-                <ProgressRing
-                  progress={stats.hijaiyah.progress}
-                  size={32}
-                  className="text-chart-1"
-                />
-              </div>
-            </CardContent>
-          </Card>
+                <h4 className="font-semibold text-card-foreground mb-1">Hijaiyah</h4>
+                <p className="text-xs text-muted-foreground mb-2">28 Huruf Arab</p>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-chart-1 font-medium">
+                    {stats.hijaiyah.completed}/{stats.hijaiyah.total}
+                  </div>
+                  <ProgressRing
+                    progress={stats.hijaiyah.progress}
+                    size={32}
+                    className="text-chart-1"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Al-Quran Module */}
-          <Card
-            className="card-hover cursor-pointer"
-            onClick={() => router.push('/quran')}
-            data-testid="module-quran"
-          >
-            <CardContent className="p-4">
-              <div className="w-12 h-12 bg-chart-2/20 rounded-xl flex items-center justify-center mb-3">
-                <BookOpen className="text-chart-2 w-6 h-6" />
-              </div>
-              <h4 className="font-semibold text-card-foreground mb-1">Al-Qur&apos;an</h4>
-              <p className="text-xs text-muted-foreground mb-2">114 Surah</p>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-chart-2 font-medium">Surah Al-Fatihah</div>
-                <div className="w-6 h-6 bg-chart-2 rounded-full flex items-center justify-center">
-                  <Bookmark className="text-white w-3 h-3" />
+          <Link href="/quran" prefetch={true} data-testid="module-quran">
+            <Card className="card-hover cursor-pointer">
+              <CardContent className="p-4">
+                <div className="w-12 h-12 bg-chart-2/20 rounded-xl flex items-center justify-center mb-3">
+                  <BookOpen className="text-chart-2 w-6 h-6" />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <h4 className="font-semibold text-card-foreground mb-1">Al-Qur&apos;an</h4>
+                <p className="text-xs text-muted-foreground mb-2">114 Surah</p>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-chart-2 font-medium">Surah Al-Fatihah</div>
+                  <div className="w-6 h-6 bg-chart-2 rounded-full flex items-center justify-center">
+                    <Bookmark className="text-white w-3 h-3" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Dhikr Module */}
-          <Card
-            className="card-hover cursor-pointer"
-            onClick={() => router.push('/dhikr')}
-            data-testid="module-dhikr"
-          >
-            <CardContent className="p-4">
-              <div className="w-12 h-12 bg-chart-3/20 rounded-xl flex items-center justify-center mb-3">
-                <BicepsFlexed className="text-chart-3 w-6 h-6" />
-              </div>
-              <h4 className="font-semibold text-card-foreground mb-1">Dhikr</h4>
-              <p className="text-xs text-muted-foreground mb-2">Pagi & Petang</p>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-chart-3 font-medium">33x</div>
-                <ProgressRing
-                  progress={66}
-                  size={32}
-                  className="text-chart-3"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <Link href="/dhikr" prefetch={true} data-testid="module-dhikr">
+            <Card className="card-hover cursor-pointer">
+              <CardContent className="p-4">
+                <div className="w-12 h-12 bg-chart-3/20 rounded-xl flex items-center justify-center mb-3">
+                  <BicepsFlexed className="text-chart-3 w-6 h-6" />
+                </div>
+                <h4 className="font-semibold text-card-foreground mb-1">Dhikr</h4>
+                <p className="text-xs text-muted-foreground mb-2">Pagi & Petang</p>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-chart-3 font-medium">33x</div>
+                  <ProgressRing
+                    progress={66}
+                    size={32}
+                    className="text-chart-3"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Quiz Module */}
-          <Card
-            className="card-hover cursor-pointer"
-            onClick={() => router.push('/quiz')}
-            data-testid="module-quiz"
-          >
-            <CardContent className="p-4">
-              <div className="w-12 h-12 bg-chart-4/20 rounded-xl flex items-center justify-center mb-3">
-                <Brain className="text-chart-4 w-6 h-6" />
-              </div>
-              <h4 className="font-semibold text-card-foreground mb-1">Kuis</h4>
-              <p className="text-xs text-muted-foreground mb-2">4 Kategori</p>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-chart-4 font-medium">Skor: 85%</div>
-                <div className="w-6 h-6 bg-chart-4 rounded-full flex items-center justify-center">
-                  <Trophy className="text-white w-3 h-3" />
+          <Link href="/quiz" prefetch={true} data-testid="module-quiz">
+            <Card className="card-hover cursor-pointer">
+              <CardContent className="p-4">
+                <div className="w-12 h-12 bg-chart-4/20 rounded-xl flex items-center justify-center mb-3">
+                  <Brain className="text-chart-4 w-6 h-6" />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <h4 className="font-semibold text-card-foreground mb-1">Kuis</h4>
+                <p className="text-xs text-muted-foreground mb-2">4 Kategori</p>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-chart-4 font-medium">Skor: 85%</div>
+                  <div className="w-6 h-6 bg-chart-4 rounded-full flex items-center justify-center">
+                    <Trophy className="text-white w-3 h-3" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </section>
 
@@ -382,48 +441,83 @@ export default function Home() {
       <section className="p-4 pb-24">
         <Card className="bg-gradient-to-br from-primary/10 to-accent/10">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-foreground">Waktu Shalat</h3>
-              <span className="text-xs text-muted-foreground">
-                {prayerTimes?.location || "Jakarta"}
-              </span>
+            <div className="flex items-start justify-between mb-3 gap-3">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Waktu Shalat</h3>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  <span>{locationLabel}</span>
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={requestLocation}
+                disabled={locationStatus === "loading"}
+                className="text-xs"
+              >
+                {locationStatus === "loading" ? "Mencari..." : "Gunakan lokasi"}
+              </Button>
             </div>
+
+            {prayerTimesLoading && (
+              <p className="text-xs text-muted-foreground">Memuat waktu shalat...</p>
+            )}
+
+            {prayerTimesError && (
+              <p className="text-xs text-destructive">
+                {getErrorMessage(prayerTimesError) || "Gagal memuat waktu shalat"}
+              </p>
+            )}
+
+            {locationStatus === "denied" && (
+              <p className="text-[11px] text-destructive">
+                Izin lokasi ditolak. Aktifkan izin lokasi di browser untuk jadwal sesuai lokasi Anda.
+              </p>
+            )}
+            {locationStatus === "unsupported" && (
+              <p className="text-[11px] text-muted-foreground">
+                Peramban tidak mendukung geolokasi. Menggunakan lokasi default.
+              </p>
+            )}
 
             {prayerTimes && (
               <div className="grid grid-cols-3 gap-3">
                 <div className="text-center">
                   <div className="text-xs text-muted-foreground mb-1">Subuh</div>
-                  <div className="text-sm font-semibold text-foreground">
-                    {prayerTimes.times.fajr}
+                  <div className={`text-sm font-semibold ${nextPrayer.name === "Subuh" ? 'text-primary' : 'text-foreground'}`}>
+                    {prayerTimes.fajr}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-muted-foreground mb-1">Dhuhur</div>
-                  <div className="text-sm font-semibold text-primary">
-                    {prayerTimes.times.dhuhr}
+                  <div className={`text-sm font-semibold ${nextPrayer.name === "Dhuhur" ? 'text-primary' : 'text-foreground'}`}>
+                    {prayerTimes.dhuhr}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-muted-foreground mb-1">Ashar</div>
-                  <div className="text-sm font-semibold text-foreground">
-                    {prayerTimes.times.asr}
+                  <div className={`text-sm font-semibold ${nextPrayer.name === "Ashar" ? 'text-primary' : 'text-foreground'}`}>
+                    {prayerTimes.asr}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-muted-foreground mb-1">Maghrib</div>
-                  <div className="text-sm font-semibold text-foreground">
-                    {prayerTimes.times.maghrib}
+                  <div className={`text-sm font-semibold ${nextPrayer.name === "Maghrib" ? 'text-primary' : 'text-foreground'}`}>
+                    {prayerTimes.maghrib}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-muted-foreground mb-1">Isya</div>
-                  <div className="text-sm font-semibold text-foreground">
-                    {prayerTimes.times.isha}
+                  <div className={`text-sm font-semibold ${nextPrayer.name === "Isya" ? 'text-primary' : 'text-foreground'}`}>
+                    {prayerTimes.isha}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-muted-foreground mb-1">Selanjutnya</div>
-                  <div className="text-xs font-medium text-primary">{timeLeft}</div>
+                  <div className="text-xs font-medium text-primary">
+                    {nextPrayer.name} • {nextPrayer.timeLeft}
+                  </div>
                 </div>
               </div>
             )}

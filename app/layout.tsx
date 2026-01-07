@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   keywords: ["hijaiyah", "quran", "dhikr", "islamic", "learning", "arabic"],
   authors: [{ name: "Belajar Ngaji Team" }],
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
+    icon: '/images/logo/image.png',
+    shortcut: '/images/logo/image.png',
     apple: '/images/logo/image.png',
   },
   manifest: '/manifest.json',

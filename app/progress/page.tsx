@@ -2,14 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { BottomNavigation } from "@/client/src/components/bottom-navigation";
-import { ProgressRing } from "@/client/src/components/progress-ring";
-import { useProgressStats } from "@/client/src/hooks/use-progress";
-import { Button } from "@/client/src/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
-import { Badge } from "@/client/src/components/ui/badge";
-import { Separator } from "@/client/src/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/client/src/components/ui/tabs";
+import { api, isApiError } from "@/lib/api";
+import { NetworkError, AuthError } from "@/components/error-boundary";
+import { BottomNavigation } from "@/components/bottom-navigation";
+import { ProgressRing } from "@/components/progress-ring";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
   TrendingUp,
@@ -26,44 +27,82 @@ import {
 
 export default function Progress() {
   const router = useRouter();
-  const stats = useProgressStats();
 
   // User data
-  const { data: user } = useQuery<{
-    id: string;
-    username: string;
-    email: string;
-    streak: number;
-    dailyProgress: number;
-    lastActive: Date;
-    preferences: Record<string, any>;
-  }>({
-    queryKey: ["/api/user"],
+  const {
+    data: user,
+    isLoading: userLoading,
+    error: userError
+  } = useQuery({
+    queryKey: ['user-profile'],
+    queryFn: () => api.user.getProfile(),
+    retry: false
+  });
+
+  // Progress data
+  const {
+    data: progressData = [],
+    isLoading: progressLoading,
+    error: progressError
+  } = useQuery({
+    queryKey: ['user-progress'],
+    queryFn: () => api.progress.getProgress(),
+    retry: false
   });
 
   // Quiz stats
-  const { data: quizStats = [] } = useQuery<Array<{
-    category: string;
-    bestScore: number;
-    attempts: number;
-  }>>({
-    queryKey: ["/api/quiz/stats"],
+  const {
+    data: quizStats,
+    isLoading: quizLoading,
+    error: quizError
+  } = useQuery({
+    queryKey: ['quiz-stats'],
+    queryFn: () => api.quiz.getStats(),
+    retry: false
   });
 
   // Recent progress
-  const { data: recentProgress = [] } = useQuery<Array<{
-    id: string;
-    userId: string;
-    module: string;
-    itemId: string;
-    progress: number;
-    completed: boolean;
-    score: number;
-    timeSpent: number;
-    lastAccessed: Date;
-  }>>({
-    queryKey: ["/api/progress"],
-  });
+  const recentProgress = progressData.slice(0, 10);
+
+  // Calculate stats from progress data
+  const calculateStats = () => {
+    const hijaiyahProgress = progressData.filter(p => p.module === 'hijaiyah');
+    const quranProgress = progressData.filter(p => p.module === 'quran');
+    const dhikrProgress = progressData.filter(p => p.module === 'dhikr');
+
+    return {
+      hijaiyah: {
+        completed: hijaiyahProgress.filter(p => p.completed).length,
+        total: 28,
+        progress: hijaiyahProgress.length > 0 ? Math.round(hijaiyahProgress.reduce((sum, p) => sum + p.progress, 0) / hijaiyahProgress.length) : 0
+      },
+      quran: {
+        bookmarked: quranProgress.length,
+        total: 114,
+        progress: Math.round((quranProgress.length / 114) * 100)
+      },
+      dhikr: {
+        todayCount: dhikrProgress.filter(p => p.completed).length,
+        progress: dhikrProgress.length > 0 ? 100 : 0
+      },
+      quiz: {
+        bestScore: quizStats?.bestScore || 0,
+        attempts: quizStats?.totalAttempts || 0
+      }
+    };
+  };
+
+  const stats = calculateStats();
+
+  // Handle authentication errors
+  if (userError && isApiError(userError) && userError.status === 401) {
+    return <AuthError />
+  }
+
+  // Handle network errors
+  if (userError && isApiError(userError) && userError.status === 0) {
+    return <NetworkError onRetry={() => window.location.reload()} />
+  }
 
   const overallProgress = [
     {
@@ -226,17 +265,17 @@ export default function Progress() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {quizStats.length > 0 ? quizStats.map((stat) => (
-                  <div key={stat.category} className="flex items-center justify-between">
+                {quizStats && quizStats.totalAttempts > 0 ? (
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium capitalize">{stat.category}</h4>
-                      <p className="text-xs text-muted-foreground">{stat.attempts} percobaan</p>
+                      <h4 className="font-medium">Quiz General</h4>
+                      <p className="text-xs text-muted-foreground">{quizStats.totalAttempts} percobaan</p>
                     </div>
-                    <Badge variant={stat.bestScore >= 80 ? "default" : "secondary"}>
-                      {stat.bestScore}%
+                    <Badge variant={quizStats.bestScore >= 80 ? "default" : "secondary"}>
+                      {quizStats.bestScore}%
                     </Badge>
                   </div>
-                )) : (
+                ) : (
                   <div className="text-center py-4">
                     <Brain className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">Belum ada kuis yang diselesaikan</p>

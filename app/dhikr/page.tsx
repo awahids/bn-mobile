@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BottomNavigation } from "@/client/src/components/bottom-navigation";
-import { AudioPlayer } from "@/client/src/components/audio-player";
-import { DhikrCounter } from "@/client/src/components/dhikr-counter";
-import { useAudio } from "@/client/src/hooks/use-audio";
+import { api, isApiError } from "@/lib/api";
+import { NetworkError, AuthError } from "@/components/error-boundary";
+import { BottomNavigation } from "@/components/bottom-navigation";
+import { AudioPlayer } from "@/components/audio-player";
+import { DhikrCounter } from "@/components/dhikr-counter";
+import { useAudio } from "../../hooks/use-audio";
 import { dhikrData, getMorningDhikr, getEveningDhikr } from "@/client/src/data/dhikr";
 import { Button } from "@/client/src/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
@@ -22,22 +24,6 @@ import {
   Check,
   Clock
 } from "lucide-react";
-
-// API helper function
-async function apiRequest(method: string, url: string, data?: unknown): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
-  }
-  return res;
-}
 
 export default function Dhikr() {
   const router = useRouter();
@@ -56,48 +42,25 @@ export default function Dhikr() {
   }, []);
 
   // Get dhikr counters for today
-  const { data: counters = [] } = useQuery<Array<{
-    id: string;
-    userId: string;
-    dhikrId: string;
-    count: number;
-    target: number;
-    date: string;
-    session: string;
-    completed: boolean;
-  }>>({
-    queryKey: ["/api/dhikr/counters", today],
+  const {
+    data: counters = [],
+    isLoading: countersLoading,
+    error: countersError
+  } = useQuery({
+    queryKey: ['dhikr-counters', today],
+    queryFn: () => api.dhikr.getCounters(today),
+    enabled: !!today,
+    retry: false
   });
 
   // Update dhikr counter mutation
   const updateCounter = useMutation({
-    mutationFn: async (data: any) => {
-      console.log("🔄 Sending dhikr update:", data);
-      try {
-        const response = await apiRequest("POST", "/api/dhikr/counters", data);
-        console.log("📡 API response status:", response.status, response.statusText);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("❌ API error response:", errorText);
-          throw new Error(`API Error: ${response.status} - ${errorText}`);
-        }
-
-        const result = await response.json();
-        console.log("✅ Dhikr update response:", result);
-        return result;
-      } catch (error) {
-        console.error("💥 Mutation error:", error);
-        throw error;
-      }
-    },
-    onSuccess: (data) => {
-      console.log("🔁 Invalidating cache for key:", ["/api/dhikr/counters", today]);
-      queryClient.invalidateQueries({ queryKey: ["/api/dhikr/counters", today] });
-      console.log("📦 Current counters after invalidation:", counters);
+    mutationFn: (data: any) => api.dhikr.updateCounter(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dhikr-counters', today] });
     },
     onError: (error) => {
-      console.error("🚨 Mutation failed:", error);
+      console.error('🚨 Dhikr counter update failed:', error);
     }
   });
 
@@ -121,27 +84,17 @@ export default function Dhikr() {
   };
 
   const getCounterData = (dhikrId: string) => {
-    console.log(`🔍 Getting counter data for ${dhikrId}:`, {
-      availableCounters: counters,
-      currentSession,
-      today,
-      searchingFor: { dhikrId, session: currentSession, date: today }
-    });
-
     const counter = counters.find((c: any) =>
       c.dhikrId === dhikrId &&
       c.session === currentSession &&
       c.date === today
     );
 
-    const result = {
+    return {
       count: counter?.count || 0,
       completed: counter?.completed || false,
       target: counter?.target || dhikrData.find(d => d.id === dhikrId)?.count || 33
     };
-
-    console.log(`📊 Counter data for ${dhikrId}:`, { foundCounter: counter, returning: result });
-    return result;
   };
 
   const handleCounterUpdate = async (dhikrId: string, newCount: number) => {
@@ -193,6 +146,16 @@ export default function Dhikr() {
   useEffect(() => {
     setTimeBasedGreeting(getTimeBasedGreeting());
   }, []);
+
+  // Handle authentication errors
+  if (countersError && isApiError(countersError) && countersError.status === 401) {
+    return <AuthError />
+  }
+
+  // Handle network errors
+  if (countersError && isApiError(countersError) && countersError.status === 0) {
+    return <NetworkError onRetry={() => window.location.reload()} />
+  }
 
   return (
     <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
