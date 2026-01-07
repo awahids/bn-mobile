@@ -7,6 +7,8 @@ generator client {
 
 datasource db {
   provider = "mongodb"
+  // Note: Prisma v7 will require moving this to prisma.config.ts
+  // Current v5.22.0 configuration is correct
   url      = env("DATABASE_URL")
 }
 

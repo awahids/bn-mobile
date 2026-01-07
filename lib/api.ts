@@ -381,6 +381,8 @@ export interface PrayerTimes {
     country?: string
     latitude?: number
     longitude?: number
+    district?: string
+    label?: string
   }
 }
 

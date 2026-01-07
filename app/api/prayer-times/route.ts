@@ -21,6 +21,8 @@ interface PrayerTimes {
     country?: string
     latitude: number
     longitude: number
+    district?: string
+    label?: string
   }
 }
 
@@ -99,6 +101,9 @@ export async function GET(request: NextRequest) {
       throw new Error('Failed to fetch prayer times from external API')
     }
 
+    // Reverse geocode for nicer location name (best-effort)
+    const place = await reverseGeocode(latitude, longitude);
+
     // Extract prayer times from response
     const timings = data.data.timings
     const prayerTimes: PrayerTimes = {
@@ -112,8 +117,10 @@ export async function GET(request: NextRequest) {
       location: {
         latitude,
         longitude,
-        city: data.data.meta?.timezone || undefined,
-        country: undefined
+        city: place?.city || data.data.meta?.timezone || undefined,
+        country: place?.country || undefined,
+        district: place?.district,
+        label: place?.label
       }
     }
 
@@ -183,6 +190,39 @@ function formatTime(decimalHours: number): string {
   const hours = Math.floor(decimalHours)
   const minutes = Math.floor((decimalHours - hours) * 60)
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+}
+
+/**
+ * Reverse geocode lat/lng to get city/district (best-effort).
+ * Uses Nominatim (OSM) free service; keep lightweight to avoid rate limits.
+ */
+async function reverseGeocode(lat: number, lng: number): Promise<{ city?: string; country?: string; district?: string; label?: string } | null> {
+  try {
+    const url = new URL("https://nominatim.openstreetmap.org/reverse");
+    url.searchParams.set("format", "jsonv2");
+    url.searchParams.set("lat", lat.toString());
+    url.searchParams.set("lon", lng.toString());
+    url.searchParams.set("zoom", "10");
+    url.searchParams.set("addressdetails", "1");
+
+    const response = await fetch(url.toString(), {
+      headers: { "User-Agent": "Hijaiyah-App/1.0" },
+    });
+
+    if (!response.ok) return null;
+    const data = await response.json();
+
+    const address = data.address || {};
+    const city = address.city || address.town || address.village;
+    const district = address.suburb || address.county || address.state_district;
+    const country = address.country;
+    const label = data.display_name as string | undefined;
+
+    return { city, country, district, label };
+  } catch (error) {
+    console.error("Reverse geocode failed:", error);
+    return null;
+  }
 }
 
 /**

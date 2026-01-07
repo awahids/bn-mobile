@@ -53,6 +53,14 @@
     "client",
     "server",
     "dist",
-    ".next"
+    ".next",
+    "scripts/analyze-bundle.ts",
+    "scripts/build-with-bun.ts",
+    "scripts/bun-optimize.ts",
+    "scripts/performance-monitor.ts",
+    "vite.*.ts",
+    "vite.config.standalone.ts",
+    "vite.plugins.standalone.ts",
+    "vite.performance.config.ts"
   ]
 }

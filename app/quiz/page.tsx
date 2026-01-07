@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, isApiError } from "@/lib/api";
 import { NetworkError } from "@/components/error-boundary";
-import { BottomNavigation } from "@/components/bottom-navigation";
+import { LazyBottomNavigation } from "@/components/lazy";
 import { quizCategories, getRandomQuestions, QuizQuestion } from "@/client/src/data/quiz";
 import { Button } from "@/client/src/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
@@ -455,7 +455,7 @@ export default function Quiz() {
         </section>
       )}
 
-      <BottomNavigation />
+      <LazyBottomNavigation />
     </div>
   );
 }

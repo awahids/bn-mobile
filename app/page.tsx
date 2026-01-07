@@ -113,8 +113,11 @@ export default function Home() {
   }, [prayerTimes]);
 
   useEffect(() => {
-    if (prayerTimes?.location?.city || prayerTimes?.location?.country) {
-      const place = [prayerTimes.location.city, prayerTimes.location.country].filter(Boolean).join(", ");
+    if (prayerTimes?.location) {
+      const loc = prayerTimes.location;
+      const place = loc.label ||
+        [loc.city, loc.district].filter(Boolean).join(", ") ||
+        [loc.city, loc.country].filter(Boolean).join(", ");
       setLocationLabel(place || "Lokasi terkini");
     } else if (coords) {
       setLocationLabel(`Lat ${coords.lat.toFixed(2)}, Lng ${coords.lng.toFixed(2)}`);

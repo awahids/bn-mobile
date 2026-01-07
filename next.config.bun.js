@@ -3,8 +3,8 @@ const nextConfig = {
   // Configure for serverless deployment
   output: 'standalone',
 
-  // Disable Turbopack when using Bun to avoid worker thread issues
-  turbopack: process.env.BUN_RUNTIME !== 'bun' ? {} : false,
+  // Disable Turbopack for Bun compatibility
+  turbopack: false,
 
   // Performance optimizations for Bun runtime
   experimental: {
@@ -20,11 +20,11 @@ const nextConfig = {
     ],
     // Enable optimized CSS
     optimizeCss: true,
-    // Disable memory-based workers when using Bun
-    memoryBasedWorkersCount: process.env.BUN_RUNTIME !== 'bun',
+    // Disable memory-based workers for Bun compatibility
+    memoryBasedWorkersCount: false,
   },
 
-  // Server external packages (moved from experimental)
+  // Server external packages
   serverExternalPackages: ['@prisma/client'],
 
   // Compiler optimizations for Bun
@@ -47,61 +47,40 @@ const nextConfig = {
       };
     }
 
-    // Bun-specific optimizations
-    if (process.env.BUN_RUNTIME === 'bun') {
-      // Disable source maps for Bun compatibility
-      config.devtool = false;
-
-      // Disable worker threads for Bun
-      config.optimization = {
-        ...config.optimization,
-        minimize: process.env.NODE_ENV === 'production',
-        concatenateModules: true,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              chunks: 'all',
-              priority: 10,
-            },
-            common: {
-              name: 'common',
-              minChunks: 2,
-              chunks: 'all',
-              priority: 5,
-            },
+    // Disable worker threads for Bun compatibility
+    config.optimization = {
+      ...config.optimization,
+      // Disable parallel processing that uses worker threads
+      minimize: process.env.NODE_ENV === 'production',
+      // Enable module concatenation
+      concatenateModules: true,
+      // Optimize chunk splitting
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 5,
           },
         },
-      };
-    } else {
-      // Standard webpack optimization for Node.js
-      config.optimization = {
-        ...config.optimization,
-        concatenateModules: true,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              chunks: 'all',
-              priority: 10,
-            },
-            common: {
-              name: 'common',
-              minChunks: 2,
-              chunks: 'all',
-              priority: 5,
-            },
-          },
-        },
-      };
-    }
+      },
+    };
 
     // Faster module resolution for Bun
     config.resolve.modules = ['node_modules', '.'];
+
+    // Disable source maps for Bun compatibility
+    if (process.env.BUN_RUNTIME === 'bun') {
+      config.devtool = false;
+    }
 
     return config;
   },

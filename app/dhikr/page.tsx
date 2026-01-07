@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, isApiError } from "@/lib/api";
 import { NetworkError, AuthError } from "@/components/error-boundary";
-import { BottomNavigation } from "@/components/bottom-navigation";
-import { AudioPlayer } from "@/components/audio-player";
-import { DhikrCounter } from "@/components/dhikr-counter";
+import { LazyBottomNavigation, LazyAudioPlayer, LazyDhikrCounter, preloadComponents } from "@/components/lazy";
 import { useAudio } from "../../hooks/use-audio";
 import { dhikrData, getMorningDhikr, getEveningDhikr } from "@/client/src/data/dhikr";
 import { Button } from "@/client/src/components/ui/button";
@@ -15,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/component
 import { Badge } from "@/client/src/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/client/src/components/ui/tabs";
 import { Progress } from "@/client/src/components/ui/progress";
+import { usePreloadOnHover } from "@/lib/lazy-loading";
 import {
   ArrowLeft,
   Sun,
@@ -33,6 +32,10 @@ export default function Dhikr() {
 
   const queryClient = useQueryClient();
   const audio = useAudio();
+
+  // Preload heavy components on hover
+  const audioPlayerPreload = usePreloadOnHover(preloadComponents.audioPlayer);
+  const dhikrCounterPreload = usePreloadOnHover(preloadComponents.dhikrCounter);
 
   // Get today's date - use state to avoid hydration mismatch
   const [today, setToday] = useState('');
@@ -269,6 +272,7 @@ export default function Dhikr() {
                         setSelectedDhikr(dhikr.id);
                       }}
                       data-testid={`play-${dhikr.id}`}
+                      {...audioPlayerPreload}
                     >
                       <Volume2 className="w-4 h-4" />
                     </Button>
@@ -292,13 +296,15 @@ export default function Dhikr() {
                   </div>
 
                   {/* Counter */}
-                  <DhikrCounter
-                    dhikrId={dhikr.id}
-                    currentCount={counterData.count}
-                    targetCount={counterData.target}
-                    onUpdate={(count: number) => handleCounterUpdate(dhikr.id, count)}
-                    completed={counterData.completed}
-                  />
+                  <div {...dhikrCounterPreload}>
+                    <LazyDhikrCounter
+                      dhikrId={dhikr.id}
+                      currentCount={counterData.count}
+                      targetCount={counterData.target}
+                      onUpdate={(count: number) => handleCounterUpdate(dhikr.id, count)}
+                      completed={counterData.completed}
+                    />
+                  </div>
                 </CardContent>
               </Card>
             );
@@ -321,7 +327,7 @@ export default function Dhikr() {
       </section>
 
       {/* Audio Player */}
-      <AudioPlayer
+      <LazyAudioPlayer
         title={selectedDhikr ? dhikrData.find(d => d.id === selectedDhikr)?.transliteration || "" : ""}
         subtitle="Dhikr Audio"
         audioUrl={selectedDhikr ? dhikrData.find(d => d.id === selectedDhikr)?.audioUrl || "" : ""}
@@ -339,7 +345,7 @@ export default function Dhikr() {
         onVolumeChange={audio.setVolume}
       />
 
-      <BottomNavigation />
+      <LazyBottomNavigation />
     </div>
   );
 }

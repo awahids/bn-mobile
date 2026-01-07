@@ -1,0 +1,67 @@
+# Bun Configuration for Optimal Performance with Next.js
+# https://bun.sh/docs/runtime/bunfig
+
+[install]
+# Use faster registry mirrors
+registry = "https://registry.npmjs.org/"
+# Enable faster installs with hardlinks
+cache = true
+# Optimize for production builds
+production = false
+# Enable exact versions for reproducible builds
+exact = true
+# Faster dependency resolution
+auto = true
+
+[install.scopes]
+# Use faster CDN for common packages
+"@types" = "https://registry.npmjs.org/"
+
+[run]
+# Enable hot reloading for development
+hot = true
+# Optimize memory usage
+bun = true
+# Disable source maps for Next.js compatibility
+sourcemap = false
+
+[test]
+# Optimize test performance
+preload = ["./test/setup.ts"]
+coverage = true
+# Use faster test runner
+timeout = 30000
+
+[build]
+# Production optimizations
+minify = true
+# Enable tree shaking
+splitting = true
+# Optimize for modern browsers
+target = "browser"
+# Disable source maps for Next.js compatibility
+sourcemap = false
+
+# Performance optimizations
+[performance]
+# Enable faster module resolution
+moduleResolution = "bundler"
+# Optimize memory usage
+memoryLimit = "4gb"
+# Disable parallel processing for Next.js compatibility
+workers = false
+
+# Development server optimizations
+[dev]
+# Enable faster HMR
+hmr = true
+# Optimize for development
+port = 3000
+# Enable HTTPS for OAuth testing
+https = false
+
+# Logging configuration
+[log]
+level = "info"
+# Reduce noise in production
+quiet = false

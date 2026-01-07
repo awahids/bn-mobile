@@ -3,8 +3,7 @@
 import { useState, useRef, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { BottomNavigation } from "@/client/src/components/bottom-navigation";
-import { ProgressRing } from "@/client/src/components/progress-ring";
+import { LazyBottomNavigation, LazyProgressRing, LazyAudioPlayer, LazyWritingCanvas, preloadComponents } from "@/components/lazy";
 import { useProgress, useUpdateProgress } from "@/client/src/hooks/use-progress";
 import { useAudio } from "@/client/src/hooks/use-audio";
 import { hijaiyahLetters } from "@/client/src/data/hijaiyah";
@@ -13,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/component
 import { Badge } from "@/client/src/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/client/src/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePreloadOnHover } from "@/lib/lazy-loading";
 import {
   ArrowLeft,
   RotateCcw,
@@ -23,25 +23,6 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-
-// Dynamic imports for heavy components with loading fallbacks
-const AudioPlayer = dynamic(
-  () => import("@/client/src/components/audio-player").then(mod => ({ default: mod.AudioPlayer })),
-  {
-    loading: () => <Skeleton className="h-20 w-full" />,
-    ssr: false
-  }
-);
-
-const WritingCanvas = dynamic(
-  () => import("@/client/src/components/writing-canvas").then(mod => ({
-    default: mod.WritingCanvas
-  })),
-  {
-    loading: () => <Skeleton className="h-64 w-full" />,
-    ssr: false
-  }
-);
 
 // Import the ref type separately since it's needed for typing
 import type { WritingCanvasRef } from "@/client/src/components/writing-canvas";
@@ -57,6 +38,10 @@ export default function Hijaiyah() {
   const { data: progressData = [] } = useProgress("hijaiyah");
   const updateProgress = useUpdateProgress();
   const audio = useAudio();
+
+  // Preload heavy components on hover
+  const audioPlayerPreload = usePreloadOnHover(preloadComponents.audioPlayer);
+  const writingCanvasPreload = usePreloadOnHover(preloadComponents.writingCanvas);
 
   const getLetterProgress = (letterId: string) => {
     const progress = progressData.find(p => p.itemId === letterId);
@@ -119,7 +104,7 @@ export default function Hijaiyah() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <ProgressRing progress={overallProgress} size={40} className="text-chart-1" />
+            <LazyProgressRing progress={overallProgress} size={40} className="text-chart-1" />
             <span className="text-sm font-medium text-chart-1">{overallProgress}%</span>
           </div>
         </div>
@@ -229,6 +214,7 @@ export default function Hijaiyah() {
                   onClick={() => playAudio(selectedLetter.audioUrl)}
                   className="flex items-center space-x-2"
                   data-testid="play-pronunciation"
+                  {...audioPlayerPreload}
                 >
                   <Volume2 className="w-4 h-4" />
                   <span>Dengar Pengucapan</span>
@@ -266,7 +252,7 @@ export default function Hijaiyah() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <WritingCanvas
+                  <LazyWritingCanvas
                     ref={writingCanvasRef}
                     letter={selectedLetter}
                     onComplete={() => {
@@ -352,7 +338,7 @@ export default function Hijaiyah() {
 
       {/* Audio Player */}
       {audioPlayerVisible && (
-        <AudioPlayer
+        <LazyAudioPlayer
           title={`Huruf ${selectedLetter.name}`}
           subtitle={selectedLetter.pronunciation}
           audioUrl={selectedLetter.audioUrl}
@@ -371,7 +357,7 @@ export default function Hijaiyah() {
         />
       )}
 
-      <BottomNavigation />
+      <LazyBottomNavigation />
     </div>
   );
 }
