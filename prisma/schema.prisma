@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  username      String   @unique
+  email         String   @unique
+  streak        Int      @default(0)
+  dailyProgress Int      @default(0) @map("daily_progress")
+  lastActive    DateTime @default(now()) @map("last_active")
+  preferences   Json     @default("{}")
+  
+  // Relations
+  progress      UserProgress[]
+  bookmarks     Bookmark[]
+  dhikrCounters DhikrCounter[]
+  quizAttempts  QuizAttempt[]
+  
+  @@map("users")
+}
+
+model UserProgress {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  module       String   // 'hijaiyah', 'quran', 'dhikr', 'quiz'
+  itemId       String   @map("item_id")
+  progress     Int      @default(0) // 0-100
+  completed    Boolean  @default(false)
+  score        Int      @default(0)
+  timeSpent    Int      @default(0) @map("time_spent") // in seconds
+  lastAccessed DateTime @default(now()) @map("last_accessed")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, module])
+  @@index([userId, module, itemId])
+  @@map("user_progress")
+}
+
+model Bookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  type      String   // 'quran', 'dhikr'
+  contentId String   @map("content_id")
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, type])
+  @@map("bookmarks")
+}
+
+model DhikrCounter {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @db.ObjectId
+  dhikrId   String  @map("dhikr_id")
+  count     Int     @default(0)
+  target    Int     @default(33)
+  date      String  // YYYY-MM-DD format
+  session   String  // 'morning' or 'evening'
+  completed Boolean @default(false)
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, date])
+  @@index([userId, dhikrId, date, session])
+  @@map("dhikr_counters")
+}
+
+model QuizAttempt {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
+  category       String
+  score          Int
+  totalQuestions Int      @map("total_questions")
+  timeSpent      Int      @map("time_spent")
+  answers        Json     // array of answer objects
+  completedAt    DateTime @default(now()) @map("completed_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, category])
+  @@index([userId, completedAt])
+  @@map("quiz_attempts")
+}
