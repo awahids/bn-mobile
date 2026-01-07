@@ -5,6 +5,16 @@
       "static/media/05d29f0ed5b0e698-s.p.6d7a8113.woff2",
       "static/media/291696193ea1e96b-s.p.6ef5e8dc.woff2"
     ],
+    "[project]/app/auth/callback/page": [
+      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+      "static/media/05d29f0ed5b0e698-s.p.6d7a8113.woff2",
+      "static/media/291696193ea1e96b-s.p.6ef5e8dc.woff2"
+    ],
+    "[project]/app/auth/error/page": [
+      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+      "static/media/05d29f0ed5b0e698-s.p.6d7a8113.woff2",
+      "static/media/291696193ea1e96b-s.p.6ef5e8dc.woff2"
+    ],
     "[project]/app/dhikr/page": [
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/05d29f0ed5b0e698-s.p.6d7a8113.woff2",
@@ -15,12 +25,12 @@
       "static/media/05d29f0ed5b0e698-s.p.6d7a8113.woff2",
       "static/media/291696193ea1e96b-s.p.6ef5e8dc.woff2"
     ],
-    "[project]/app/page": [
+    "[project]/app/login/page": [
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/05d29f0ed5b0e698-s.p.6d7a8113.woff2",
       "static/media/291696193ea1e96b-s.p.6ef5e8dc.woff2"
     ],
-    "[project]/app/profile/page": [
+    "[project]/app/page": [
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/05d29f0ed5b0e698-s.p.6d7a8113.woff2",
       "static/media/291696193ea1e96b-s.p.6ef5e8dc.woff2"

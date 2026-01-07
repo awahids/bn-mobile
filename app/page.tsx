@@ -1,13 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { BottomNavigation } from "@/client/src/components/bottom-navigation";
-import { ProgressRing } from "@/client/src/components/progress-ring";
-import { useTheme } from "@/client/src/components/theme-provider";
-import { useProgressStats } from "@/client/src/hooks/use-progress";
-import { Button } from "@/client/src/components/ui/button";
-import { Card, CardContent } from "@/client/src/components/ui/card";
+import { BottomNavigation } from "@/components/bottom-navigation";
+import { ProgressRing } from "@/components/progress-ring";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Moon,
   Sun,
@@ -26,8 +25,22 @@ import {
 
 export default function Home() {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
-  const stats = useProgressStats();
+
+  // Mock stats data
+  const stats = {
+    hijaiyah: { completed: 12, total: 28, progress: 43 }
+  };
+
+  // Simple theme state without provider dependency
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
+    // Update document class if on client side
+    if (typeof window !== 'undefined') {
+      document.documentElement.classList.toggle('dark');
+    }
+  };
 
   // Prayer times query
   const { data: prayerTimes } = useQuery<{
@@ -59,6 +72,11 @@ export default function Home() {
 
   const getCurrentPrayerInfo = () => {
     if (!prayerTimes) return { next: "Dhuhur", timeLeft: "2h 15m" };
+
+    // Only calculate on client side to avoid hydration mismatch
+    if (typeof window === 'undefined') {
+      return { next: "Dhuhur", timeLeft: "2h 15m" };
+    }
 
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -101,10 +119,10 @@ export default function Home() {
               className="rounded-lg"
               data-testid="toggle-theme"
             >
-              {theme === 'light' ? (
-                <Sun className="w-4 h-4" />
-              ) : (
+              {isDarkMode ? (
                 <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
               )}
             </Button>
             <Button

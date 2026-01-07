@@ -14,8 +14,11 @@ const ThemeProviderContext = createContext<ThemeProviderContextType | undefined>
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false);
 
+  // Only run on client side after hydration
   useEffect(() => {
+    setMounted(true);
     const saved = localStorage.getItem("theme") as Theme;
     if (saved) {
       setThemeState(saved);
@@ -23,11 +26,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
     localStorage.setItem("theme", theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -36,6 +41,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
+
+  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
+  if (!mounted) {
+    return (
+      <ThemeProviderContext.Provider value={{ theme: "light", setTheme, toggleTheme }}>
+        {children}
+      </ThemeProviderContext.Provider>
+    );
+  }
 
   return (
     <ThemeProviderContext.Provider value={{ theme, setTheme, toggleTheme }}>

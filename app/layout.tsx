@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Amiri } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -19,7 +19,12 @@ export const metadata: Metadata = {
   description: "Aplikasi pembelajaran huruf Hijaiyah, Al-Qur'an, Dhikr, dan Kuis interaktif",
   keywords: ["hijaiyah", "quran", "dhikr", "islamic", "learning", "arabic"],
   authors: [{ name: "Belajar Ngaji Team" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#000000" },

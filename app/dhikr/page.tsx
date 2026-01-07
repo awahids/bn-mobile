@@ -48,8 +48,12 @@ export default function Dhikr() {
   const queryClient = useQueryClient();
   const audio = useAudio();
 
-  // Get today's date
-  const today = new Date().toISOString().split('T')[0];
+  // Get today's date - use state to avoid hydration mismatch
+  const [today, setToday] = useState('');
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0]);
+  }, []);
 
   // Get dhikr counters for today
   const { data: counters = [] } = useQuery<Array<{
@@ -99,6 +103,8 @@ export default function Dhikr() {
 
   // Determine current session based on time
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const now = new Date();
     const hour = now.getHours();
 
@@ -172,13 +178,21 @@ export default function Dhikr() {
   ).length;
   const completionPercentage = Math.round((totalCompleted / currentDhikrList.length) * 100);
 
+  const [timeBasedGreeting, setTimeBasedGreeting] = useState("Dhikr Pagi");
+
   const getTimeBasedGreeting = () => {
+    if (typeof window === 'undefined') return "Dhikr Pagi";
+
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) return "Dhikr Pagi";
     if (hour >= 12 && hour < 18) return "Dhikr Siang";
     if (hour >= 18 && hour < 24) return "Dhikr Petang";
     return "Dhikr Malam";
   };
+
+  useEffect(() => {
+    setTimeBasedGreeting(getTimeBasedGreeting());
+  }, []);
 
   return (
     <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
@@ -196,7 +210,7 @@ export default function Dhikr() {
             </Button>
             <div>
               <h1 className="text-lg font-semibold text-foreground">
-                {getTimeBasedGreeting()}
+                {timeBasedGreeting}
               </h1>
               <p className="text-xs text-muted-foreground">
                 {totalCompleted}/{currentDhikrList.length} Selesai
