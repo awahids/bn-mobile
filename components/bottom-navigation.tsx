@@ -3,7 +3,6 @@
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, BookOpen, Users, TrendingUp, User } from "lucide-react";
-import { UserMenu } from "@/components/auth/user-menu";
 
 const navItems = [
   { path: "/", label: "Beranda", icon: Home },
@@ -26,30 +25,22 @@ export function BottomNavigation() {
   return (
     <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-card border-t border-border safe-area-bottom">
       <div className="flex items-center justify-between py-2 px-4">
-        <div className="flex items-center justify-around flex-1">
-          {navItems.slice(0, 3).map(({ path, label, icon: Icon }) => (
-            <button
-              key={path}
-              onClick={() => router.push(path)}
-              className={cn(
-                "flex flex-col items-center py-2 px-3 transition-colors touch-target",
-                isActive(path)
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              data-testid={`nav-${label.toLowerCase()}`}
-            >
-              <Icon className="w-5 h-5 mb-1" />
-              <span className="text-xs font-medium">{label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* User Menu */}
-        <div className="flex flex-col items-center py-2 px-3">
-          <UserMenu />
-          <span className="text-xs font-medium text-muted-foreground mt-1">Profil</span>
-        </div>
+        {navItems.map(({ path, label, icon: Icon }) => (
+          <button
+            key={path}
+            onClick={() => router.push(path)}
+            className={cn(
+              "flex flex-col items-center py-2 px-3 transition-colors touch-target",
+              isActive(path)
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            data-testid={`nav-${label.toLowerCase()}`}
+          >
+            <Icon className="w-5 h-5 mb-1" />
+            <span className="text-xs font-medium">{label}</span>
+          </button>
+        ))}
       </div>
     </nav>
   );
