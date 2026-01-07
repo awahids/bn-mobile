@@ -9,3 +9,4 @@ vite.config.ts.*
 .next/*
 
 .env
+.env.local

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface AudioState {
   isPlaying: boolean;
@@ -7,109 +7,169 @@ interface AudioState {
   volume: number;
   isLoading: boolean;
   error: string | null;
+  currentSrc: string;
+  title: string;
+  subtitle: string;
 }
 
-export function useAudio(src?: string) {
-  const [state, setState] = useState<AudioState>({
-    isPlaying: false,
+const initialState: AudioState = {
+  isPlaying: false,
+  currentTime: 0,
+  duration: 0,
+  volume: 1,
+  isLoading: false,
+  error: null,
+  currentSrc: "",
+  title: "",
+  subtitle: "",
+};
+
+let audioState: AudioState = initialState;
+let audioRef: HTMLAudioElement | null = null;
+const listeners = new Set<(state: AudioState) => void>();
+
+const updateState = (updates: Partial<AudioState>) => {
+  audioState = { ...audioState, ...updates };
+  listeners.forEach((listener) => listener(audioState));
+};
+
+const createAudio = (audioSrc: string) => {
+  if (audioRef) {
+    audioRef.pause();
+  }
+
+  const audio = new Audio(audioSrc);
+  audio.volume = audioState.volume;
+  audioRef = audio;
+
+  updateState({
+    currentSrc: audioSrc,
     currentTime: 0,
     duration: 0,
-    volume: 1,
-    isLoading: false,
+    isLoading: true,
     error: null,
+    isPlaying: false,
   });
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  audio.addEventListener("loadstart", () => {
+    updateState({ isLoading: true, error: null });
+  });
 
-  const createAudio = useCallback((audioSrc: string) => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-
-    const audio = new Audio(audioSrc);
-    audioRef.current = audio;
-
-    audio.addEventListener('loadstart', () => {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+  audio.addEventListener("loadedmetadata", () => {
+    updateState({
+      duration: audio.duration,
+      isLoading: false,
     });
+  });
 
-    audio.addEventListener('loadedmetadata', () => {
-      setState(prev => ({ 
-        ...prev, 
-        duration: audio.duration,
-        isLoading: false 
-      }));
+  audio.addEventListener("timeupdate", () => {
+    updateState({ currentTime: audio.currentTime });
+  });
+
+  audio.addEventListener("play", () => {
+    updateState({ isPlaying: true });
+  });
+
+  audio.addEventListener("pause", () => {
+    updateState({ isPlaying: false });
+  });
+
+  audio.addEventListener("ended", () => {
+    updateState({ isPlaying: false });
+  });
+
+  audio.addEventListener("volumechange", () => {
+    updateState({ volume: audio.volume });
+  });
+
+  audio.addEventListener("error", () => {
+    updateState({
+      error: "Failed to load audio",
+      isLoading: false,
     });
+  });
 
-    audio.addEventListener('timeupdate', () => {
-      setState(prev => ({ ...prev, currentTime: audio.currentTime }));
-    });
+  return audio;
+};
 
-    audio.addEventListener('ended', () => {
-      setState(prev => ({ ...prev, isPlaying: false }));
-    });
+const getOrCreateAudio = (audioSrc?: string) => {
+  if (audioRef && (!audioSrc || audioState.currentSrc === audioSrc)) {
+    return audioRef;
+  }
 
-    audio.addEventListener('error', () => {
-      setState(prev => ({ 
-        ...prev, 
-        error: 'Failed to load audio',
-        isLoading: false 
-      }));
-    });
+  if (!audioSrc) {
+    return audioRef;
+  }
 
-    return audio;
+  return createAudio(audioSrc);
+};
+
+export function useAudio(src?: string) {
+  const [state, setState] = useState<AudioState>(audioState);
+
+  useEffect(() => {
+    const listener = (nextState: AudioState) => setState(nextState);
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
   }, []);
 
-  const play = useCallback(async (audioSrc?: string) => {
-    try {
-      const currentSrc = audioSrc || src;
-      if (!currentSrc) return;
+  const play = useCallback(
+    async (audioSrc?: string) => {
+      try {
+        const resolvedSrc = audioSrc || src || audioState.currentSrc;
+        const audio = getOrCreateAudio(resolvedSrc);
+        if (!audio) return;
 
-      let audio = audioRef.current;
-      
-      if (!audio || audio.src !== currentSrc) {
-        audio = createAudio(currentSrc);
+        await audio.play();
+        updateState({ isPlaying: true, error: null });
+      } catch (error) {
+        updateState({
+          error: "Failed to play audio",
+          isPlaying: false,
+          isLoading: false,
+        });
       }
-
-      await audio.play();
-      setState(prev => ({ ...prev, isPlaying: true }));
-    } catch (error) {
-      setState(prev => ({ 
-        ...prev, 
-        error: 'Failed to play audio',
-        isPlaying: false 
-      }));
-    }
-  }, [src, createAudio]);
+    },
+    [src]
+  );
 
   const pause = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setState(prev => ({ ...prev, isPlaying: false }));
+    if (audioRef) {
+      audioRef.pause();
+      updateState({ isPlaying: false });
     }
   }, []);
 
   const stop = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setState(prev => ({ ...prev, isPlaying: false, currentTime: 0 }));
+    if (audioRef) {
+      audioRef.pause();
+      audioRef.currentTime = 0;
+      updateState({ isPlaying: false, currentTime: 0 });
     }
   }, []);
 
   const seek = useCallback((time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
-      setState(prev => ({ ...prev, currentTime: time }));
+    if (audioRef) {
+      audioRef.currentTime = time;
+      updateState({ currentTime: time });
     }
   }, []);
 
   const setVolume = useCallback((volume: number) => {
-    if (audioRef.current) {
-      audioRef.current.volume = Math.max(0, Math.min(1, volume));
-      setState(prev => ({ ...prev, volume }));
+    const nextVolume = Math.max(0, Math.min(1, volume));
+    if (audioRef) {
+      audioRef.volume = nextVolume;
     }
+    updateState({ volume: nextVolume });
+  }, []);
+
+  const setMeta = useCallback((meta: { title?: string; subtitle?: string }) => {
+    updateState({
+      title: meta.title ?? audioState.title,
+      subtitle: meta.subtitle ?? audioState.subtitle,
+    });
   }, []);
 
   return {
@@ -119,6 +179,7 @@ export function useAudio(src?: string) {
     stop,
     seek,
     setVolume,
+    setMeta,
     toggle: state.isPlaying ? pause : () => play(),
   };
 }

@@ -19,6 +19,12 @@ export const metadata: Metadata = {
   description: "Aplikasi pembelajaran huruf Hijaiyah, Al-Qur'an, Dhikr, dan Kuis interaktif",
   keywords: ["hijaiyah", "quran", "dhikr", "islamic", "learning", "arabic"],
   authors: [{ name: "Belajar Ngaji Team" }],
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/images/logo/image.png',
+  },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {

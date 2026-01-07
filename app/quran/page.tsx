@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { BottomNavigation } from "@/components/bottom-navigation";
@@ -52,6 +52,19 @@ export default function Quran() {
 
   const audio = useAudio();
 
+  useEffect(() => {
+    if (!audio.currentSrc) return;
+
+    setCurrentAudioUrl(audio.currentSrc);
+    if (audio.title) {
+      setCurrentAudioTitle(audio.title);
+    }
+    if (audio.subtitle) {
+      setCurrentAudioSubtitle(audio.subtitle);
+    }
+    setAudioPlayerVisible(true);
+  }, [audio.currentSrc, audio.title, audio.subtitle]);
+
   // Bookmarks query - temporarily disabled for checkpoint
   const bookmarks: Array<{
     id: string;
@@ -89,6 +102,7 @@ export default function Quran() {
     setCurrentAudioUrl(proxyUrl);
     setCurrentAudioTitle(title);
     setCurrentAudioSubtitle(subtitle);
+    audio.setMeta({ title, subtitle });
     audio.play(proxyUrl);
     setAudioPlayerVisible(true);
   };
@@ -340,9 +354,15 @@ export default function Quran() {
 
       {/* Audio Player */}
       <AudioPlayer
-        title={currentAudioTitle || (currentAyah ? `Ayat ${currentAyah}` : selectedSurahData?.name || "Al-Qur'an")}
-        subtitle={currentAudioSubtitle || (selectedSurahData?.name || "Recitation")}
-        audioUrl={currentAudioUrl}
+        title={
+          currentAudioTitle ||
+          audio.title ||
+          (currentAyah ? `Ayat ${currentAyah}` : selectedSurahData?.name || "Al-Qur'an")
+        }
+        subtitle={
+          currentAudioSubtitle || audio.subtitle || (selectedSurahData?.name || "Recitation")
+        }
+        audioUrl={currentAudioUrl || audio.currentSrc}
         isVisible={audioPlayerVisible}
         onClose={() => setAudioPlayerVisible(false)}
         // Audio state from useAudio hook
@@ -353,7 +373,7 @@ export default function Quran() {
         isLoading={audio.isLoading}
         error={audio.error}
         // Audio controls from useAudio hook
-        onPlay={() => audio.play()}
+        onPlay={() => audio.play(currentAudioUrl || audio.currentSrc)}
         onPause={audio.pause}
         onSeek={audio.seek}
         onVolumeChange={audio.setVolume}
