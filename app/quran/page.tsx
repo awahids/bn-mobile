@@ -3,16 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { BottomNavigation } from "@/client/src/components/bottom-navigation";
-import { AudioPlayer } from "@/client/src/components/audio-player";
+import { BottomNavigation } from "@/components/bottom-navigation";
+import { AudioPlayer } from "@/components/audio-player";
 import { useAudio } from "@/client/src/hooks/use-audio";
 import { quranSurahs, alFatihahAyahs, getSurahById, fetchSurahAyahs, QuranAyah } from "@/client/src/data/quran";
-import { Button } from "@/client/src/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
-import { Input } from "@/client/src/components/ui/input";
-import { Badge } from "@/client/src/components/ui/badge";
-import { Separator } from "@/client/src/components/ui/separator";
-import { ScrollArea } from "@/client/src/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ArrowLeft,
   Search,
@@ -52,21 +52,16 @@ export default function Quran() {
 
   const audio = useAudio();
 
-  // Bookmarks query
-  const { data: bookmarks = [], refetch: refetchBookmarks } = useQuery<Array<{
+  // Bookmarks query - temporarily disabled for checkpoint
+  const bookmarks: Array<{
     id: string;
     userId: string;
     type: string;
     contentId: string;
     note: string | null;
     createdAt: Date;
-  }>>({
-    queryKey: ["/api/bookmarks"],
-    queryFn: async () => {
-      const response = await fetch("/api/bookmarks?type=quran");
-      return response.json();
-    }
-  });
+  }> = [];
+  const refetchBookmarks = async () => { };
 
   const filteredSurahs = quranSurahs.filter(surah =>
     surah.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -80,30 +75,13 @@ export default function Quran() {
   };
 
   const toggleBookmark = async (surahId: number, ayahNumber?: number) => {
-    const contentId = ayahNumber ? `${surahId}:${ayahNumber}` : surahId.toString();
-    const existing = bookmarks.find((b: any) => b.contentId === contentId);
-
-    try {
-      if (existing) {
-        await apiRequest("DELETE", `/api/bookmarks/${existing.id}`);
-      } else {
-        await apiRequest("POST", "/api/bookmarks", {
-          type: "quran",
-          contentId,
-          note: ayahNumber ? `Ayat ${ayahNumber}` : `Surah ${getSurahById(surahId)?.name}`
-        });
-      }
-
-      // Refetch bookmarks to update the UI
-      await refetchBookmarks();
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
-    }
+    // Temporarily disabled for checkpoint
+    console.log('Bookmark toggle disabled for checkpoint:', { surahId, ayahNumber });
   };
 
-  // Helper function to convert CDN URLs to use our proxy
+  // Helper function to convert CDN URLs to use our proxy - temporarily disabled
   const getProxyAudioUrl = (cdnUrl: string) => {
-    return `/api/audio-proxy?url=${encodeURIComponent(cdnUrl)}`;
+    return cdnUrl; // Direct URL for checkpoint
   };
 
   const playAudio = (audioUrl: string, title: string, subtitle: string) => {

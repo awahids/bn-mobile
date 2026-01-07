@@ -1,550 +1,111 @@
-[00:00:01.145] Server  LOG     ⚠ Console Ninja Turbopack support is a PRO feature, currently available to community users while in preview
-[00:00:01.593] Server  LOG     ✓ Ready in 1051ms
-[00:00:12.749] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:12.749] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:13.442] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:13.442] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:13.489] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:13.489] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:13.502] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:13.502] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:24.900] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /dhikr. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:24.901] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /dhikr. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:25.132] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:25.132] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:25.156] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:25.156] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.156] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.157] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"evening","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"evening"},"today":"2026-01-07"}
-[00:00:25.157] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.354] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.354] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.354] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.354] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:28.354] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:28.354] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:28.354] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:28.354] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.355] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.355] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:28.355] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:28.355] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:28.355] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:28.355] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:28.355] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.704] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:33.705] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:33.833] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.833] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.833] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.833] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:33.834] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:39.980] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.980] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:39.981] Browser LOG     🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for subhanallah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"subhanallah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for subhanallah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for alhamdulillah: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"alhamdulillah","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for alhamdulillah: {"returning":{"completed":false,"count":0,"target":33}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for allahuakbar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"allahuakbar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for allahuakbar: {"returning":{"completed":false,"count":0,"target":34}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for istighfar: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"istighfar","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for istighfar: {"returning":{"completed":false,"count":0,"target":100}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for salawat: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"salawat","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for salawat: {"returning":{"completed":false,"count":0,"target":10}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for ayat-kursi: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"ayat-kursi","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for ayat-kursi: {"returning":{"completed":false,"count":0,"target":1}}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 🔍 Getting counter data for qul-huwa: {"availableCounters":[],"currentSession":"morning","searchingFor":{"date":"2026-01-07","dhikrId":"qul-huwa","session":"morning"},"today":"2026-01-07"}
-[00:00:39.981] Browser LOG     [2;38;2;124;124;124m%s[0m 📊 Counter data for qul-huwa: {"returning":{"completed":false,"count":0,"target":3}}
-[00:00:46.488] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:46.488] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:46.662] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:46.662] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:46.686] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:46.686] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:46.715] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:46.715] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:49.420] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /hijaiyah. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:49.420] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /hijaiyah. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:49.590] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:49.591] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:59.646] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:00:59.646] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:25.953] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /progress. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:25.953] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /progress. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:26.334] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:26.335] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:26.354] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:26.354] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:26.398] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:26.398] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:38.497] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /profile. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:38.497] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /profile. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:38.632] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:38.632] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:38.653] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:38.653] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.655] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.655] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.772] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.772] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.781] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.782] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.815] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:50.815] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:53.854] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /quiz. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:02:53.854] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /quiz. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:27.661] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /hijaiyah. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:27.661] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /hijaiyah. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:27.789] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:27.789] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.093] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.093] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.162] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.162] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.193] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.193] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.210] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:31.210] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:32.939] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /profile. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:32.939] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /profile. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:33.002] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:33.002] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:33.016] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:33.016] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.467] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /progress. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.467] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /progress. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.560] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.560] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.570] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.570] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.582] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
-[00:03:43.582] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+[00:00:00.900] Server  LOG     ⚠ Console Ninja Turbopack support is a PRO feature, currently available to community users while in preview
+[00:00:01.168] Server  LOG     ✓ Ready in 647ms
+[00:00:06.583] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /progress. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:06.583] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /progress. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:07.420] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:07.421] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:07.429] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:07.429] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:07.447] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:07.447] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.450] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.450] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.609] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.609] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.634] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.634] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.690] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:17.690] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:19.452] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /quran. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:19.452] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /quran. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:21.783] Server  LOG     ✓ Compiled in 344ms
+[00:00:39.176] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:39.176] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:39.316] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:39.316] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:39.329] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:39.329] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:39.357] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:39.357] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:50.294] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /quran. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:50.294] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /quran. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:59.859] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /quiz. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:00:59.859] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /quiz. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:13.181] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /hijaiyah. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:13.181] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /hijaiyah. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:13.457] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:13.458] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:14.519] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:14.519] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.100] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.101] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.197] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.197] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.208] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.208] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.231] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:18.231] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:28.601] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /quiz. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:28.601] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /quiz. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:38.474] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /progress. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:38.474] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /progress. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:59.387] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /progress. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:01:59.387] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /progress. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:02:10.644] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /profile. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:02:10.644] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /profile. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:02:23.939] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /profile. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[00:02:23.939] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /profile. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
