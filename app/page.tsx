@@ -10,6 +10,7 @@ import { NetworkError } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { ProgressRing } from "@/components/progress-ring";
 import { usePrefetchByContext } from "@/lib/prefetch";
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -33,6 +34,7 @@ const DEFAULT_COORDS = { lat: -6.2, lng: 106.8167 }; // Jakarta fallback
 
 export default function Home() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   // Prefetch learning routes since users are likely to navigate to them from home
   usePrefetchByContext('home');
@@ -42,19 +44,9 @@ export default function Home() {
     hijaiyah: { completed: 12, total: 28, progress: 43 }
   };
 
-  // Simple theme state without provider dependency
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [coords, setCoords] = useState(DEFAULT_COORDS);
   const [locationLabel, setLocationLabel] = useState("Jakarta (default)");
-  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "denied" | "unsupported" | "error">("idle");
-
-  const toggleTheme = () => {
-    setIsDarkMode(prev => !prev);
-    // Update document class if on client side
-    if (typeof window !== 'undefined') {
-      document.documentElement.classList.toggle('dark');
-    }
-  };
+  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "denied" | "unsupported">("idle");
 
   // Prayer times query
   const {
@@ -186,7 +178,7 @@ export default function Home() {
               className="rounded-lg"
               data-testid="toggle-theme"
             >
-              {isDarkMode ? (
+              {theme === 'dark' ? (
                 <Moon className="w-4 h-4" />
               ) : (
                 <Sun className="w-4 h-4" />
