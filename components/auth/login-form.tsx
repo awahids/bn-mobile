@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { useEffect, useMemo, useState } from 'react'
+import { getProviders, signIn, type ClientSafeProvider } from 'next-auth/react'
 import { Eye, EyeOff } from 'lucide-react'
 import { FaFacebook, FaGoogle } from 'react-icons/fa'
 import { Button } from '@/components/ui/button'
@@ -34,6 +34,32 @@ export function LoginForm({
   const [showLoginPassword, setShowLoginPassword] = useState(false)
   const [showRegisterPassword, setShowRegisterPassword] = useState(false)
   const [showRegisterConfirm, setShowRegisterConfirm] = useState(false)
+  const [providers, setProviders] = useState<Record<string, ClientSafeProvider> | null>(null)
+  const [providersError, setProvidersError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    getProviders()
+      .then((result) => {
+        if (cancelled) return
+        setProviders(result)
+      })
+      .catch((error) => {
+        if (cancelled) return
+        console.error('Failed to load auth providers:', error)
+        setProvidersError('Layanan login sedang tidak tersedia')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const availableSocialProviders = useMemo(() => {
+    if (!providers) return socialProviders
+    return socialProviders.filter((p) => Boolean(providers[p.id]))
+  }, [providers])
 
   const handleSocialSignIn = async (provider: SocialProvider) => {
     try {
@@ -226,7 +252,7 @@ export function LoginForm({
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3">
-              {socialProviders.map((provider) => {
+              {availableSocialProviders.map((provider) => {
                 const Icon = provider.icon
                 const isLoading = loadingProvider === provider.id
 
@@ -248,6 +274,18 @@ export function LoginForm({
                 )
               })}
             </div>
+
+            {providersError && (
+              <p className="mt-4 text-xs text-destructive text-center">
+                {providersError}
+              </p>
+            )}
+
+            {providers && availableSocialProviders.length === 0 && (
+              <p className="mt-4 text-xs text-muted-foreground text-center">
+                Provider OAuth belum dikonfigurasi. Set `GOOGLE_CLIENT_ID` dan `GOOGLE_CLIENT_SECRET` di env.
+              </p>
+            )}
 
             <div className="mt-6 text-center text-xs text-muted-foreground">
               {activeTab === 'login' ? (

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { api, isApiError } from "@/lib/api";
+import { api, isApiError } from "@/lib/api-client";
 import { NetworkError, AuthError } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { ProgressRing } from "@/components/progress-ring";

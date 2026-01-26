@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, forwardRef, useImperativeHandle } from "react";
-import { HijaiyahLetter } from "@/client/src/data/hijaiyah";
+import { HijaiyahLetter } from "@/data/hijaiyah";
 import { Card } from "@/components/ui/card";
 
 interface WritingCanvasProps {
@@ -195,3 +195,5 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
     </Card>
   );
 });
+
+WritingCanvas.displayName = "WritingCanvas";

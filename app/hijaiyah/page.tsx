@@ -4,13 +4,13 @@ import { useState, useRef, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { LazyBottomNavigation, LazyProgressRing, LazyAudioPlayer, LazyWritingCanvas, preloadComponents } from "@/components/lazy";
-import { useProgress, useUpdateProgress } from "@/client/src/hooks/use-progress";
-import { useAudio } from "@/client/src/hooks/use-audio";
-import { hijaiyahLetters } from "@/client/src/data/hijaiyah";
-import { Button } from "@/client/src/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
-import { Badge } from "@/client/src/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/client/src/components/ui/tabs";
+import { useProgress, useUpdateProgress } from "@/hooks/use-progress";
+import { useAudio } from "@/hooks/use-audio";
+import { hijaiyahLetters } from "@/data/hijaiyah";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePreloadOnHover } from "@/lib/lazy-loading";
 import {
@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 // Import the ref type separately since it's needed for typing
-import type { WritingCanvasRef } from "@/client/src/components/writing-canvas";
+import type { WritingCanvasRef } from "@/components/writing-canvas";
 
 export default function Hijaiyah() {
   const router = useRouter();
@@ -56,7 +56,6 @@ export default function Hijaiyah() {
     await updateProgress.mutateAsync({
       module: "hijaiyah",
       itemId: letterId,
-      userId: "default-user",
       progress: 100,
       completed: true,
       score,

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, isApiError, getErrorMessage } from "@/lib/api";
+import { api, isApiError, getErrorMessage } from "@/lib/api-client";
 import { AuthError, NetworkError } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { useTheme } from "@/components/theme-provider";
@@ -44,18 +44,6 @@ export default function Profile() {
   const [notifications, setNotifications] = useState(true);
   const [audioEnabled, setAudioEnabled] = useState(true);
 
-  // Loading state
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-        <BottomNavigation />
-      </div>
-    )
-  }
-
   // Fetch user data and bookmarks
   const {
     data: userData,
@@ -64,7 +52,7 @@ export default function Profile() {
   } = useQuery({
     queryKey: ['user-profile'],
     queryFn: () => api.user.getProfile(),
-    enabled: !!session?.user?.id,
+    enabled: status === 'authenticated' && !!session?.user?.id,
     retry: false
   });
 
@@ -75,9 +63,21 @@ export default function Profile() {
   } = useQuery({
     queryKey: ['user-bookmarks'],
     queryFn: () => api.bookmarks.getBookmarks(),
-    enabled: !!session?.user?.id,
+    enabled: status === 'authenticated' && !!session?.user?.id,
     retry: false
   });
+
+  // Loading state (after hooks)
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+        <BottomNavigation />
+      </div>
+    )
+  }
 
   // Use session data if logged in, otherwise use mock data
   const user = session?.user ? {
@@ -349,7 +349,7 @@ export default function Profile() {
                 onClick={() => router.push('/quran')}
                 data-testid="view-all-bookmarks"
               >
-                Lihat Al-Qur'an
+                Lihat Al-Qur&apos;an
               </Button>
             </CardContent>
           </Card>

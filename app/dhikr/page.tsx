@@ -3,16 +3,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, isApiError } from "@/lib/api";
+import { api, isApiError } from "@/lib/api-client";
 import { NetworkError, AuthError } from "@/components/error-boundary";
 import { LazyBottomNavigation, LazyAudioPlayer, LazyDhikrCounter, preloadComponents } from "@/components/lazy";
-import { useAudio } from "../../hooks/use-audio";
-import { dhikrData, getMorningDhikr, getEveningDhikr } from "@/client/src/data/dhikr";
-import { Button } from "@/client/src/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
-import { Badge } from "@/client/src/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/client/src/components/ui/tabs";
-import { Progress } from "@/client/src/components/ui/progress";
+import { useAudio } from "@/hooks/use-audio";
+import { dhikrData, getMorningDhikr, getEveningDhikr } from "@/data/dhikr";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { usePreloadOnHover } from "@/lib/lazy-loading";
 import {
   ArrowLeft,

@@ -6,6 +6,14 @@ const nextConfig = {
   // Disable Turbopack when using Bun to avoid worker thread issues
   turbopack: process.env.BUN_RUNTIME !== 'bun' ? {} : false,
 
+  // Suppress source map warnings in development
+  onDemandEntries: {
+    // Period (in ms) where the server will keep pages in the buffer
+    maxInactiveAge: 25 * 1000,
+    // Number of pages that should be kept simultaneously without being disposed
+    pagesBufferLength: 2,
+  },
+
   // Performance optimizations for Bun runtime
   experimental: {
     // Enable optimized package imports
@@ -25,7 +33,15 @@ const nextConfig = {
   },
 
   // Server external packages (moved from experimental)
-  serverExternalPackages: ['@prisma/client'],
+  serverExternalPackages: ['@prisma/client', 'prisma'],
+
+  // Turbopack configuration for better Prisma compatibility
+  turbopack: process.env.BUN_RUNTIME !== 'bun' ? {
+    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    resolveAlias: {
+      '@prisma/client': '@prisma/client'
+    }
+  } : false,
 
   // Compiler optimizations for Bun
   compiler: {
@@ -36,7 +52,13 @@ const nextConfig = {
   },
 
   // Webpack optimizations for Bun runtime
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
+    // Prisma client configuration
+    config.externals = config.externals || []
+    if (isServer) {
+      config.externals.push('@prisma/client')
+    }
+
     // Optimize for Bun runtime
     if (!isServer) {
       config.resolve.fallback = {
@@ -48,9 +70,11 @@ const nextConfig = {
     }
 
     // Bun-specific optimizations
-    if (process.env.BUN_RUNTIME === 'bun') {
-      // Disable source maps for Bun compatibility
-      config.devtool = false;
+    if (process.env.BUN_RUNTIME === 'bun' || process.env.npm_config_user_agent?.includes('bun')) {
+      // Disable source maps for Bun compatibility in development
+      if (dev) {
+        config.devtool = false;
+      }
 
       // Disable worker threads for Bun
       config.optimization = {

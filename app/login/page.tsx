@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { getSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense, useState } from 'react'
 import { LoginForm } from '@/components/auth/login-form'
@@ -12,19 +12,18 @@ function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
+  const { status } = useSession()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    // Check if user is already logged in
-    const checkSession = async () => {
-      const session = await getSession()
-      if (session) {
-        router.push(callbackUrl)
-      }
+  }, [])
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push(callbackUrl)
     }
-    checkSession()
-  }, [router, callbackUrl])
+  }, [status, router, callbackUrl])
 
   return (
     <div className="min-h-screen max-w-md mx-auto bg-background relative flex flex-col safe-area-top">

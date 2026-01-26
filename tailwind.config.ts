@@ -7,8 +7,6 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    // Legacy paths for migration
-    "./client/src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

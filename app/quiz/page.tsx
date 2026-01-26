@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, isApiError } from "@/lib/api";
+import { api, isApiError } from "@/lib/api-client";
 import { NetworkError } from "@/components/error-boundary";
 import { LazyBottomNavigation } from "@/components/lazy";
-import { quizCategories, getRandomQuestions, QuizQuestion } from "@/client/src/data/quiz";
-import { Button } from "@/client/src/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/client/src/components/ui/card";
-import { Badge } from "@/client/src/components/ui/badge";
-import { Progress } from "@/client/src/components/ui/progress";
+import { quizCategories, getRandomQuestions, QuizQuestion } from "@/data/quiz";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
   Clock,

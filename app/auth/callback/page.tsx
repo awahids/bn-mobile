@@ -2,12 +2,13 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { getSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function CallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { data: session, status: sessionStatus } = useSession()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -15,8 +16,8 @@ function CallbackContent() {
     const handleCallback = async () => {
       try {
         // Check for error parameters
-        const error = searchParams.get('error')
-        const errorDescription = searchParams.get('error_description')
+        const error = searchParams?.get('error')
+        const errorDescription = searchParams?.get('error_description')
 
         if (error) {
           setStatus('error')
@@ -27,8 +28,12 @@ function CallbackContent() {
           return
         }
 
+        // Wait for session to load
+        if (sessionStatus === 'loading') {
+          return
+        }
+
         // Check if session was created successfully
-        const session = await getSession()
         if (session) {
           setStatus('success')
           setMessage('Login berhasil! Mengalihkan...')
@@ -53,7 +58,7 @@ function CallbackContent() {
     }
 
     handleCallback()
-  }, [router, searchParams])
+  }, [router, searchParams, session, sessionStatus])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 p-4">

@@ -6,8 +6,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
+
 import { storage } from '@/lib/storage'
 import { z } from 'zod'
 
@@ -28,7 +28,7 @@ const createProgressSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
 
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -38,10 +38,10 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const module = searchParams.get('module')
+    const moduleParam = searchParams.get('module')
 
     // Validate module if provided
-    if (module && !['hijaiyah', 'quran', 'dhikr', 'quiz'].includes(module)) {
+    if (moduleParam && !['hijaiyah', 'quran', 'dhikr', 'quiz'].includes(moduleParam)) {
       return NextResponse.json(
         { error: 'Invalid module. Must be one of: hijaiyah, quran, dhikr, quiz' },
         { status: 400 }
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     const progress = await storage.getUserProgress(
       session.user.id,
-      module || undefined
+      moduleParam || undefined
     )
 
     return NextResponse.json({
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
 
     if (!session?.user?.id) {
       return NextResponse.json(

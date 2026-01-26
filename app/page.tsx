@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { api, isApiError, getErrorMessage } from "@/lib/api";
+import { api, isApiError, getErrorMessage } from "@/lib/api-client";
 import { NetworkError } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { ProgressRing } from "@/components/progress-ring";
