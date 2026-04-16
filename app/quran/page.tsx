@@ -87,9 +87,8 @@ export default function Quran() {
     return bookmarks.some((b: any) => b.contentId === contentId);
   };
 
-  const toggleBookmark = async (surahId: number, ayahNumber?: number) => {
+  const toggleBookmark = async (_surahId: number, _ayahNumber?: number) => {
     // Temporarily disabled for checkpoint
-    console.log('Bookmark toggle disabled for checkpoint:', { surahId, ayahNumber });
   };
 
   // Helper function to convert CDN URLs to use our proxy - temporarily disabled

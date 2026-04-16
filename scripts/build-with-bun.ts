@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
 /**
- * Bun-compatible build script for Next.js
- * Handles Bun-specific compatibility issues
+ * Bun-only build script for Next.js
+ * Handles Bun-specific compatibility flags
  */
 
 import { spawn } from "child_process";
@@ -57,10 +57,7 @@ class BunBuilder {
 
     } catch (error) {
       console.error('❌ Build failed:', error);
-
-      // Fallback to Node.js build
-      console.log('🔄 Falling back to Node.js build...');
-      await this.buildWithNode();
+      throw error;
     }
   }
 
@@ -78,13 +75,6 @@ class BunBuilder {
     } catch (error) {
       throw new Error(`Bun build failed: ${error}`);
     }
-  }
-
-  private async buildWithNode(): Promise<void> {
-    // Fallback to Node.js
-    process.env.BUN_RUNTIME = '';
-    await exec('npx next build');
-    console.log('✅ Fallback build completed with Node.js');
   }
 
   async dev(): Promise<void> {
@@ -105,10 +95,7 @@ class BunBuilder {
 
     } catch (error) {
       console.error('❌ Development server failed:', error);
-
-      // Fallback to Node.js
-      console.log('🔄 Falling back to Node.js development server...');
-      await exec('npx next dev');
+      throw error;
     }
   }
 
@@ -125,10 +112,7 @@ class BunBuilder {
 
     } catch (error) {
       console.error('❌ Production server failed:', error);
-
-      // Fallback to Node.js
-      console.log('🔄 Falling back to Node.js production server...');
-      await exec('npx next start');
+      throw error;
     }
   }
 }

@@ -10,3 +10,7 @@ vite.config.ts.*
 
 .env
 .env.local
+
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

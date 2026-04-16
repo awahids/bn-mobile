@@ -15,7 +15,6 @@ export default [
       "out/**",
       "tsconfig.tsbuildinfo",
       "bun.lockb",
-      "package-lock.json",
     ],
   },
   ...coreWebVitals,
