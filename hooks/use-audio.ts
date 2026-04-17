@@ -1,48 +1,20 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+import { useStore } from "@tanstack/react-store";
+import { audioStore, updateAudioState } from "@/store/audio-store";
 
-interface AudioState {
-  isPlaying: boolean;
-  currentTime: number;
-  duration: number;
-  volume: number;
-  isLoading: boolean;
-  error: string | null;
-  currentSrc: string;
-  title: string;
-  subtitle: string;
-}
-
-const initialState: AudioState = {
-  isPlaying: false,
-  currentTime: 0,
-  duration: 0,
-  volume: 1,
-  isLoading: false,
-  error: null,
-  currentSrc: "",
-  title: "",
-  subtitle: "",
-};
-
-let audioState: AudioState = initialState;
 let audioRef: HTMLAudioElement | null = null;
-const listeners = new Set<(state: AudioState) => void>();
-
-const updateState = (updates: Partial<AudioState>) => {
-  audioState = { ...audioState, ...updates };
-  listeners.forEach((listener) => listener(audioState));
-};
 
 const createAudio = (audioSrc: string) => {
   if (audioRef) {
     audioRef.pause();
   }
 
+  const state = audioStore.state;
   const audio = new Audio(audioSrc);
-  audio.volume = audioState.volume;
+  audio.volume = state.volume;
   audioRef = audio;
 
-  updateState({
+  updateAudioState({
     currentSrc: audioSrc,
     currentTime: 0,
     duration: 0,
@@ -52,38 +24,38 @@ const createAudio = (audioSrc: string) => {
   });
 
   audio.addEventListener("loadstart", () => {
-    updateState({ isLoading: true, error: null });
+    updateAudioState({ isLoading: true, error: null });
   });
 
   audio.addEventListener("loadedmetadata", () => {
-    updateState({
+    updateAudioState({
       duration: audio.duration,
       isLoading: false,
     });
   });
 
   audio.addEventListener("timeupdate", () => {
-    updateState({ currentTime: audio.currentTime });
+    updateAudioState({ currentTime: audio.currentTime });
   });
 
   audio.addEventListener("play", () => {
-    updateState({ isPlaying: true });
+    updateAudioState({ isPlaying: true });
   });
 
   audio.addEventListener("pause", () => {
-    updateState({ isPlaying: false });
+    updateAudioState({ isPlaying: false });
   });
 
   audio.addEventListener("ended", () => {
-    updateState({ isPlaying: false });
+    updateAudioState({ isPlaying: false });
   });
 
   audio.addEventListener("volumechange", () => {
-    updateState({ volume: audio.volume });
+    updateAudioState({ volume: audio.volume });
   });
 
   audio.addEventListener("error", () => {
-    updateState({
+    updateAudioState({
       error: "Failed to load audio",
       isLoading: false,
     });
@@ -93,7 +65,8 @@ const createAudio = (audioSrc: string) => {
 };
 
 const getOrCreateAudio = (audioSrc?: string) => {
-  if (audioRef && (!audioSrc || audioState.currentSrc === audioSrc)) {
+  const state = audioStore.state;
+  if (audioRef && (!audioSrc || state.currentSrc === audioSrc)) {
     return audioRef;
   }
 
@@ -105,27 +78,20 @@ const getOrCreateAudio = (audioSrc?: string) => {
 };
 
 export function useAudio(src?: string) {
-  const [state, setState] = useState<AudioState>(audioState);
-
-  useEffect(() => {
-    const listener = (nextState: AudioState) => setState(nextState);
-    listeners.add(listener);
-    return () => {
-      listeners.delete(listener);
-    };
-  }, []);
+  const state = useStore(audioStore, (state) => state);
 
   const play = useCallback(
     async (audioSrc?: string) => {
       try {
-        const resolvedSrc = audioSrc || src || audioState.currentSrc;
+        const state = audioStore.state;
+        const resolvedSrc = audioSrc || src || state.currentSrc;
         const audio = getOrCreateAudio(resolvedSrc);
         if (!audio) return;
 
         await audio.play();
-        updateState({ isPlaying: true, error: null });
+        updateAudioState({ isPlaying: true, error: null });
       } catch (error) {
-        updateState({
+        updateAudioState({
           error: "Failed to play audio",
           isPlaying: false,
           isLoading: false,
@@ -138,7 +104,7 @@ export function useAudio(src?: string) {
   const pause = useCallback(() => {
     if (audioRef) {
       audioRef.pause();
-      updateState({ isPlaying: false });
+      updateAudioState({ isPlaying: false });
     }
   }, []);
 
@@ -146,14 +112,14 @@ export function useAudio(src?: string) {
     if (audioRef) {
       audioRef.pause();
       audioRef.currentTime = 0;
-      updateState({ isPlaying: false, currentTime: 0 });
+      updateAudioState({ isPlaying: false, currentTime: 0 });
     }
   }, []);
 
   const seek = useCallback((time: number) => {
     if (audioRef) {
       audioRef.currentTime = time;
-      updateState({ currentTime: time });
+      updateAudioState({ currentTime: time });
     }
   }, []);
 
@@ -162,13 +128,14 @@ export function useAudio(src?: string) {
     if (audioRef) {
       audioRef.volume = nextVolume;
     }
-    updateState({ volume: nextVolume });
+    updateAudioState({ volume: nextVolume });
   }, []);
 
   const setMeta = useCallback((meta: { title?: string; subtitle?: string }) => {
-    updateState({
-      title: meta.title ?? audioState.title,
-      subtitle: meta.subtitle ?? audioState.subtitle,
+    const state = audioStore.state;
+    updateAudioState({
+      title: meta.title ?? state.title,
+      subtitle: meta.subtitle ?? state.subtitle,
     });
   }, []);
 

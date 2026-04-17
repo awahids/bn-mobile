@@ -2,13 +2,13 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/hooks/use-auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function CallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { data: session, status: sessionStatus } = useSession()
+  const { user, status: authStatus } = useAuth()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -28,13 +28,13 @@ function CallbackContent() {
           return
         }
 
-        // Wait for session to load
-        if (sessionStatus === 'loading') {
+        // Wait for auth bootstrap to load
+        if (authStatus === 'loading') {
           return
         }
 
-        // Check if session was created successfully
-        if (session) {
+        // Check if auth state was created successfully
+        if (user) {
           setStatus('success')
           setMessage('Login berhasil! Mengalihkan...')
           setTimeout(() => {
@@ -58,7 +58,7 @@ function CallbackContent() {
     }
 
     handleCallback()
-  }, [router, searchParams, session, sessionStatus])
+  }, [authStatus, router, searchParams, user])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 p-4">

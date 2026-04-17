@@ -70,6 +70,8 @@ export const viewport: Viewport = {
   ],
 };
 
+import { PageTransition } from "@/components/page-transition";
+
 export default function RootLayout({
   children,
 }: {
@@ -95,8 +97,13 @@ export default function RootLayout({
             }),
           }}
         />
-        <Providers>{children}</Providers>
+        <Providers>
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </Providers>
       </body>
     </html>
   );
 }
+

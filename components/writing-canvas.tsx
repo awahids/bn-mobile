@@ -1,88 +1,127 @@
 "use client";
 
-import { useRef, useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from "react";
 import { HijaiyahLetter } from "@/data/hijaiyah";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface WritingCanvasProps {
   letter: HijaiyahLetter;
   onComplete: () => void;
   completed: boolean;
+  className?: string;
 }
 
 export interface WritingCanvasRef {
   clearCanvas: () => void;
 }
 
-export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({ letter, onComplete, completed }, ref) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({ letter, onComplete, completed, className }, ref) => {
+  const guideCanvasRef = useRef<HTMLCanvasElement>(null);
+  const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [strokeCount, setStrokeCount] = useState(0);
-  const [hitPoints, setHitPoints] = useState<Set<number>>(new Set());
+
+  // Function to get the real Arabic font family from computed styles
+  const getArabicFont = useCallback(() => {
+    if (typeof window === "undefined") return "serif";
+    const container = containerRef.current;
+    if (!container) return "serif";
+    
+    // Try to get font from the container which should have --font-arabic available
+    const style = window.getComputedStyle(container);
+    const fontVar = style.getPropertyValue('--font-arabic');
+    
+    if (fontVar && fontVar.trim()) {
+      return fontVar.replace(/['"]/g, '');
+    }
+    
+    return 'Amiri, "Noto Naskh Arabic", serif';
+  }, []);
 
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const drawingCanvas = drawingCanvasRef.current;
+    if (!drawingCanvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = drawingCanvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setHitPoints(new Set());
-
-    const rect = canvas.getBoundingClientRect();
-    drawGuide(ctx, rect.width, rect.height);
-
+    ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
     setStrokeCount(0);
   };
 
-  const drawGuide = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  const drawGuide = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const dpr = window.devicePixelRatio || 1;
+    
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, width * dpr, height * dpr);
+    
     ctx.save();
-    ctx.globalAlpha = 0.15;
-    ctx.font = '120px var(--font-arabic)';
+    ctx.scale(dpr, dpr);
+    
+    // Draw ghost letter - slightly more visible since dots are gone
+    ctx.globalAlpha = 0.25; 
+    const fontSize = Math.min(width, height) * 0.65;
+    const arabicFont = getArabicFont();
+    
+    ctx.font = `${fontSize}px ${arabicFont}, serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = 'hsl(var(--muted-foreground))';
-    ctx.fillText(letter.arabic, width / 2, height / 2);
-
-    if (letter.strokePoints) {
-      letter.strokePoints.forEach((p, index) => {
-        ctx.beginPath();
-        ctx.arc((p.x / 100) * width, (p.y / 100) * height, 6, 0, Math.PI * 2);
-        ctx.fillStyle = hitPoints.has(index) ? '#22c55e' : 'hsl(var(--muted-foreground))';
-        ctx.globalAlpha = hitPoints.has(index) ? 0.6 : 0.3;
-        ctx.fill();
-      });
-    }
+    
+    // Position the letter higher to make room for tails (descenders)
+    const yOffset = height * 0.02; 
+    ctx.fillText(letter.arabic, width / 2, height / 2 - yOffset);
     ctx.restore();
-  };
+  }, [letter.arabic, getArabicFont]);
 
   useImperativeHandle(ref, () => ({
     clearCanvas
-  }), [letter, hitPoints]);
+  }));
+
+  const initCanvases = useCallback(() => {
+    const container = containerRef.current;
+    const guideCanvas = guideCanvasRef.current;
+    const drawingCanvas = drawingCanvasRef.current;
+    if (!container || !guideCanvas || !drawingCanvas) return;
+
+    const rect = container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    if (guideCanvas.width !== rect.width * dpr || guideCanvas.height !== rect.height * dpr) {
+      [guideCanvas, drawingCanvas].forEach(canvas => {
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+      });
+    }
+
+    const dCtx = drawingCanvas.getContext('2d');
+    if (dCtx) {
+      dCtx.setTransform(1, 0, 0, 1, 0, 0);
+      dCtx.scale(dpr, dpr);
+      dCtx.strokeStyle = '#2563eb';
+      dCtx.lineWidth = 16;
+      dCtx.lineCap = 'round';
+      dCtx.lineJoin = 'round';
+    }
+
+    const gCtx = guideCanvas.getContext('2d');
+    if (gCtx) {
+      drawGuide(gCtx, rect.width, rect.height);
+    }
+  }, [drawGuide]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    initCanvases();
+    const timer = setTimeout(initCanvases, 200);
+    window.addEventListener('resize', initCanvases);
+    return () => {
+      window.removeEventListener('resize', initCanvases);
+      clearTimeout(timer);
+    };
+  }, [initCanvases]);
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * window.devicePixelRatio;
-    canvas.height = rect.height * window.devicePixelRatio;
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-    ctx.strokeStyle = '#2563eb';
-    ctx.lineWidth = 6;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGuide(ctx, rect.width, rect.height);
-  }, [letter, completed, hitPoints]);
-
-  // Clear canvas when completed changes from true to false
   useEffect(() => {
     if (!completed && strokeCount > 0) {
       clearCanvas();
@@ -90,7 +129,7 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
   }, [completed]);
 
   const getEventPos = (e: React.TouchEvent | React.MouseEvent) => {
-    const canvas = canvasRef.current;
+    const canvas = drawingCanvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
@@ -103,42 +142,17 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
     };
   };
 
-  const checkPoints = (x: number, y: number) => {
-    if (!letter.strokePoints || !canvasRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-
-    const newHitPoints = new Set(hitPoints);
-    let changed = false;
-
-    letter.strokePoints.forEach((p, index) => {
-      const px = (p.x / 100) * rect.width;
-      const py = (p.y / 100) * rect.height;
-      const dist = Math.sqrt(Math.pow(x - px, 2) + Math.pow(y - py, 2));
-
-      if (dist < 25 && !newHitPoints.has(index)) {
-        newHitPoints.add(index);
-        changed = true;
-      }
-    });
-
-    if (changed) {
-      setHitPoints(newHitPoints);
-      if (letter.strokePoints && newHitPoints.size >= letter.strokePoints.length * 0.8) {
-        if (!completed) {
-          setTimeout(() => onComplete(), 300);
-        }
-      }
-    }
-  };
-
   const startDrawing = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
+    if ('touches' in e) {
+       if (e.cancelable) e.preventDefault();
+       if (e.touches.length === 0) return;
+    } else {
+       e.preventDefault();
+    }
+    
     setIsDrawing(true);
     const pos = getEventPos(e);
-    checkPoints(pos.x, pos.y);
-
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = drawingCanvasRef.current?.getContext('2d');
     if (!ctx) return;
 
     ctx.beginPath();
@@ -146,13 +160,11 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
   };
 
   const draw = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
     if (!isDrawing) return;
+    if ('touches' in e && e.cancelable) e.preventDefault();
 
     const pos = getEventPos(e);
-    checkPoints(pos.x, pos.y);
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = drawingCanvasRef.current?.getContext('2d');
     if (!ctx) return;
 
     ctx.lineTo(pos.x, pos.y);
@@ -160,13 +172,12 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
   };
 
   const stopDrawing = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
     if (!isDrawing) return;
-
     setIsDrawing(false);
+    
     setStrokeCount(prev => {
       const newCount = prev + 1;
-      // Simple completion detection based on stroke count
+      // Complete after 2 strokes
       if (newCount >= 2 && !completed) {
         setTimeout(() => onComplete(), 500);
       }
@@ -175,23 +186,38 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
   };
 
   return (
-    <Card className="p-4">
-      <canvas
-        ref={canvasRef}
-        className="w-full h-64 border-2 border-dashed border-muted-foreground/30 rounded-lg writing-canvas cursor-crosshair"
-        style={{ touchAction: 'none' }}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        onTouchStart={startDrawing}
-        onTouchMove={draw}
-        onTouchEnd={stopDrawing}
-        data-testid="writing-canvas"
-      />
-      <p className="text-xs text-muted-foreground mt-2 text-center">
-        Ikuti bentuk huruf yang terlihat samar dan mulai menulis
-      </p>
+    <Card className={cn("p-4 overflow-hidden", className)}>
+      <div 
+        ref={containerRef}
+        className="w-full h-80 relative border-2 border-dashed border-muted-foreground/30 rounded-2xl overflow-hidden bg-muted/5 touch-none"
+      >
+        <canvas
+          ref={guideCanvasRef}
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ touchAction: 'none' }}
+        />
+        <canvas
+          ref={drawingCanvasRef}
+          className="absolute inset-0 w-full h-full cursor-crosshair"
+          style={{ touchAction: 'none' }}
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+          onTouchStart={startDrawing}
+          onTouchMove={draw}
+          onTouchEnd={stopDrawing}
+          data-testid="writing-canvas"
+        />
+      </div>
+      <div className="flex flex-col items-center mt-5 space-y-1">
+        <h4 className="text-base font-bold text-foreground">
+          Latihan: {letter.name}
+        </h4>
+        <p className="text-xs text-muted-foreground text-center">
+          Tuliskan huruf di atas mengikuti pola yang ada
+        </p>
+      </div>
     </Card>
   );
 });

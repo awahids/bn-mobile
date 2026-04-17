@@ -28,7 +28,7 @@ function ErrorContent() {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   useEffect(() => {
-    const error = searchParams.get('error') || 'Default'
+    const error = searchParams?.get('error') || 'Default'
     setErrorType(error)
     setErrorMessage(errorMessages[error] || errorMessages.Default)
   }, [searchParams])

@@ -1,39 +1,52 @@
-'use client'
+"use client"
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth as useAuthContext } from "@/components/auth/auth-provider"
 
 export function useAuth() {
-  const { data: session, status } = useSession()
+  const auth = useAuthContext()
   const router = useRouter()
 
-  const isLoading = status === 'loading'
-  const isAuthenticated = !!session
-  const user = session?.user
-
-  const requireAuth = useCallback((redirectTo = '/login') => {
-    if (!isLoading && !isAuthenticated) {
-      router.push(redirectTo)
-      return false
-    }
-    return true
-  }, [isLoading, isAuthenticated, router])
-
-  const redirectIfAuthenticated = useCallback((redirectTo = '/') => {
-    if (!isLoading && isAuthenticated) {
-      router.push(redirectTo)
+  const requireAuth = useCallback(
+    (redirectTo = "/login") => {
+      if (auth.status !== "loading" && !auth.isAuthenticated) {
+        router.push(redirectTo)
+        return false
+      }
       return true
-    }
-    return false
-  }, [isLoading, isAuthenticated, router])
+    },
+    [auth.isAuthenticated, auth.status, router]
+  )
+
+  const redirectIfAuthenticated = useCallback(
+    (redirectTo = "/") => {
+      if (auth.status !== "loading" && auth.isAuthenticated) {
+        router.push(redirectTo)
+        return true
+      }
+      return false
+    },
+    [auth.isAuthenticated, auth.status, router]
+  )
+
+  const session = auth.user
+    ? {
+        user: {
+          id: auth.user.id,
+          name: auth.user.name,
+          email: auth.user.email,
+          image: auth.user.avatarUrl ?? null,
+        },
+      }
+    : null
 
   return {
+    ...auth,
     session,
-    user,
-    isLoading,
-    isAuthenticated,
+    isLoading: auth.status === "loading",
     requireAuth,
     redirectIfAuthenticated,
   }
 }
+

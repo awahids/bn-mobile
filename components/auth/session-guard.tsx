@@ -1,8 +1,8 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useAuth } from '@/hooks/use-auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface SessionGuardProps {
@@ -18,16 +18,16 @@ export function SessionGuard({
   redirectTo = '/login',
   fallback
 }: SessionGuardProps) {
-  const { data: session, status } = useSession()
+  const { isAuthenticated, status } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
     if (status === 'loading') return // Still loading
 
-    if (requireAuth && !session) {
+    if (requireAuth && !isAuthenticated) {
       router.push(redirectTo)
     }
-  }, [session, status, requireAuth, redirectTo, router])
+  }, [isAuthenticated, status, requireAuth, redirectTo, router])
 
   if (status === 'loading') {
     return fallback || (
@@ -45,7 +45,7 @@ export function SessionGuard({
     )
   }
 
-  if (requireAuth && !session) {
+  if (requireAuth && !isAuthenticated) {
     return null // Will redirect
   }
 

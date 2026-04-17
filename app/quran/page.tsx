@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useStore } from "@tanstack/react-store";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { AudioPlayer } from "@/components/audio-player";
 import { useAudio } from "@/hooks/use-audio";
-import { quranSurahs, alFatihahAyahs, getSurahById, fetchSurahAyahs, QuranAyah } from "@/data/quran";
+import { useSurahAyahs, useFilteredSurahs } from "@/hooks/use-quran";
+import { getSurahById } from "@/data/quran";
+import { appStore, setAppSearchQuery, setSelectedSurah, setAudioPlayerVisible } from "@/store/app-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,93 +18,40 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ArrowLeft,
   Search,
-  Play,
-  Pause,
   Bookmark,
   BookmarkCheck,
   Volume2,
   MapPin
 } from "lucide-react";
 
-// API helper functions
-async function apiRequest(method: string, url: string, data?: unknown): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
-  }
-  return res;
-}
-
 export default function Quran() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
-  const [audioPlayerVisible, setAudioPlayerVisible] = useState(false);
-  const [currentAyah, setCurrentAyah] = useState<number | null>(null);
-  const [currentAudioUrl, setCurrentAudioUrl] = useState<string>("");
-  const [currentAudioTitle, setCurrentAudioTitle] = useState<string>("");
-  const [currentAudioSubtitle, setCurrentAudioSubtitle] = useState<string>("");
-
+  const { searchQuery, selectedSurah, audioPlayerVisible } = useStore(appStore, (state) => state);
+  
+  // Audio state managed via TanStack Store in useAudio
   const audio = useAudio();
+  const [currentAyah, setCurrentAyah] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!audio.currentSrc) return;
-
-    setCurrentAudioUrl(audio.currentSrc);
-    if (audio.title) {
-      setCurrentAudioTitle(audio.title);
+    if (audio.currentSrc && !audioPlayerVisible) {
+      setAudioPlayerVisible(true);
     }
-    if (audio.subtitle) {
-      setCurrentAudioSubtitle(audio.subtitle);
-    }
-    setAudioPlayerVisible(true);
-  }, [audio.currentSrc, audio.title, audio.subtitle]);
+  }, [audio.currentSrc, audioPlayerVisible]);
 
-  // Bookmarks query - temporarily disabled for checkpoint
-  const bookmarks: Array<{
-    id: string;
-    userId: string;
-    type: string;
-    contentId: string;
-    note: string | null;
-    createdAt: Date;
-  }> = [];
-  const refetchBookmarks = async () => { };
-
-  const filteredSurahs = quranSurahs.filter(surah =>
-    surah.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    surah.englishName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    surah.id.toString() === searchQuery
-  );
-
+  // Bookmarks - temporarily static
+  const bookmarks: any[] = [];
   const isBookmarked = (surahId: number, ayahNumber?: number) => {
     const contentId = ayahNumber ? `${surahId}:${ayahNumber}` : surahId.toString();
     return bookmarks.some((b: any) => b.contentId === contentId);
   };
 
   const toggleBookmark = async (_surahId: number, _ayahNumber?: number) => {
-    // Temporarily disabled for checkpoint
-  };
-
-  // Helper function to convert CDN URLs to use our proxy - temporarily disabled
-  const getProxyAudioUrl = (cdnUrl: string) => {
-    return cdnUrl; // Direct URL for checkpoint
+    // Temporarily disabled
   };
 
   const playAudio = (audioUrl: string, title: string, subtitle: string) => {
-    const proxyUrl = getProxyAudioUrl(audioUrl);
-    setCurrentAudioUrl(proxyUrl);
-    setCurrentAudioTitle(title);
-    setCurrentAudioSubtitle(subtitle);
     audio.setMeta({ title, subtitle });
-    audio.play(proxyUrl);
+    audio.play(audioUrl);
     setAudioPlayerVisible(true);
   };
 
@@ -112,13 +61,8 @@ export default function Quran() {
   };
 
   const selectedSurahData = selectedSurah ? getSurahById(selectedSurah) : null;
-
-  // Dynamic ayah fetching for selected surah
-  const { data: surahAyahs = [], isLoading: ayahsLoading } = useQuery<QuranAyah[]>({
-    queryKey: ["/api/surah-ayahs", selectedSurah],
-    queryFn: () => selectedSurah ? fetchSurahAyahs(selectedSurah) : Promise.resolve([]),
-    enabled: !!selectedSurah
-  });
+  const filteredSurahs = useFilteredSurahs(searchQuery);
+  const { data: surahAyahs = [], isLoading: ayahsLoading } = useSurahAyahs(selectedSurah);
 
   return (
     <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
@@ -171,7 +115,7 @@ export default function Quran() {
               <Input
                 placeholder="Cari surah atau nomor..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setAppSearchQuery(e.target.value)}
                 className="pl-10"
                 data-testid="search-surah"
               />
@@ -353,26 +297,18 @@ export default function Quran() {
 
       {/* Audio Player */}
       <AudioPlayer
-        title={
-          currentAudioTitle ||
-          audio.title ||
-          (currentAyah ? `Ayat ${currentAyah}` : selectedSurahData?.name || "Al-Qur'an")
-        }
-        subtitle={
-          currentAudioSubtitle || audio.subtitle || (selectedSurahData?.name || "Recitation")
-        }
-        audioUrl={currentAudioUrl || audio.currentSrc}
+        title={audio.title || (currentAyah ? `Ayat ${currentAyah}` : selectedSurahData?.name || "Al-Qur'an")}
+        subtitle={audio.subtitle || (selectedSurahData?.name || "Recitation")}
+        audioUrl={audio.currentSrc}
         isVisible={audioPlayerVisible}
         onClose={() => setAudioPlayerVisible(false)}
-        // Audio state from useAudio hook
         isPlaying={audio.isPlaying}
         currentTime={audio.currentTime}
         duration={audio.duration}
         volume={audio.volume}
         isLoading={audio.isLoading}
         error={audio.error}
-        // Audio controls from useAudio hook
-        onPlay={() => audio.play(currentAudioUrl || audio.currentSrc)}
+        onPlay={() => audio.play()}
         onPause={audio.pause}
         onSeek={audio.seek}
         onVolumeChange={audio.setVolume}

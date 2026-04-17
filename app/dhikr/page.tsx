@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
+import { ProgressRing } from "@/components/progress-ring";
 import { usePreloadOnHover } from "@/lib/lazy-loading";
 import {
   ArrowLeft,
@@ -23,6 +23,7 @@ import {
   Check,
   Clock
 } from "lucide-react";
+
 
 export default function Dhikr() {
   const router = useRouter();
@@ -161,107 +162,160 @@ export default function Dhikr() {
   }
 
   return (
-    <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
+    <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top overflow-x-hidden">
+      {/* Immersive Header */}
+      <header className="sticky top-0 z-50 glass border-b border-primary/10">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.push('/')}
+              className="rounded-2xl bg-primary/5 hover:bg-primary/10 transition-colors"
               data-testid="back-home"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 text-primary" />
             </Button>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">
+              <h1 className="text-xl font-black text-foreground tracking-tight">
                 {timeBasedGreeting}
               </h1>
-              <p className="text-xs text-muted-foreground">
-                {totalCompleted}/{currentDhikrList.length} Selesai
-              </p>
+              <div className="flex items-center space-x-2">
+                <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                  {totalCompleted}/{currentDhikrList.length} SELESAI
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <div className="text-right mr-2">
-              <div className="text-sm font-medium text-primary">{completionPercentage}%</div>
+          <div className="flex items-center space-x-3">
+            <div className="relative w-10 h-10 flex items-center justify-center">
+              <ProgressRing
+                progress={completionPercentage}
+                size={40}
+                strokeWidth={3}
+                className="text-primary opacity-20"
+              />
+              <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-primary">
+                {completionPercentage}%
+              </div>
             </div>
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
               onClick={resetAllCounters}
+              className="rounded-2xl bg-accent/5 hover:bg-accent/10 transition-colors"
               data-testid="reset-all"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-4 h-4 text-accent" />
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Progress Overview */}
-      <section className="p-4 bg-gradient-to-br from-chart-3/10 to-chart-1/10">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
+      {/* Progress Overview Hero */}
+      <section className="relative pt-8 pb-12 px-6 mesh-gradient rounded-b-[3rem] shadow-xl shadow-primary/5 mb-8">
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-sm animate-float">
                 {currentSession === 'morning' ? (
-                  <Sun className="w-5 h-5 text-chart-3" />
+                  <Sun className="w-6 h-6 text-chart-3" />
                 ) : (
-                  <Moon className="w-5 h-5 text-chart-1" />
+                  <Moon className="w-6 h-6 text-primary" />
                 )}
-                <span className="font-medium">Progress Hari Ini</span>
               </div>
-              <Badge variant={completionPercentage === 100 ? "default" : "secondary"}>
-                {totalCompleted}/{currentDhikrList.length}
-              </Badge>
+              <div>
+                <h2 className="text-lg font-bold text-foreground leading-none mb-1">Dzikir {currentSession === 'morning' ? 'Pagi' : 'Petang'}</h2>
+                <p className="text-xs font-medium text-muted-foreground">Kumpulkan pahala hari ini</p>
+              </div>
             </div>
-
-            <Progress value={completionPercentage} className="h-2 mb-2" />
-
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Mulai dengan Bismillah</span>
-              <span>{completionPercentage}% Complete</span>
+            <div className="text-right">
+              <span className="text-3xl font-black text-primary">{totalCompleted}</span>
+              <span className="text-xs font-bold text-muted-foreground">/{currentDhikrList.length}</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          <div className="space-y-2">
+            <div className="w-full bg-background/30 backdrop-blur-sm h-3 rounded-full overflow-hidden border border-white/10 p-0.5">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(var(--primary),0.5)]"
+                style={{ width: `${completionPercentage}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">
+              <span>Bismillah</span>
+              <span>Alhamdulillah</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorations */}
+        <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
       </section>
 
-      {/* Session Tabs */}
-      <section className="px-4">
-        <Tabs value={currentSession} onValueChange={(value) => setCurrentSession(value as 'morning' | 'evening')}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="morning" data-testid="tab-morning">
+      {/* Session Management */}
+      <section className="px-6 mb-8">
+        <Tabs
+          value={currentSession}
+          onValueChange={(value) => setCurrentSession(value as 'morning' | 'evening')}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-2 rounded-3xl bg-primary/5 p-1.5 h-auto">
+            <TabsTrigger
+              value="morning"
+              className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+              data-testid="tab-morning"
+            >
               <Sun className="w-4 h-4 mr-2" />
-              Pagi
+              <span className="font-bold tracking-tight">Pagi</span>
             </TabsTrigger>
-            <TabsTrigger value="evening" data-testid="tab-evening">
+            <TabsTrigger
+              value="evening"
+              className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+              data-testid="tab-evening"
+            >
               <Moon className="w-4 h-4 mr-2" />
-              Petang
+              <span className="font-bold tracking-tight">Petang</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
       </section>
 
       {/* Dhikr List */}
-      <section className="p-4 pb-24">
-        <div className="space-y-4">
-          {currentDhikrList.map((dhikr) => {
+      <section className="px-6 pb-32">
+        <div className="space-y-6">
+          {currentDhikrList.map((dhikr, index) => {
             const counterData = getCounterData(dhikr.id);
 
             return (
-              <Card key={dhikr.id} className={`transition-all ${counterData.completed ? 'bg-chart-3/5 border-chart-3' : ''}`}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <CardTitle className="text-lg">{dhikr.transliteration}</CardTitle>
-                      {counterData.completed && (
-                        <Badge variant="default" className="bg-chart-3">
-                          <Check className="w-3 h-3 mr-1" />
-                          Selesai
-                        </Badge>
-                      )}
+              <Card
+                key={dhikr.id}
+                className={`group relative overflow-hidden rounded-[2.5rem] transition-all duration-500 border-none shadow-sm ${counterData.completed
+                    ? 'bg-primary shadow-xl shadow-primary/20 scale-[0.98]'
+                    : 'glass hover:shadow-lg hover:shadow-primary/5'
+                  }`}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="p-8">
+                  <div className="flex items-start justify-between mb-8">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${counterData.completed ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'
+                          }`}>
+                          DZIKIR {index + 1}
+                        </span>
+                        {counterData.completed && (
+                          <div className="flex h-5 w-5 rounded-full bg-white items-center justify-center p-1">
+                            <Check className="w-full h-full text-primary" />
+                          </div>
+                        )}
+                      </div>
+                      <h3 className={`text-xl font-bold leading-tight ${counterData.completed ? 'text-white' : 'text-foreground'
+                        }`}>
+                        {dhikr.transliteration}
+                      </h3>
                     </div>
 
                     <Button
@@ -271,31 +325,39 @@ export default function Dhikr() {
                         playAudio(dhikr.audioUrl || "", dhikr.transliteration);
                         setSelectedDhikr(dhikr.id);
                       }}
+                      className={`rounded-2xl ${counterData.completed ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-primary/10 hover:bg-primary/20 text-primary'
+                        }`}
                       data-testid={`play-${dhikr.id}`}
                       {...audioPlayerPreload}
                     >
-                      <Volume2 className="w-4 h-4" />
+                      <Volume2 className="w-5 h-5" />
                     </Button>
                   </div>
-                </CardHeader>
 
-                <CardContent className="space-y-4">
-                  {/* Arabic Text */}
-                  <div className="arabic-text">
-                    <div className="text-xl font-arabic leading-relaxed text-chart-3 mb-2">
+                  {/* Arabic Text Display */}
+                  <div className="relative mb-8 text-center py-4 bg-white/5 rounded-3xl backdrop-blur-sm shadow-inner group-hover:scale-[1.02] transition-transform duration-500">
+                    <div className={`text-3xl font-arabic leading-relaxed text-right p-4 ${counterData.completed ? 'text-white' : 'text-primary'
+                      }`} dir="rtl">
                       {dhikr.arabic}
                     </div>
                   </div>
 
-                  {/* Translation */}
-                  <div>
-                    <p className="text-sm text-foreground mb-1">{dhikr.meaning}</p>
+                  {/* Meaning & Reference */}
+                  <div className="space-y-4 mb-8">
+                    <p className={`text-sm font-medium leading-relaxed ${counterData.completed ? 'text-white/90' : 'text-foreground/80'
+                      }`}>
+                      &quot;{dhikr.meaning}&quot;
+                    </p>
                     {dhikr.reference && (
-                      <p className="text-xs text-muted-foreground">{dhikr.reference}</p>
+                      <div className={`flex items-start space-x-2 text-[10px] font-bold italic uppercase tracking-wider ${counterData.completed ? 'text-white/60' : 'text-muted-foreground'
+                        }`}>
+                        <div className="w-1.5 h-1.5 rounded-full bg-current mt-1.5 flex-shrink-0" />
+                        <span>{dhikr.reference}</span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Counter */}
+                  {/* High Tactile Counter */}
                   <div {...dhikrCounterPreload}>
                     <LazyDhikrCounter
                       dhikrId={dhikr.id}
@@ -305,24 +367,34 @@ export default function Dhikr() {
                       completed={counterData.completed}
                     />
                   </div>
-                </CardContent>
+                </div>
+
+                {/* Status Decoration */}
+                {counterData.completed && (
+                  <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                )}
               </Card>
             );
           })}
         </div>
 
-        {/* Daily Completion Message */}
+        {/* Celebration Achievement Card */}
         {completionPercentage === 100 && (
-          <Card className="mt-6 bg-gradient-to-r from-chart-3/20 to-chart-1/20">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-3">🤲</div>
-              <h3 className="text-lg font-semibold mb-2">Masha Allah!</h3>
-              <p className="text-sm text-muted-foreground">
-                Anda telah menyelesaikan dhikr {currentSession === 'morning' ? 'pagi' : 'petang'} hari ini.
-                Semoga diberkahi Allah SWT.
-              </p>
-            </CardContent>
-          </Card>
+          <div className="mt-12 group">
+            <div className="glass p-10 rounded-[3rem] text-center relative overflow-hidden transition-all duration-500 hover:scale-[1.02] border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+              <div className="relative z-10">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 p-4 shadow-inner group-hover:animate-float">
+                  <span className="text-4xl">🤲</span>
+                </div>
+                <h3 className="text-2xl font-black text-foreground mb-3">Masha Allah!</h3>
+                <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+                  Luar biasa. Anda telah menyelesaikan seluruh rangkaian dzikir untuk sesi ini.
+                  <span className="block mt-2 text-primary font-bold">Semoga istiqomah selalu.</span>
+                </p>
+              </div>
+              <div className="absolute top-[-20%] left-[-10%] w-48 h-48 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+            </div>
+          </div>
         )}
       </section>
 

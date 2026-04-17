@@ -1,21 +1,33 @@
 /**
  * API Client Functions
  *
- * Centralized API client for all server endpoints with proper error handling,
- * type safety, and consistent response patterns.
+ * Centralized API client for Golang backend endpoints with token refresh support.
  */
+
+import {
+  clearAccessToken,
+  emitAuthStateChanged,
+  getAccessToken,
+  setAccessToken,
+} from "./auth-storage"
+
+const DEFAULT_API_BASE_URL = "http://localhost:8080/api/v1"
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.API_BASE_URL ||
+  DEFAULT_API_BASE_URL
+).replace(/\/$/, "")
 
 // ==================== TYPES ====================
 
-// API Response wrapper type
 export interface ApiResponse<T = any> {
   success: boolean
+  message?: string
   data?: T
-  error?: string
+  error?: string | Record<string, any>
   details?: any[]
 }
 
-// Error class for API errors
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -24,127 +36,249 @@ export class ApiError extends Error {
     public details?: any[]
   ) {
     super(message)
-    this.name = 'ApiError'
+    this.name = "ApiError"
   }
 }
 
-// Request configuration
 interface RequestConfig {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  method?: "GET" | "POST" | "PATCH" | "DELETE"
   body?: any
   headers?: Record<string, string>
   requireAuth?: boolean
 }
 
-// ==================== CORE API FUNCTIONS ====================
+interface AuthTokenResponse {
+  accessToken: string
+  tokenType: string
+  expiresIn: number
+}
 
-/**
- * Core API request function with error handling
- */
+let refreshPromise: Promise<string | null> | null = null
+
+function buildUrl(endpoint: string): string {
+  if (/^https?:\/\//.test(endpoint)) {
+    return endpoint
+  }
+  if (!endpoint.startsWith("/")) {
+    return `${API_BASE_URL}/${endpoint}`
+  }
+  return `${API_BASE_URL}${endpoint}`
+}
+
+function normalizeApiErrorMessage(
+  response: Response,
+  payload?: ApiResponse<any>
+): string {
+  if (!payload) {
+    return `HTTP ${response.status}: ${response.statusText}`
+  }
+  if (typeof payload.error === "string" && payload.error.trim() !== "") {
+    return payload.error
+  }
+  if (payload.message && payload.message.trim() !== "") {
+    return payload.message
+  }
+  return `HTTP ${response.status}: ${response.statusText}`
+}
+
+async function parseJsonResponse<T>(response: Response): Promise<ApiResponse<T>> {
+  try {
+    return (await response.json()) as ApiResponse<T>
+  } catch {
+    throw new ApiError(
+      response.status,
+      `Failed to parse response: ${response.statusText}`
+    )
+  }
+}
+
+async function refreshAccessToken(): Promise<string | null> {
+  if (refreshPromise) {
+    return refreshPromise
+  }
+
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch(buildUrl("/auth/refresh"), {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      })
+
+      const payload = await parseJsonResponse<AuthTokenResponse>(response)
+      const token = payload?.data?.accessToken
+
+      if (!response.ok || !token) {
+        clearAccessToken()
+        emitAuthStateChanged("token-cleared")
+        return null
+      }
+
+      setAccessToken(token)
+      emitAuthStateChanged("refresh")
+      return token
+    } catch {
+      clearAccessToken()
+      emitAuthStateChanged("token-cleared")
+      return null
+    }
+  })().finally(() => {
+    refreshPromise = null
+  })
+
+  return refreshPromise
+}
+
 async function apiRequest<T = any>(
   endpoint: string,
   config: RequestConfig = {}
 ): Promise<T> {
-  const {
-    method = 'GET',
-    body,
-    headers = {},
-    requireAuth = true
-  } = config
+  const { method = "GET", body, headers = {}, requireAuth = true } = config
+  const url = buildUrl(endpoint)
 
-  try {
-    // Prepare request headers
+  const makeOptions = (token?: string): RequestInit => {
     const requestHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
-      ...headers
+      "Content-Type": "application/json",
+      ...headers,
     }
 
-    // Prepare request options
+    const authToken = token || getAccessToken()
+    if (requireAuth && authToken) {
+      requestHeaders.Authorization = `Bearer ${authToken}`
+    }
+
     const requestOptions: RequestInit = {
       method,
       headers: requestHeaders,
-      credentials: 'include' // This will include session cookies automatically
+      credentials: "include",
     }
 
-    // Add body for non-GET requests
-    if (body && method !== 'GET') {
+    if (body !== undefined && method !== "GET") {
       requestOptions.body = JSON.stringify(body)
     }
 
-    // Make the request
-    const response = await fetch(endpoint, requestOptions)
+    return requestOptions
+  }
 
-    // Handle non-JSON responses (like 204 No Content)
+  const executeRequest = async (token?: string) => {
+    const response = await fetch(url, makeOptions(token))
     if (response.status === 204) {
-      return { success: true } as T
+      return { response, payload: { success: true } as ApiResponse<T> }
+    }
+    const payload = await parseJsonResponse<T>(response)
+    return { response, payload }
+  }
+
+  try {
+    let { response, payload } = await executeRequest()
+
+    if (response.status === 401 && requireAuth) {
+      const refreshedToken = await refreshAccessToken()
+      if (refreshedToken) {
+        ;({ response, payload } = await executeRequest(refreshedToken))
+      }
     }
 
-    // Parse JSON response
-    let responseData: ApiResponse<T>
-    try {
-      responseData = await response.json()
-    } catch (parseError) {
-      throw new ApiError(
-        response.status,
-        `Failed to parse response: ${response.statusText}`
-      )
-    }
-
-    // Handle HTTP errors
     if (!response.ok) {
       throw new ApiError(
         response.status,
-        responseData.error || `HTTP ${response.status}: ${response.statusText}`,
+        normalizeApiErrorMessage(response, payload),
         undefined,
-        responseData.details
+        payload?.details
       )
     }
 
-    // Return the data directly for successful responses
-    return responseData.success && responseData.data !== undefined ? responseData.data : responseData as T
-
+    return payload.success && payload.data !== undefined
+      ? payload.data
+      : (payload as T)
   } catch (error) {
-    // Re-throw ApiError instances
     if (error instanceof ApiError) {
       throw error
     }
 
-    // Handle network errors
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new ApiError(0, 'Network error: Unable to connect to server')
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new ApiError(0, "Network error: Unable to connect to server")
     }
 
-    // Handle other errors
-    throw new ApiError(500, `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new ApiError(
+      500,
+      `Unexpected error: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    )
   }
 }
 
-/**
- * Helper function for GET requests
- */
 async function get<T = any>(endpoint: string, requireAuth = true): Promise<T> {
-  return apiRequest<T>(endpoint, { method: 'GET', requireAuth })
+  return apiRequest<T>(endpoint, { method: "GET", requireAuth })
 }
 
-/**
- * Helper function for POST requests
- */
-async function post<T = any>(endpoint: string, body?: any, requireAuth = true): Promise<T> {
-  return apiRequest<T>(endpoint, { method: 'POST', body, requireAuth })
+async function post<T = any>(
+  endpoint: string,
+  body?: any,
+  requireAuth = true
+): Promise<T> {
+  return apiRequest<T>(endpoint, { method: "POST", body, requireAuth })
 }
 
-/**
- * Helper function for PATCH requests
- */
-async function patch<T = any>(endpoint: string, body?: any, requireAuth = true): Promise<T> {
-  return apiRequest<T>(endpoint, { method: 'PATCH', body, requireAuth })
+async function patch<T = any>(
+  endpoint: string,
+  body?: any,
+  requireAuth = true
+): Promise<T> {
+  return apiRequest<T>(endpoint, { method: "PATCH", body, requireAuth })
 }
 
-/**
- * Helper function for DELETE requests
- */
 async function del<T = any>(endpoint: string, requireAuth = true): Promise<T> {
-  return apiRequest<T>(endpoint, { method: 'DELETE', requireAuth })
+  return apiRequest<T>(endpoint, { method: "DELETE", requireAuth })
+}
+
+// ==================== AUTH API ====================
+
+export interface AuthUser {
+  id: string
+  email: string
+  name: string
+  avatarUrl?: string
+  role?: string
+  lastLoginAt?: string
+}
+
+export interface AuthLoginResponse {
+  user: AuthUser
+  tokens: AuthTokenResponse
+}
+
+export const authApi = {
+  loginWithGoogle: async (idToken: string): Promise<AuthLoginResponse> => {
+    const data = await post<AuthLoginResponse>(
+      "/auth/google",
+      { idToken },
+      false
+    )
+    if (data?.tokens?.accessToken) {
+      setAccessToken(data.tokens.accessToken)
+      emitAuthStateChanged("login")
+    }
+    return data
+  },
+  refresh: async (): Promise<AuthTokenResponse> => {
+    const data = await post<AuthTokenResponse>("/auth/refresh", undefined, false)
+    if (data?.accessToken) {
+      setAccessToken(data.accessToken)
+      emitAuthStateChanged("refresh")
+    }
+    return data
+  },
+  me: (): Promise<AuthUser> => get<AuthUser>("/auth/me"),
+  logout: async (): Promise<void> => {
+    try {
+      await post<void>("/auth/logout", undefined, false)
+    } finally {
+      clearAccessToken()
+      emitAuthStateChanged("logout")
+    }
+  },
 }
 
 // ==================== USER API ====================
@@ -154,6 +288,7 @@ export interface User {
   name?: string | null
   email?: string | null
   image?: string | null
+  avatarUrl?: string | null
   username?: string | null
   streak: number
   dailyProgress: number
@@ -170,8 +305,8 @@ export interface UpdateUserData {
 }
 
 export const userApi = {
-  getProfile: (): Promise<User> => get<User>('/api/user'),
-  updateProfile: (data: UpdateUserData): Promise<User> => patch<User>('/api/user', data)
+  getProfile: (): Promise<User> => get<User>("/user"),
+  updateProfile: (data: UpdateUserData): Promise<User> => patch<User>("/user", data),
 }
 
 // ==================== PROGRESS API ====================
@@ -179,7 +314,7 @@ export const userApi = {
 export interface UserProgress {
   id: string
   userId: string
-  module: 'hijaiyah' | 'quran' | 'dhikr' | 'quiz'
+  module: "hijaiyah" | "quran" | "dhikr" | "quiz"
   itemId: string
   progress: number
   completed: boolean
@@ -189,7 +324,7 @@ export interface UserProgress {
 }
 
 export interface CreateProgressData {
-  module: 'hijaiyah' | 'quran' | 'dhikr' | 'quiz'
+  module: "hijaiyah" | "quran" | "dhikr" | "quiz"
   itemId: string
   progress: number
   completed?: boolean
@@ -199,13 +334,13 @@ export interface CreateProgressData {
 
 export const progressApi = {
   getProgress: (module?: string): Promise<UserProgress[]> => {
-    const endpoint = module ? `/api/progress?module=${module}` : '/api/progress'
+    const endpoint = module ? `/progress?module=${module}` : "/progress"
     return get<UserProgress[]>(endpoint)
   },
   getProgressItem: (module: string, itemId: string): Promise<UserProgress | null> =>
-    get<UserProgress | null>(`/api/progress/${module}/${itemId}`),
+    get<UserProgress | null>(`/progress/${module}/${itemId}`),
   updateProgress: (data: CreateProgressData): Promise<UserProgress> =>
-    post<UserProgress>('/api/progress', data)
+    post<UserProgress>("/progress", data),
 }
 
 // ==================== BOOKMARKS API ====================
@@ -213,27 +348,26 @@ export const progressApi = {
 export interface Bookmark {
   id: string
   userId: string
-  type: 'quran' | 'dhikr'
+  type: "quran" | "dhikr"
   contentId: string
   note?: string | null
   createdAt: Date
 }
 
 export interface CreateBookmarkData {
-  type: 'quran' | 'dhikr'
+  type: "quran" | "dhikr"
   contentId: string
   note?: string
 }
 
 export const bookmarksApi = {
   getBookmarks: (type?: string): Promise<Bookmark[]> => {
-    const endpoint = type ? `/api/bookmarks?type=${type}` : '/api/bookmarks'
+    const endpoint = type ? `/bookmarks?type=${type}` : "/bookmarks"
     return get<Bookmark[]>(endpoint)
   },
   createBookmark: (data: CreateBookmarkData): Promise<Bookmark> =>
-    post<Bookmark>('/api/bookmarks', data),
-  deleteBookmark: (id: string): Promise<void> =>
-    del<void>(`/api/bookmarks/${id}`)
+    post<Bookmark>("/bookmarks", data),
+  deleteBookmark: (id: string): Promise<void> => del<void>(`/bookmarks/${id}`),
 }
 
 // ==================== DHIKR API ====================
@@ -245,7 +379,7 @@ export interface DhikrCounter {
   count: number
   target: number
   date: string
-  session: 'morning' | 'evening'
+  session: "morning" | "evening"
   completed: boolean
 }
 
@@ -254,17 +388,17 @@ export interface CreateDhikrCounterData {
   count: number
   target?: number
   date: string
-  session: 'morning' | 'evening'
+  session: "morning" | "evening"
   completed?: boolean
 }
 
 export const dhikrApi = {
   getCounters: (date?: string): Promise<DhikrCounter[]> => {
-    const endpoint = date ? `/api/dhikr/counters?date=${date}` : '/api/dhikr/counters'
+    const endpoint = date ? `/dhikr/counters?date=${date}` : "/dhikr/counters"
     return get<DhikrCounter[]>(endpoint)
   },
   updateCounter: (data: CreateDhikrCounterData): Promise<DhikrCounter> =>
-    post<DhikrCounter>('/api/dhikr/counters', data)
+    post<DhikrCounter>("/dhikr/counters", data),
 }
 
 // ==================== QUIZ API ====================
@@ -298,13 +432,30 @@ export interface QuizStats {
 
 export const quizApi = {
   getAttempts: (category?: string): Promise<QuizAttempt[]> => {
-    const endpoint = category ? `/api/quiz/attempts?category=${category}` : '/api/quiz/attempts'
+    const endpoint = category ? `/quiz/attempts?category=${category}` : "/quiz/attempts"
     return get<QuizAttempt[]>(endpoint)
   },
   createAttempt: (data: CreateQuizAttemptData): Promise<QuizAttempt> =>
-    post<QuizAttempt>('/api/quiz/attempts', data),
-  getStats: (): Promise<QuizStats> =>
-    get<QuizStats>('/api/quiz/stats')
+    post<QuizAttempt>("/quiz/attempts", data),
+  getStats: async (): Promise<QuizStats> => {
+    const raw = await get<any>("/quiz/stats")
+    if (raw?.overall) {
+      return {
+        totalAttempts: raw.overall.totalAttempts ?? 0,
+        averageScore: raw.overall.averageScore ?? 0,
+        bestScore: raw.overall.bestScore ?? 0,
+        totalTimeSpent: raw.overall.totalTimeSpent ?? 0,
+        categoriesAttempted: raw.overall.categoriesAttempted ?? 0,
+      }
+    }
+    return {
+      totalAttempts: raw?.totalAttempts ?? 0,
+      averageScore: raw?.averageScore ?? 0,
+      bestScore: raw?.bestScore ?? 0,
+      totalTimeSpent: raw?.totalTimeSpent ?? 0,
+      categoriesAttempted: raw?.categoriesAttempted ?? 0,
+    }
+  },
 }
 
 // ==================== UTILITY API ====================
@@ -329,24 +480,26 @@ export interface PrayerTimes {
 
 export const utilityApi = {
   getPrayerTimes: (coords?: { lat: number; lng: number }): Promise<PrayerTimes> => {
-    const lat = coords?.lat ?? -6.2;
-    const lng = coords?.lng ?? 106.8167;
-    return get<PrayerTimes>(`/api/prayer-times?lat=${lat}&lng=${lng}`, false);
+    const lat = coords?.lat ?? -6.2
+    const lng = coords?.lng ?? 106.8167
+    return get<PrayerTimes>(`/prayer-times?lat=${lat}&lng=${lng}`, false)
   },
   getAudioProxy: (url: string): Promise<Blob> => {
-    return fetch(`/api/audio-proxy?url=${encodeURIComponent(url)}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new ApiError(response.status, 'Failed to fetch audio')
-        }
-        return response.blob()
-      })
-  }
+    return fetch(buildUrl(`/audio-proxy?url=${encodeURIComponent(url)}`), {
+      credentials: "include",
+    }).then((response) => {
+      if (!response.ok) {
+        throw new ApiError(response.status, "Failed to fetch audio")
+      }
+      return response.blob()
+    })
+  },
 }
 
 // ==================== COMBINED API OBJECT ====================
 
 export const api = {
+  auth: authApi,
   user: userApi,
   progress: progressApi,
   bookmarks: bookmarksApi,
@@ -357,7 +510,7 @@ export const api = {
   get,
   post,
   patch,
-  delete: del
+  delete: del,
 }
 
 // ==================== ERROR HANDLING UTILITIES ====================
@@ -373,7 +526,7 @@ export function getErrorMessage(error: any): string {
   if (error instanceof Error) {
     return error.message
   }
-  return 'An unexpected error occurred'
+  return "An unexpected error occurred"
 }
 
 export async function withRetry<T>(
@@ -389,7 +542,12 @@ export async function withRetry<T>(
     } catch (error) {
       lastError = error
 
-      if (isApiError(error) && error.status >= 400 && error.status < 500 && error.status !== 429) {
+      if (
+        isApiError(error) &&
+        error.status >= 400 &&
+        error.status < 500 &&
+        error.status !== 429
+      ) {
         throw error
       }
 
@@ -397,7 +555,7 @@ export async function withRetry<T>(
         break
       }
 
-      await new Promise(resolve => setTimeout(resolve, delay * attempt))
+      await new Promise((resolve) => setTimeout(resolve, delay * attempt))
     }
   }
 
@@ -405,3 +563,4 @@ export async function withRetry<T>(
 }
 
 export default api
+

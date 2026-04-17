@@ -1,18 +1,18 @@
 'use client'
 
 import Image from 'next/image'
-import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense, useState } from 'react'
 import { LoginForm } from '@/components/auth/login-form'
+import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 
 function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
-  const { status } = useSession()
+  const callbackUrl = searchParams?.get('callbackUrl') || '/'
+  const { status } = useAuth()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

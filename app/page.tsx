@@ -27,8 +27,10 @@ import {
   Trophy,
   Check,
   Star,
-  MapPin
+  MapPin,
+  Clock
 } from "lucide-react";
+
 
 const DEFAULT_COORDS = { lat: -6.2, lng: 106.8167 }; // Jakarta fallback
 
@@ -153,175 +155,173 @@ export default function Home() {
 
   return (
     <div className="min-h-screen max-w-md mx-auto bg-background relative safe-area-top">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-card border border-border flex items-center justify-center">
-              <Image
-                src="/images/logo/image.png"
-                alt="Belajar Ngaji"
-                width={40}
-                height={40}
-                className="h-full w-full object-cover"
-                priority
-              />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">Belajar Ngaji</h1>
-              <p className="text-xs text-muted-foreground">Assalamu&apos;alaikum</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-lg"
-              data-testid="toggle-theme"
-            >
-              {theme === 'dark' ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-lg"
-              data-testid="notifications"
-            >
-              <Bell className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Welcome Section */}
-      <section className="p-4 bg-gradient-to-br from-primary/10 to-accent/10">
-        <Card className="shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h2 className="text-xl font-semibold text-card-foreground">Selamat Pagi</h2>
-                <p className="text-sm text-muted-foreground">Mari lanjutkan pembelajaran hari ini</p>
+      {/* Immersive Hero Section */}
+      <section className="relative overflow-hidden pt-8 pb-12 px-6 mesh-gradient rounded-b-[2.5rem] shadow-xl shadow-primary/5">
+        <div className="relative z-10 flex flex-col space-y-6">
+          <header className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center p-1.5 shadow-inner">
+                <Image
+                  src="/images/logo/image.png"
+                  alt="Belajar Ngaji"
+                  width={48}
+                  height={48}
+                  className="h-full w-full object-cover rounded-xl"
+                  priority
+                />
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-primary" data-testid="user-streak">
-                  {user?.streak || 7}
+              <div className="flex flex-col">
+                <h1 className="text-xl font-bold text-foreground/90 tracking-tight">Belajar Ngaji</h1>
+                <div className="flex items-center space-x-1">
+                  <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Aktif Belajar</p>
                 </div>
-                <div className="text-xs text-muted-foreground">Hari berturut</div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Progress Harian</span>
-                <span className="text-primary font-medium" data-testid="daily-progress">
-                  {user?.dailyProgress || 3}/5
-                </span>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-full bg-background/40 backdrop-blur-md border border-white/20 hover:bg-background/60 transition-all duration-300"
+                data-testid="toggle-theme"
+              >
+                {theme === 'dark' ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-accent" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-background/40 backdrop-blur-md border border-white/20 hover:bg-background/60 transition-all duration-300"
+                data-testid="notifications"
+              >
+                <Bell className="w-4 h-4 text-foreground/70" />
+              </Button>
+            </div>
+          </header>
+
+          <div className="space-y-1">
+            <h2 className="text-3xl font-extrabold text-foreground tracking-tight leading-tight">
+              Assalamu&apos;alaikum,
+              <span className="block text-primary">Sobat Ngaji ✨</span>
+            </h2>
+            <p className="text-muted-foreground text-sm font-medium">Lanjutkan langkahmu menuju keberkahan hari ini.</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 pt-2">
+            <div className="glass p-4 rounded-3xl flex flex-col justify-between space-y-2 border-primary/10 shadow-sm">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Streak Saya</span>
+              <div className="flex items-baseline space-x-2">
+                <span className="text-3xl font-black text-primary">{user?.streak || 7}</span>
+                <span className="text-xs font-bold text-primary/60">HARI</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
+              <div className="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full w-3/4 animate-pulse-soft" />
+              </div>
+            </div>
+            <div className="glass p-4 rounded-3xl flex flex-col justify-between space-y-2 border-accent/10 shadow-sm">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Target Hari Ini</span>
+              <div className="flex items-baseline space-x-2">
+                <span className="text-3xl font-black text-accent">{user?.dailyProgress || 3}</span>
+                <span className="text-xs font-bold text-accent/60">/ 5</span>
+              </div>
+              <div className="h-1.5 w-full bg-accent/10 rounded-full overflow-hidden">
                 <div
-                  className="bg-primary h-2 rounded-full progress-animate"
+                  className="h-full bg-accent rounded-full transition-all duration-1000"
                   style={{ width: `${((user?.dailyProgress || 3) / 5) * 100}%` }}
                 />
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Background Decorations */}
+        <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-20%] left-[-10%] w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
       </section>
 
-      {/* Quick Actions */}
-      <section className="p-4">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Modul Pembelajaran</h3>
+      {/* Modul Pembelajaran */}
+      <section className="px-6 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-foreground">Modul Pilihan</h3>
+          <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-tighter">Explore All</span>
+        </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-4">
           {/* Hijaiyah Module */}
-          <Link href="/hijaiyah" prefetch={true} data-testid="module-hijaiyah">
-            <Card className="card-hover cursor-pointer">
-              <CardContent className="p-4">
-                <div className="w-12 h-12 bg-chart-1/20 rounded-xl flex items-center justify-center mb-3">
-                  <Languages className="text-chart-1 w-6 h-6" />
-                </div>
-                <h4 className="font-semibold text-card-foreground mb-1">Hijaiyah</h4>
-                <p className="text-xs text-muted-foreground mb-2">28 Huruf Arab</p>
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-chart-1 font-medium">
-                    {stats.hijaiyah.completed}/{stats.hijaiyah.total}
-                  </div>
-                  <ProgressRing
-                    progress={stats.hijaiyah.progress}
-                    size={32}
-                    className="text-chart-1"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+          <Link href="/hijaiyah" prefetch={true} className="group" data-testid="module-hijaiyah">
+            <div className="relative glass p-5 rounded-[2rem] border-primary/5 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 active:scale-95">
+              <div className="w-14 h-14 bg-gradient-to-br from-chart-1 to-chart-1/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-1/10 group-hover:animate-float">
+                <Languages className="text-white w-full h-full" />
+              </div>
+              <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Hijaiyah</h4>
+              <p className="text-xs text-muted-foreground mb-4">28 Huruf Arab</p>
+              <div className="flex items-center justify-between bg-primary/5 p-2 rounded-2xl">
+                <span className="text-[10px] font-black text-primary uppercase">{stats.hijaiyah.completed}/{stats.hijaiyah.total}</span>
+                <ProgressRing
+                  progress={stats.hijaiyah.progress}
+                  size={24}
+                  className="text-primary"
+                />
+              </div>
+            </div>
           </Link>
 
           {/* Al-Quran Module */}
-          <Link href="/quran" prefetch={true} data-testid="module-quran">
-            <Card className="card-hover cursor-pointer">
-              <CardContent className="p-4">
-                <div className="w-12 h-12 bg-chart-2/20 rounded-xl flex items-center justify-center mb-3">
-                  <BookOpen className="text-chart-2 w-6 h-6" />
+          <Link href="/quran" prefetch={true} className="group" data-testid="module-quran">
+            <div className="relative glass p-5 rounded-[2rem] border-secondary/5 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 active:scale-95">
+              <div className="w-14 h-14 bg-gradient-to-br from-chart-2 to-chart-2/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-2/10 group-hover:animate-float">
+                <BookOpen className="text-white w-full h-full" />
+              </div>
+              <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Al-Qur&apos;an</h4>
+              <p className="text-xs text-muted-foreground mb-4">114 Surah</p>
+              <div className="flex items-center justify-between bg-accent/5 p-2 rounded-2xl">
+                <span className="text-[10px] font-black text-accent uppercase">Surah Al-Fatihah</span>
+                <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center p-1.5 shadow-sm">
+                  <Bookmark className="text-white w-full h-full" />
                 </div>
-                <h4 className="font-semibold text-card-foreground mb-1">Al-Qur&apos;an</h4>
-                <p className="text-xs text-muted-foreground mb-2">114 Surah</p>
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-chart-2 font-medium">Surah Al-Fatihah</div>
-                  <div className="w-6 h-6 bg-chart-2 rounded-full flex items-center justify-center">
-                    <Bookmark className="text-white w-3 h-3" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </Link>
 
           {/* Dhikr Module */}
-          <Link href="/dhikr" prefetch={true} data-testid="module-dhikr">
-            <Card className="card-hover cursor-pointer">
-              <CardContent className="p-4">
-                <div className="w-12 h-12 bg-chart-3/20 rounded-xl flex items-center justify-center mb-3">
-                  <BicepsFlexed className="text-chart-3 w-6 h-6" />
-                </div>
-                <h4 className="font-semibold text-card-foreground mb-1">Dhikr</h4>
-                <p className="text-xs text-muted-foreground mb-2">Pagi & Petang</p>
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-chart-3 font-medium">33x</div>
-                  <ProgressRing
-                    progress={66}
-                    size={32}
-                    className="text-chart-3"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+          <Link href="/dhikr" prefetch={true} className="group" data-testid="module-dhikr">
+            <div className="relative glass p-5 rounded-[2rem] border-chart-3/5 transition-all duration-300 hover:shadow-xl hover:shadow-chart-3/5 active:scale-95">
+              <div className="w-14 h-14 bg-gradient-to-br from-chart-3 to-chart-3/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-3/10 group-hover:animate-float">
+                <BicepsFlexed className="text-white w-full h-full" />
+              </div>
+              <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Dhikr</h4>
+              <p className="text-xs text-muted-foreground mb-4">Pagi & Petang</p>
+              <div className="flex items-center justify-between bg-chart-3/5 p-2 rounded-2xl">
+                <span className="text-[10px] font-black text-chart-3 uppercase">33x</span>
+                <ProgressRing
+                  progress={66}
+                  size={24}
+                  className="text-chart-3"
+                />
+              </div>
+            </div>
           </Link>
 
           {/* Quiz Module */}
-          <Link href="/quiz" prefetch={true} data-testid="module-quiz">
-            <Card className="card-hover cursor-pointer">
-              <CardContent className="p-4">
-                <div className="w-12 h-12 bg-chart-4/20 rounded-xl flex items-center justify-center mb-3">
-                  <Brain className="text-chart-4 w-6 h-6" />
+          <Link href="/quiz" prefetch={true} className="group" data-testid="module-quiz">
+            <div className="relative glass p-5 rounded-[2rem] border-chart-4/5 transition-all duration-300 hover:shadow-xl hover:shadow-chart-4/5 active:scale-95">
+              <div className="w-14 h-14 bg-gradient-to-br from-chart-4 to-chart-4/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-4/10 group-hover:animate-float">
+                <Brain className="text-white w-full h-full" />
+              </div>
+              <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Kuis</h4>
+              <p className="text-xs text-muted-foreground mb-4">4 Kategori</p>
+              <div className="flex items-center justify-between bg-chart-4/5 p-2 rounded-2xl">
+                <span className="text-[10px] font-black text-chart-4 uppercase">Skor: 85%</span>
+                <div className="w-6 h-6 bg-chart-4 rounded-full flex items-center justify-center p-1.5 shadow-sm">
+                  <Trophy className="text-white w-full h-full" />
                 </div>
-                <h4 className="font-semibold text-card-foreground mb-1">Kuis</h4>
-                <p className="text-xs text-muted-foreground mb-2">4 Kategori</p>
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-chart-4 font-medium">Skor: 85%</div>
-                  <div className="w-6 h-6 bg-chart-4 rounded-full flex items-center justify-center">
-                    <Trophy className="text-white w-3 h-3" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </Link>
         </div>
       </section>
+
 
       {/* Continue Learning */}
       <section className="p-4">
@@ -432,93 +432,82 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Prayer Times */}
-      <section className="p-4 pb-24">
-        <Card className="bg-gradient-to-br from-primary/10 to-accent/10">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between mb-3 gap-3">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Waktu Shalat</h3>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  <span>{locationLabel}</span>
-                </p>
+      {/* Prayer Times Widget */}
+      <section className="px-6 pb-28">
+        <div className="glass overflow-hidden rounded-[2.5rem] border-primary/10 shadow-lg shadow-primary/5">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center p-2">
+                  <Clock className="text-primary w-full h-full" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground">Waktu Shalat</h3>
+                  <div className="flex items-center text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                    <MapPin className="w-3 h-3 mr-1 text-primary" />
+                    {locationLabel}
+                  </div>
+                </div>
               </div>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={requestLocation}
                 disabled={locationStatus === "loading"}
-                className="text-xs"
+                className="rounded-xl bg-primary/5 text-primary text-[10px] font-black uppercase tracking-tighter h-8"
               >
-                {locationStatus === "loading" ? "Mencari..." : "Gunakan lokasi"}
+                {locationStatus === "loading" ? "Mencari..." : "Update Lokasi"}
               </Button>
             </div>
 
-            {prayerTimesLoading && (
-              <p className="text-xs text-muted-foreground">Memuat waktu shalat...</p>
-            )}
-
-            {prayerTimesError && (
-              <p className="text-xs text-destructive">
-                {getErrorMessage(prayerTimesError) || "Gagal memuat waktu shalat"}
-              </p>
-            )}
-
-            {locationStatus === "denied" && (
-              <p className="text-[11px] text-destructive">
-                Izin lokasi ditolak. Aktifkan izin lokasi di browser untuk jadwal sesuai lokasi Anda.
-              </p>
-            )}
-            {locationStatus === "unsupported" && (
-              <p className="text-[11px] text-muted-foreground">
-                Peramban tidak mendukung geolokasi. Menggunakan lokasi default.
-              </p>
-            )}
-
-            {prayerTimes && (
+            {prayerTimesLoading ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : prayerTimes ? (
               <div className="grid grid-cols-3 gap-3">
-                <div className="text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Subuh</div>
-                  <div className={`text-sm font-semibold ${nextPrayer.name === "Subuh" ? 'text-primary' : 'text-foreground'}`}>
-                    {prayerTimes.fajr}
+                {[
+                  { name: "Subuh", time: prayerTimes.fajr },
+                  { name: "Dhuhur", time: prayerTimes.dhuhr },
+                  { name: "Ashar", time: prayerTimes.asr },
+                  { name: "Maghrib", time: prayerTimes.maghrib },
+                  { name: "Isya", time: prayerTimes.isha }
+                ].map((p) => (
+                  <div
+                    key={p.name}
+                    className={`relative p-3 rounded-2xl transition-all duration-300 ${nextPrayer.name === p.name
+                        ? 'bg-primary shadow-lg shadow-primary/20 scale-105 z-10'
+                        : 'bg-primary/5'
+                      }`}
+                  >
+                    <div className={`text-[10px] font-bold uppercase tracking-widest leading-none mb-1 ${nextPrayer.name === p.name ? 'text-white/80' : 'text-muted-foreground'
+                      }`}>
+                      {p.name}
+                    </div>
+                    <div className={`text-sm font-black ${nextPrayer.name === p.name ? 'text-white' : 'text-foreground'
+                      }`}>
+                      {p.time}
+                    </div>
+                    {nextPrayer.name === p.name && (
+                      <div className="absolute top-[-4px] right-[-4px] w-3 h-3 bg-accent rounded-full border-2 border-white animate-pulse" />
+                    )}
                   </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Dhuhur</div>
-                  <div className={`text-sm font-semibold ${nextPrayer.name === "Dhuhur" ? 'text-primary' : 'text-foreground'}`}>
-                    {prayerTimes.dhuhr}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Ashar</div>
-                  <div className={`text-sm font-semibold ${nextPrayer.name === "Ashar" ? 'text-primary' : 'text-foreground'}`}>
-                    {prayerTimes.asr}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Maghrib</div>
-                  <div className={`text-sm font-semibold ${nextPrayer.name === "Maghrib" ? 'text-primary' : 'text-foreground'}`}>
-                    {prayerTimes.maghrib}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Isya</div>
-                  <div className={`text-sm font-semibold ${nextPrayer.name === "Isya" ? 'text-primary' : 'text-foreground'}`}>
-                    {prayerTimes.isha}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Selanjutnya</div>
-                  <div className="text-xs font-medium text-primary">
-                    {nextPrayer.name} • {nextPrayer.timeLeft}
-                  </div>
+                ))}
+
+                {/* Next Prayer Countdown Card */}
+                <div className="col-span-1 rounded-2xl bg-accent p-3 shadow-lg shadow-accent/20 flex flex-col justify-center items-center text-center">
+                  <div className="text-[9px] font-black text-white/70 uppercase tracking-tighter mb-0.5">Selanjutnya</div>
+                  <div className="text-xs font-black text-white leading-none mb-1">{nextPrayer.name}</div>
+                  <div className="text-[10px] font-bold text-white bg-black/10 px-2 py-0.5 rounded-full">{nextPrayer.timeLeft} lagi</div>
                 </div>
               </div>
+            ) : (
+              <p className="text-center py-4 text-xs text-muted-foreground font-medium">Gagal memuat jadwal shalat</p>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
+
 
       <BottomNavigation />
     </div>

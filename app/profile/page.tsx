@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from "react";
-import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, isApiError, getErrorMessage } from "@/lib/api-client";
+import { useQuery } from "@tanstack/react-query";
+import { api, isApiError } from "@/lib/api-client";
+import { useAuth } from "@/hooks/use-auth";
 import { AuthError, NetworkError } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { useTheme } from "@/components/theme-provider";
@@ -36,10 +36,9 @@ import {
 } from "lucide-react";
 
 export default function Profile() {
-  const { data: session, status } = useSession()
+  const { user: sessionUser, status, isAuthenticated, logout } = useAuth()
   const router = useRouter()
   const { theme, toggleTheme } = useTheme();
-  const queryClient = useQueryClient();
 
   const [notifications, setNotifications] = useState(true);
   const [audioEnabled, setAudioEnabled] = useState(true);
@@ -52,7 +51,7 @@ export default function Profile() {
   } = useQuery({
     queryKey: ['user-profile'],
     queryFn: () => api.user.getProfile(),
-    enabled: status === 'authenticated' && !!session?.user?.id,
+    enabled: status === 'authenticated' && !!sessionUser?.id,
     retry: false
   });
 
@@ -63,7 +62,7 @@ export default function Profile() {
   } = useQuery({
     queryKey: ['user-bookmarks'],
     queryFn: () => api.bookmarks.getBookmarks(),
-    enabled: status === 'authenticated' && !!session?.user?.id,
+    enabled: status === 'authenticated' && !!sessionUser?.id,
     retry: false
   });
 
@@ -80,9 +79,9 @@ export default function Profile() {
   }
 
   // Use session data if logged in, otherwise use mock data
-  const user = session?.user ? {
-    username: userData?.name || session.user.name || 'User',
-    email: userData?.email || session.user.email || 'user@example.com',
+  const user = isAuthenticated ? {
+    username: userData?.name || sessionUser?.name || 'User',
+    email: userData?.email || sessionUser?.email || 'user@example.com',
     streak: userData?.streak || 0,
     dailyProgress: userData?.dailyProgress || 0
   } : {
@@ -93,19 +92,17 @@ export default function Profile() {
   }
 
   const handleSignOut = async () => {
-    await signOut({
-      callbackUrl: '/',
-      redirect: true
-    })
+    await logout()
+    router.push('/')
   }
 
   // Handle authentication errors
-  if (session && userError && isApiError(userError) && userError.status === 401) {
+  if (isAuthenticated && userError && isApiError(userError) && userError.status === 401) {
     return <AuthError />
   }
 
   // Handle network errors
-  if (session && userError && isApiError(userError) && userError.status === 0) {
+  if (isAuthenticated && userError && isApiError(userError) && userError.status === 0) {
     return <NetworkError onRetry={() => window.location.reload()} />
   }
 
@@ -124,7 +121,7 @@ export default function Profile() {
     },
     {
       label: "Progress Harian",
-      value: session ? `${user?.dailyProgress || 0}/5` : '-/5',
+      value: isAuthenticated ? `${user?.dailyProgress || 0}/5` : '-/5',
       icon: Calendar,
       color: "text-chart-1"
     }
@@ -151,7 +148,7 @@ export default function Profile() {
         <Switch
           checked={notifications}
           onCheckedChange={setNotifications}
-          disabled={!session}
+          disabled={!isAuthenticated}
           data-testid="notifications-toggle"
         />
       )
@@ -164,7 +161,7 @@ export default function Profile() {
         <Switch
           checked={audioEnabled}
           onCheckedChange={setAudioEnabled}
-          disabled={!session}
+          disabled={!isAuthenticated}
           data-testid="audio-toggle"
         />
       )
@@ -208,7 +205,7 @@ export default function Profile() {
           <Button
             variant="ghost"
             size="icon"
-            disabled={!session}
+            disabled={!isAuthenticated}
             data-testid="edit-profile"
           >
             <Edit className="w-5 h-5" />
@@ -222,11 +219,11 @@ export default function Profile() {
           <CardContent className="p-6">
             <div className="flex items-center space-x-4 mb-4">
               <Avatar className="w-16 h-16">
-                {session?.user?.image ? (
-                  <AvatarImage src={session.user.image} alt={session.user.name || 'User'} />
+                {sessionUser?.avatarUrl ? (
+                  <AvatarImage src={sessionUser.avatarUrl} alt={sessionUser.name || 'User'} />
                 ) : (
                   <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                    {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+                    {sessionUser?.name?.charAt(0).toUpperCase() || 'U'}
                   </AvatarFallback>
                 )}
               </Avatar>
@@ -237,7 +234,7 @@ export default function Profile() {
                 <p className="text-sm text-muted-foreground mb-2">
                   {user?.email}
                 </p>
-                {session ? (
+                {isAuthenticated ? (
                   <Badge variant="secondary">Pelajar Aktif</Badge>
                 ) : (
                   <Button
@@ -260,10 +257,10 @@ export default function Profile() {
                 return (
                   <div key={index} className="text-center">
                     <div className="flex justify-center mb-2">
-                      <IconComponent className={`w-5 h-5 ${session ? stat.color : 'text-muted-foreground'}`} />
+                      <IconComponent className={`w-5 h-5 ${isAuthenticated ? stat.color : 'text-muted-foreground'}`} />
                     </div>
-                    <div className={`text-lg font-bold ${session ? '' : 'text-muted-foreground'}`}>
-                      {session ? stat.value : '-'}
+                    <div className={`text-lg font-bold ${isAuthenticated ? '' : 'text-muted-foreground'}`}>
+                      {isAuthenticated ? stat.value : '-'}
                     </div>
                     <div className="text-xs text-muted-foreground">{stat.label}</div>
                   </div>
@@ -274,7 +271,7 @@ export default function Profile() {
         </Card>
 
         {/* Login CTA for non-logged in users */}
-        {!session && (
+        {!isAuthenticated && (
           <Card className="mb-6 border-primary/20 bg-primary/5">
             <CardContent className="p-6 text-center">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -297,7 +294,7 @@ export default function Profile() {
         )}
 
         {/* Bookmarks - only show if logged in and has bookmarks */}
-        {session && bookmarks.length > 0 && (
+        {isAuthenticated && bookmarks.length > 0 && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -398,7 +395,7 @@ export default function Profile() {
                 <h3 className="font-medium">Pengingat Harian</h3>
                 <p className="text-sm text-muted-foreground">Notifikasi untuk belajar rutin</p>
               </div>
-              <Switch defaultChecked disabled={!session} />
+              <Switch defaultChecked disabled={!isAuthenticated} />
             </div>
 
             <div className="flex items-center justify-between">
@@ -406,7 +403,7 @@ export default function Profile() {
                 <h3 className="font-medium">Auto-play Audio</h3>
                 <p className="text-sm text-muted-foreground">Mainkan audio secara otomatis</p>
               </div>
-              <Switch defaultChecked={false} disabled={!session} />
+              <Switch defaultChecked={false} disabled={!isAuthenticated} />
             </div>
 
             <div className="flex items-center justify-between">
@@ -414,7 +411,7 @@ export default function Profile() {
                 <h3 className="font-medium">Mode Tantangan</h3>
                 <p className="text-sm text-muted-foreground">Kuis dengan waktu terbatas</p>
               </div>
-              <Switch defaultChecked disabled={!session} />
+              <Switch defaultChecked disabled={!isAuthenticated} />
             </div>
           </CardContent>
         </Card>
@@ -450,7 +447,7 @@ export default function Profile() {
         </Card>
 
         {/* Achievements Preview - only show if logged in */}
-        {session && (
+        {isAuthenticated && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -480,7 +477,7 @@ export default function Profile() {
         )}
 
         {/* Sign Out - only show if logged in */}
-        {session && (
+        {isAuthenticated && (
           <Card className="border-destructive/20">
             <CardContent className="p-4">
               <Button

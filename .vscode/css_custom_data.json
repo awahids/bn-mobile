@@ -1,0 +1,29 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@tailwind",
+      "description": "Tailwind CSS directive to inject base, components, or utilities layers."
+    },
+    {
+      "name": "@apply",
+      "description": "Tailwind CSS directive to inline utility classes into a custom CSS rule."
+    },
+    {
+      "name": "@config",
+      "description": "Tailwind CSS directive to specify a config file for this stylesheet."
+    },
+    {
+      "name": "@screen",
+      "description": "Tailwind CSS directive to emit a media query for a configured breakpoint."
+    },
+    {
+      "name": "@variants",
+      "description": "Legacy Tailwind CSS directive for variant generation."
+    },
+    {
+      "name": "@responsive",
+      "description": "Legacy Tailwind CSS directive for responsive variants."
+    }
+  ]
+}
