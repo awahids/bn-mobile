@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const INTERNAL_API_ORIGIN = (process.env.INTERNAL_API_ORIGIN || 'http://43.157.213.220:8080')
+const INTERNAL_API_ORIGIN = (process.env.INTERNAL_API_ORIGIN || 'http://localhost:9001')
   .replace(/\/+$/, '')
   .replace(/\/api\/v1$/, '')
 

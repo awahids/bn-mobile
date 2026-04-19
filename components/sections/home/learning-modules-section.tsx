@@ -7,6 +7,9 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 interface LearningModulesSectionProps {
   stats: {
     hijaiyah: { completed: number; total: number; progress: number };
+    quran: { bookmarked: number; total: number; lastReadLabel: string };
+    dhikr: { todayCount: number; progress: number };
+    quiz: { bestScore: number; attempts: number };
   };
 }
 
@@ -47,7 +50,9 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
             <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Al-Qur&apos;an</h4>
             <p className="text-xs text-muted-foreground mb-4">114 Surah</p>
             <div className="flex items-center justify-between bg-accent/5 p-2 rounded-2xl">
-              <span className="text-[10px] font-black text-accent uppercase">Surah Al-Fatihah</span>
+              <span className="text-[10px] font-black text-accent uppercase">
+                {stats.quran.lastReadLabel}
+              </span>
               <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center p-1.5 shadow-sm">
                 <Bookmark className="text-white w-full h-full" />
               </div>
@@ -64,9 +69,9 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
             <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Dhikr</h4>
             <p className="text-xs text-muted-foreground mb-4">Pagi & Petang</p>
             <div className="flex items-center justify-between bg-chart-3/5 p-2 rounded-2xl">
-              <span className="text-[10px] font-black text-chart-3 uppercase">33x</span>
+              <span className="text-[10px] font-black text-chart-3 uppercase">{stats.dhikr.todayCount}x</span>
               <ProgressRing
-                progress={66}
+                progress={stats.dhikr.progress}
                 size={24}
                 className="text-chart-3"
               />
@@ -83,7 +88,9 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
             <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Kuis</h4>
             <p className="text-xs text-muted-foreground mb-4">4 Kategori</p>
             <div className="flex items-center justify-between bg-chart-4/5 p-2 rounded-2xl">
-              <span className="text-[10px] font-black text-chart-4 uppercase">Skor: 85%</span>
+              <span className="text-[10px] font-black text-chart-4 uppercase">
+                Skor: {stats.quiz.bestScore}%
+              </span>
               <div className="w-6 h-6 bg-chart-4 rounded-full flex items-center justify-center p-1.5 shadow-sm">
                 <Trophy className="text-white w-full h-full" />
               </div>

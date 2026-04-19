@@ -210,6 +210,73 @@ export const getSurahById = (id: number) => {
   return quranSurahs.find(surah => surah.id === id);
 };
 
+export interface QuranDisplayReference {
+  surahId: number | null;
+  ayahNumber: number | null;
+  title: string;
+  subtitle: string;
+  shortLabel: string;
+  progressPercent: number;
+  progressLabel: string;
+}
+
+export const parseQuranContentId = (contentId?: string | null) => {
+  if (!contentId) {
+    return { surahId: null, ayahNumber: null };
+  }
+
+  const [surahPart, ayahPart] = contentId.split(":");
+  const parsedSurahId = Number(surahPart);
+  const parsedAyah = ayahPart ? Number(ayahPart) : Number.NaN;
+
+  const surahId = Number.isFinite(parsedSurahId) && parsedSurahId > 0 ? parsedSurahId : null;
+  const ayahNumber = Number.isFinite(parsedAyah) && parsedAyah > 0 ? parsedAyah : null;
+
+  return { surahId, ayahNumber };
+};
+
+export const getQuranDisplayReference = (contentId?: string | null): QuranDisplayReference => {
+  const { surahId, ayahNumber } = parseQuranContentId(contentId);
+  if (!surahId) {
+    return {
+      surahId: null,
+      ayahNumber: null,
+      title: "Al-Qur'an",
+      subtitle: "Mulai dari surah pertama",
+      shortLabel: "Belum ada",
+      progressPercent: 0,
+      progressLabel: "0%",
+    };
+  }
+
+  const surah = getSurahById(surahId);
+  const surahName = surah?.name || `Surah ${surahId}`;
+  const totalAyahs = surah?.numberOfAyahs;
+
+  if (ayahNumber && totalAyahs) {
+    const progressPercent = Math.max(0, Math.min(100, Math.round((ayahNumber / totalAyahs) * 100)));
+    return {
+      surahId,
+      ayahNumber,
+      title: surahName,
+      subtitle: `Ayat ${ayahNumber} dari ${totalAyahs}`,
+      shortLabel: `${surahName} :${ayahNumber}`,
+      progressPercent,
+      progressLabel: `${ayahNumber}/${totalAyahs}`,
+    };
+  }
+
+  return {
+    surahId,
+    ayahNumber: null,
+    title: surahName,
+    subtitle: totalAyahs ? `Surah ${surahId} • ${totalAyahs} ayat` : `Surah ${surahId}`,
+    shortLabel: surahName,
+    progressPercent: 0,
+    progressLabel: "Tersimpan",
+  };
+};
+
 export const searchSurahs = (query: string) => {
   const searchTerm = query.toLowerCase();
   return quranSurahs.filter(surah => 

@@ -1,12 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api, isApiError } from "@/lib/api-client";
+import {
+  api,
+  isApiError,
+  type Bookmark,
+  type DhikrCounter,
+  type PrayerTimes,
+  type QuizAttempt,
+  type QuizStats,
+  type UserProgress,
+} from "@/lib/api-client";
 import { NetworkError } from "@/components/shared/error-boundary";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
 import { usePrefetchByContext } from "@/lib/prefetch";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
+import { useAuth } from "@/hooks/use-auth";
+import { hijaiyahLetters } from "@/data/hijaiyah";
+import { getQuranDisplayReference } from "@/data/quran";
+import { getDhikrById } from "@/data/dhikr";
+import { getQuizCategoryById } from "@/data/quiz";
 
 // Section Components
 import { HeroSection } from "@/components/sections/home/hero-section";
@@ -16,30 +30,238 @@ import { RecentActivitySection } from "@/components/sections/home/recent-activit
 import { PrayerTimesSection } from "@/components/sections/home/prayer-times-section";
 
 const DEFAULT_COORDS = { lat: -6.2, lng: 106.8167 }; // Jakarta fallback
+const PRAYER_COORDS_STORAGE_KEY = "bn_prayer_coords_v1";
+const PRAYER_TIMES_STORAGE_KEY = "bn_prayer_times_v1";
+
+type ActivityType = "hijaiyah" | "quran" | "dhikr" | "quiz";
+type LocationStatus = "idle" | "loading" | "denied" | "unsupported";
+type Coordinates = { lat: number; lng: number };
+
+interface PrayerTimesCachePayload {
+  dateKey: string;
+  coords: Coordinates;
+  data: PrayerTimes;
+}
+
+function clampPercentage(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function toLocalDateKey(date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function toTimestamp(value: unknown): number {
+  if (!value) return 0;
+  const parsed = new Date(value as string).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function formatRelativeTime(value: unknown): string {
+  const timestamp = toTimestamp(value);
+  if (!timestamp) return "Baru saja";
+
+  const diffMs = Date.now() - timestamp;
+  if (diffMs < 60_000) return "Baru saja";
+
+  const diffMinutes = Math.floor(diffMs / 60_000);
+  if (diffMinutes < 60) return `${diffMinutes} menit lalu`;
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours} jam lalu`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays} hari lalu`;
+
+  return new Date(timestamp).toLocaleDateString("id-ID");
+}
+
+function isCoordinates(value: unknown): value is Coordinates {
+  if (!value || typeof value !== "object") return false;
+  const coords = value as Partial<Coordinates>;
+  return (
+    typeof coords.lat === "number" &&
+    Number.isFinite(coords.lat) &&
+    coords.lat >= -90 &&
+    coords.lat <= 90 &&
+    typeof coords.lng === "number" &&
+    Number.isFinite(coords.lng) &&
+    coords.lng >= -180 &&
+    coords.lng <= 180
+  );
+}
+
+function isPrayerTimes(value: unknown): value is PrayerTimes {
+  if (!value || typeof value !== "object") return false;
+  const times = value as Partial<PrayerTimes>;
+
+  return (
+    typeof times.fajr === "string" &&
+    typeof times.sunrise === "string" &&
+    typeof times.dhuhr === "string" &&
+    typeof times.asr === "string" &&
+    typeof times.maghrib === "string" &&
+    typeof times.isha === "string" &&
+    typeof times.date === "string" &&
+    !!times.location &&
+    typeof times.location === "object"
+  );
+}
+
+function areCoordsEqual(a: Coordinates, b: Coordinates): boolean {
+  return Math.abs(a.lat - b.lat) < 0.0001 && Math.abs(a.lng - b.lng) < 0.0001;
+}
+
+function formatCoordsLabel(coords: Coordinates): string {
+  if (areCoordsEqual(coords, DEFAULT_COORDS)) {
+    return "Jakarta (default)";
+  }
+  return `Lat ${coords.lat.toFixed(2)}, Lng ${coords.lng.toFixed(2)}`;
+}
+
+function getLocationLabel(prayerTimes: PrayerTimes | null | undefined, coords: Coordinates): string {
+  if (prayerTimes?.location) {
+    const loc = prayerTimes.location;
+    const place =
+      loc.label ||
+      [loc.city, loc.district].filter(Boolean).join(", ") ||
+      [loc.city, loc.country].filter(Boolean).join(", ");
+    return place || "Lokasi terkini";
+  }
+
+  return formatCoordsLabel(coords);
+}
+
+function readStoredCoords(): Coordinates | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(PRAYER_COORDS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    return isCoordinates(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredCoords(coords: Coordinates) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(PRAYER_COORDS_STORAGE_KEY, JSON.stringify(coords));
+  } catch {
+    // Ignore storage write errors.
+  }
+}
+
+function readStoredPrayerTimes(todayKey: string, coords: Coordinates): PrayerTimes | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(PRAYER_TIMES_STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as Partial<PrayerTimesCachePayload>;
+    if (
+      typeof parsed.dateKey !== "string" ||
+      parsed.dateKey !== todayKey ||
+      !isCoordinates(parsed.coords) ||
+      !areCoordsEqual(parsed.coords, coords) ||
+      !isPrayerTimes(parsed.data)
+    ) {
+      return null;
+    }
+
+    return parsed.data;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredPrayerTimes(todayKey: string, coords: Coordinates, prayerTimes: PrayerTimes) {
+  if (typeof window === "undefined") return;
+
+  try {
+    const payload: PrayerTimesCachePayload = {
+      dateKey: todayKey,
+      coords,
+      data: prayerTimes,
+    };
+    window.localStorage.setItem(PRAYER_TIMES_STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // Ignore storage write errors.
+  }
+}
 
 export function HomePageContent() {
+  const { status } = useAuth();
+  const isAuthenticated = status === "authenticated";
+  const todayKey = useMemo(() => toLocalDateKey(), []);
+
   // Prefetch learning routes since users are likely to navigate to them from home
   usePrefetchByContext('home');
 
-  // Mock stats data
-  const stats = {
-    hijaiyah: { completed: 12, total: 28, progress: 43 }
-  };
-
-  const [coords, setCoords] = useState(DEFAULT_COORDS);
+  const [coords, setCoords] = useState<Coordinates>(DEFAULT_COORDS);
   const [locationLabel, setLocationLabel] = useState("Jakarta (default)");
-  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "denied" | "unsupported">("idle");
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
+  const [cachedPrayerTimes, setCachedPrayerTimes] = useState<{
+    coords: Coordinates;
+    data: PrayerTimes;
+  } | null>(null);
+  const [isPrayerStorageHydrated, setIsPrayerStorageHydrated] = useState(false);
+
+  useEffect(() => {
+    const storedCoords = readStoredCoords() ?? DEFAULT_COORDS;
+    const storedPrayerTimes = readStoredPrayerTimes(todayKey, storedCoords);
+
+    setCoords(storedCoords);
+    setLocationLabel(getLocationLabel(storedPrayerTimes, storedCoords));
+    setCachedPrayerTimes(
+      storedPrayerTimes
+        ? {
+            coords: storedCoords,
+            data: storedPrayerTimes,
+          }
+        : null
+    );
+    setIsPrayerStorageHydrated(true);
+  }, [todayKey]);
 
   // Prayer times query
   const {
-    data: prayerTimes,
-    isLoading: prayerTimesLoading,
-  } = useQuery({
-    queryKey: ['prayer-times', coords.lat, coords.lng],
+    data: fetchedPrayerTimes,
+    isLoading: prayerTimesQueryLoading,
+  } = useQuery<PrayerTimes>({
+    queryKey: ['prayer-times', todayKey, coords.lat, coords.lng],
     queryFn: () => api.utility.getPrayerTimes(coords),
+    enabled: isPrayerStorageHydrated,
     staleTime: 1000 * 60 * 60, // 1 hour
     retry: 1
   });
+  const prayerTimes =
+    fetchedPrayerTimes ||
+    (cachedPrayerTimes && areCoordsEqual(cachedPrayerTimes.coords, coords)
+      ? cachedPrayerTimes.data
+      : null);
+  const prayerTimesLoading = !prayerTimes && (!isPrayerStorageHydrated || prayerTimesQueryLoading);
+
+  useEffect(() => {
+    if (!isPrayerStorageHydrated) return;
+    saveStoredCoords(coords);
+  }, [coords, isPrayerStorageHydrated]);
+
+  useEffect(() => {
+    if (!fetchedPrayerTimes || !isPrayerStorageHydrated) return;
+    saveStoredPrayerTimes(todayKey, coords, fetchedPrayerTimes);
+    setCachedPrayerTimes({
+      coords,
+      data: fetchedPrayerTimes,
+    });
+  }, [coords, fetchedPrayerTimes, isPrayerStorageHydrated, todayKey]);
 
   // User data query
   const {
@@ -48,7 +270,43 @@ export function HomePageContent() {
   } = useQuery({
     queryKey: ['user-profile'],
     queryFn: () => api.user.getProfile(),
+    enabled: isAuthenticated,
     retry: false
+  });
+
+  const { data: progressData = [] } = useQuery<UserProgress[]>({
+    queryKey: ["home-progress"],
+    queryFn: () => api.progress.getProgress(),
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
+  const { data: quranBookmarks = [] } = useQuery<Bookmark[]>({
+    queryKey: ["home-bookmarks", "quran"],
+    queryFn: () => api.bookmarks.getBookmarks("quran"),
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
+  const { data: quizStats } = useQuery<QuizStats>({
+    queryKey: ["home-quiz-stats"],
+    queryFn: () => api.quiz.getStats(),
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
+  const { data: quizAttempts = [] } = useQuery<QuizAttempt[]>({
+    queryKey: ["home-quiz-attempts"],
+    queryFn: () => api.quiz.getAttempts(),
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
+  const { data: dhikrCounters = [] } = useQuery<DhikrCounter[]>({
+    queryKey: ["home-dhikr-counters", todayKey],
+    queryFn: () => api.dhikr.getCounters(todayKey),
+    enabled: isAuthenticated && !!todayKey,
+    retry: false,
   });
 
   const [nextPrayer, setNextPrayer] = useState<{ name: string; timeLeft: string }>({
@@ -93,15 +351,7 @@ export function HomePageContent() {
   }, [prayerTimes]);
 
   useEffect(() => {
-    if (prayerTimes?.location) {
-      const loc = prayerTimes.location;
-      const place = loc.label ||
-        [loc.city, loc.district].filter(Boolean).join(", ") ||
-        [loc.city, loc.country].filter(Boolean).join(", ");
-      setLocationLabel(place || "Lokasi terkini");
-    } else if (coords) {
-      setLocationLabel(`Lat ${coords.lat.toFixed(2)}, Lng ${coords.lng.toFixed(2)}`);
-    }
+    setLocationLabel(getLocationLabel(prayerTimes, coords));
   }, [prayerTimes, coords]);
 
   const requestLocation = useCallback(() => {
@@ -125,6 +375,165 @@ export function HomePageContent() {
     );
   }, []);
 
+  const hijaiyahProgress = useMemo(
+    () => progressData.filter((item) => item.module === "hijaiyah"),
+    [progressData]
+  );
+  const quranProgress = useMemo(
+    () => progressData.filter((item) => item.module === "quran"),
+    [progressData]
+  );
+
+  const learningStats = useMemo(() => {
+    const hijaiyahCompleted = hijaiyahProgress.filter((item) => item.completed).length;
+    const hijaiyahProgressPercent = clampPercentage((hijaiyahCompleted / 28) * 100);
+
+    const latestQuranProgress = [...quranProgress]
+      .sort((a, b) => toTimestamp(b.lastAccessed) - toTimestamp(a.lastAccessed))[0];
+    const latestQuranBookmark = quranBookmarks[0];
+
+    const latestQuranContentId =
+      toTimestamp(latestQuranProgress?.lastAccessed) >= toTimestamp(latestQuranBookmark?.createdAt)
+        ? latestQuranProgress?.itemId
+        : latestQuranBookmark?.contentId;
+    const quranReference = getQuranDisplayReference(latestQuranContentId);
+
+    const totalDhikrCount = dhikrCounters.reduce((sum, item) => sum + (item.count || 0), 0);
+    const totalDhikrTarget = dhikrCounters.reduce((sum, item) => sum + (item.target || 0), 0);
+    const dhikrProgressPercent =
+      totalDhikrTarget > 0 ? clampPercentage((totalDhikrCount / totalDhikrTarget) * 100) : 0;
+
+    const quizBestScore = quizStats?.bestScore ?? Math.max(...quizAttempts.map((item) => item.score || 0), 0);
+    const totalQuizAttempts = quizStats?.totalAttempts ?? quizAttempts.length;
+
+    return {
+      hijaiyah: {
+        completed: hijaiyahCompleted,
+        total: 28,
+        progress: hijaiyahProgressPercent,
+      },
+      quran: {
+        bookmarked: quranBookmarks.length,
+        total: 114,
+        lastReadLabel: quranReference.shortLabel,
+      },
+      dhikr: {
+        todayCount: totalDhikrCount,
+        progress: dhikrProgressPercent,
+      },
+      quiz: {
+        bestScore: clampPercentage(quizBestScore),
+        attempts: totalQuizAttempts,
+      },
+    };
+  }, [dhikrCounters, hijaiyahProgress, quranBookmarks, quranProgress, quizAttempts, quizStats]);
+
+  const continueLearningItems = useMemo(() => {
+    const latestHijaiyah = [...hijaiyahProgress]
+      .sort((a, b) => toTimestamp(b.lastAccessed) - toTimestamp(a.lastAccessed))[0];
+    const latestQuranProgress = [...quranProgress]
+      .sort((a, b) => toTimestamp(b.lastAccessed) - toTimestamp(a.lastAccessed))[0];
+    const latestQuranBookmark = quranBookmarks[0];
+
+    const hijaiyahLetter = hijaiyahLetters.find((item) => item.id === latestHijaiyah?.itemId) || hijaiyahLetters[0];
+    const hijaiyahPercent = clampPercentage(latestHijaiyah?.progress ?? 0);
+
+    const latestQuranContentId =
+      toTimestamp(latestQuranProgress?.lastAccessed) >= toTimestamp(latestQuranBookmark?.createdAt)
+        ? latestQuranProgress?.itemId
+        : latestQuranBookmark?.contentId;
+    const quranReference = getQuranDisplayReference(latestQuranContentId);
+    const quranPercent = clampPercentage(
+      latestQuranProgress?.progress ?? quranReference.progressPercent
+    );
+
+    return [
+      {
+        id: "continue-hijaiyah",
+        href: "/hijaiyah",
+        title: `Huruf ${hijaiyahLetter.name} (${hijaiyahLetter.arabic})`,
+        subtitle: latestHijaiyah?.completed
+          ? "Sudah selesai, lanjut huruf berikutnya"
+          : "Pelajari cara menulis dan pengucapan",
+        progressPercent: hijaiyahPercent,
+        progressLabel: `${hijaiyahPercent}%`,
+        iconText: hijaiyahLetter.arabic,
+        iconType: "hijaiyah" as const,
+      },
+      {
+        id: "continue-quran",
+        href: "/quran",
+        title: quranReference.title,
+        subtitle: quranReference.subtitle,
+        progressPercent: quranPercent,
+        progressLabel:
+          latestQuranProgress?.progress !== undefined
+            ? `${quranPercent}%`
+            : quranReference.progressLabel,
+        iconType: "quran" as const,
+      },
+    ];
+  }, [hijaiyahProgress, quranBookmarks, quranProgress]);
+
+  const recentActivities = useMemo(() => {
+    if (!isAuthenticated) return [] as { id: string; title: string; timeLabel: string; type: ActivityType }[];
+
+    const progressActivities = progressData.map((item) => {
+      let title = "Aktivitas belajar";
+
+      if (item.module === "hijaiyah") {
+        const letter = hijaiyahLetters.find((letterItem) => letterItem.id === item.itemId);
+        title = item.completed
+          ? `Menyelesaikan huruf ${letter?.name || item.itemId}`
+          : `Belajar huruf ${letter?.name || item.itemId}`;
+      } else if (item.module === "quran") {
+        const reference = getQuranDisplayReference(item.itemId);
+        title = `Membaca ${reference.title}`;
+      } else if (item.module === "dhikr") {
+        const dhikr = getDhikrById(item.itemId);
+        title = `Dhikr ${dhikr?.translation || item.itemId}`;
+      } else if (item.module === "quiz") {
+        const category = getQuizCategoryById(item.itemId);
+        title = `Kuis ${category?.name || item.itemId}`;
+      }
+
+      return {
+        id: `progress-${item.module}-${item.itemId}-${toTimestamp(item.lastAccessed)}`,
+        title,
+        type: item.module as ActivityType,
+        timeLabel: formatRelativeTime(item.lastAccessed),
+        timestamp: toTimestamp(item.lastAccessed),
+      };
+    });
+
+    const quizActivities = quizAttempts.map((attempt) => {
+      const category = getQuizCategoryById(attempt.category);
+      return {
+        id: `quiz-${attempt.id}`,
+        title: `Kuis ${category?.name || attempt.category} - Skor ${attempt.score}%`,
+        type: "quiz" as const,
+        timeLabel: formatRelativeTime(attempt.completedAt),
+        timestamp: toTimestamp(attempt.completedAt),
+      };
+    });
+
+    const bookmarkActivities = quranBookmarks.map((bookmark) => {
+      const reference = getQuranDisplayReference(bookmark.contentId);
+      return {
+        id: `bookmark-${bookmark.id}`,
+        title: `Menyimpan ${reference.title}`,
+        type: "quran" as const,
+        timeLabel: formatRelativeTime(bookmark.createdAt),
+        timestamp: toTimestamp(bookmark.createdAt),
+      };
+    });
+
+    return [...progressActivities, ...quizActivities, ...bookmarkActivities]
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 3)
+      .map(({ id, title, type, timeLabel }) => ({ id, title, type, timeLabel }));
+  }, [isAuthenticated, progressData, quranBookmarks, quizAttempts]);
+
   // Handle critical errors
   if (userError && isApiError(userError) && userError.status === 0) {
     return <NetworkError onRetry={() => window.location.reload()} />
@@ -134,11 +543,11 @@ export function HomePageContent() {
     <MobilePageShell>
       <HeroSection user={user} />
       
-      <LearningModulesSection stats={stats} />
+      <LearningModulesSection stats={learningStats} />
 
-      <ContinueLearningSection />
+      <ContinueLearningSection items={continueLearningItems} />
 
-      <RecentActivitySection />
+      <RecentActivitySection activities={recentActivities} />
 
       <PrayerTimesSection 
         prayerTimes={prayerTimes}
