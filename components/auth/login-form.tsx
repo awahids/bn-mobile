@@ -2,12 +2,10 @@
 
 import Script from "next/script"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AlertCircle } from "lucide-react"
-import { getErrorMessage } from "@/lib/api-core"
-import { useAuth } from "@/hooks/use-auth"
 
 declare global {
   interface Window {
@@ -21,7 +19,14 @@ interface LoginFormProps {
   description?: string
 }
 
-const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+const googleScope = "openid email profile"
+
+function sanitizeCallbackUrl(callbackUrl: string): string {
+  if (!callbackUrl.startsWith("/") || callbackUrl.startsWith("//")) {
+    return "/"
+  }
+  return callbackUrl
+}
 
 export function LoginForm({
   callbackUrl = "/",
@@ -29,52 +34,69 @@ export function LoginForm({
   description,
 }: LoginFormProps) {
   const router = useRouter()
-  const { loginWithGoogleIdToken } = useAuth()
-  const buttonRef = useRef<HTMLDivElement>(null)
+  const safeCallbackUrl = useMemo(
+    () => sanitizeCallbackUrl(callbackUrl),
+    [callbackUrl]
+  )
+  const codeClientRef = useRef<any>(null)
+  const [hydrated, setHydrated] = useState(false)
+  const [googleClientId, setGoogleClientId] = useState<string | null>(null)
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isGoogleReady, setIsGoogleReady] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!scriptLoaded || !buttonRef.current || !window.google || !googleClientId) {
+    setHydrated(true)
+    setGoogleClientId(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || null)
+  }, [])
+
+  useEffect(() => {
+    if (!scriptLoaded || !window.google || !googleClientId) {
+      setIsGoogleReady(false)
       return
     }
 
-    const element = buttonRef.current
-    element.innerHTML = ""
+    try {
+      codeClientRef.current = window.google.accounts.oauth2.initCodeClient({
+        client_id: googleClientId,
+        scope: googleScope,
+        ux_mode: "redirect",
+        redirect_uri: `${window.location.origin}/auth/callback`,
+        state: JSON.stringify({ callbackUrl: safeCallbackUrl }),
+      })
 
-    window.google.accounts.id.initialize({
-      client_id: googleClientId,
-      callback: async (response: { credential?: string }) => {
-        if (!response?.credential) {
-          setError("Google tidak mengembalikan ID token.")
-          return
-        }
+      setIsGoogleReady(true)
+      setError(null)
+    } catch {
+      codeClientRef.current = null
+      setIsGoogleReady(false)
+      setError("Google OAuth gagal diinisialisasi.")
+    }
+  }, [googleClientId, safeCallbackUrl, scriptLoaded])
 
-        try {
-          setIsSubmitting(true)
-          setError(null)
-          await loginWithGoogleIdToken(response.credential)
-          router.push(callbackUrl)
-        } catch (err) {
-          setError(getErrorMessage(err))
-        } finally {
-          setIsSubmitting(false)
-        }
-      },
-      auto_select: false,
-      cancel_on_tap_outside: true,
-      use_fedcm_for_prompt: true,
-    })
+  const handleGoogleLogin = () => {
+    if (!googleClientId) {
+      setError("`NEXT_PUBLIC_GOOGLE_CLIENT_ID` belum diset.")
+      return
+    }
 
-    window.google.accounts.id.renderButton(element, {
-      theme: "outline",
-      size: "large",
-      shape: "pill",
-      text: "continue_with",
-      width: 320,
-    })
-  }, [callbackUrl, loginWithGoogleIdToken, router, scriptLoaded])
+    if (!codeClientRef.current) {
+      setError("Google OAuth belum siap, coba beberapa detik lagi.")
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      setError(null)
+      codeClientRef.current.requestCode()
+    } catch {
+      setIsSubmitting(false)
+      setError("Gagal memulai login Google.")
+    }
+  }
+
+  const hasGoogleClientId = !!googleClientId
 
   return (
     <div className="w-full">
@@ -85,24 +107,24 @@ export function LoginForm({
       />
 
       {title && (
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-bold text-foreground mb-2">{title}</h2>
+        <div className="mb-6 text-center">
+          <h2 className="mb-2 text-xl font-bold text-foreground">{title}</h2>
           {description && <p className="text-sm text-muted-foreground">{description}</p>}
         </div>
       )}
 
       <Card className="border border-border/60 shadow-sm">
-        <CardContent className="p-6 space-y-5">
+        <CardContent className="space-y-5 p-6">
           <div className="text-center">
             <h3 className="text-lg font-semibold">Masuk dengan Google</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Autentikasi sekarang diproses oleh backend Golang.
-            </p>
+            {/* <p className="mt-1 text-sm text-muted-foreground">
+              Login menggunakan Google OAuth 2.0 (authorization code flow).
+            </p> */}
           </div>
 
-          {!googleClientId && (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 mt-0.5" />
+          {hydrated && !hasGoogleClientId && (
+            <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              <AlertCircle className="mt-0.5 h-4 w-4" />
               <span>`NEXT_PUBLIC_GOOGLE_CLIENT_ID` belum diset.</span>
             </div>
           )}
@@ -113,14 +135,17 @@ export function LoginForm({
             </div>
           )}
 
-          <div className="flex justify-center">
-            <div ref={buttonRef} />
-          </div>
+          <Button
+            type="button"
+            className="w-full"
+            onClick={handleGoogleLogin}
+            disabled={isSubmitting || !hydrated || !hasGoogleClientId}
+          >
+            {isSubmitting ? "Mengalihkan ke Google..." : "Lanjutkan dengan Google"}
+          </Button>
 
-          {isSubmitting && (
-            <div className="text-center text-sm text-muted-foreground">
-              Memproses login...
-            </div>
+          {scriptLoaded && !isGoogleReady && hasGoogleClientId && (
+            <p className="text-center text-xs text-muted-foreground">Menyiapkan Google OAuth...</p>
           )}
 
           <Button
@@ -134,9 +159,9 @@ export function LoginForm({
         </CardContent>
       </Card>
 
-      <div className="text-center text-xs text-muted-foreground mt-4">
+      <div className="mt-4 text-center text-xs text-muted-foreground">
         Dengan masuk, Anda menyetujui{" "}
-        <button className="underline hover:text-foreground transition-colors" type="button">
+        <button className="underline transition-colors hover:text-foreground" type="button">
           syarat dan ketentuan
         </button>{" "}
         aplikasi
@@ -144,4 +169,3 @@ export function LoginForm({
     </div>
   )
 }
-

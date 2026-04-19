@@ -1,0 +1,90 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import { LazyBottomNavigation } from "@/components/lazy";
+import { useAuth } from "@/hooks/use-auth";
+import { quizCategories } from "@/data/quiz";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MobilePageShell } from "@/components/page-atoms/mobile-page-shell";
+import { StickyPageHeader } from "@/components/page-atoms/sticky-page-header";
+import { CategoryIcon } from "./category-icon";
+
+export function QuizCategoryPageContent() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <MobilePageShell>
+      <StickyPageHeader
+        title="Kuis Islam"
+        subtitle="Pilih kategori kuis"
+        leftSlot={
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push("/")}
+            data-testid="back-button"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        }
+      />
+
+      <section className="p-4 pb-24">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-2">Pilih Kategori Kuis</h2>
+          <p className="text-sm text-muted-foreground">
+            Kategori dipilih dulu, lalu lanjut ke halaman mulai kuis.
+          </p>
+        </div>
+
+        {!isAuthenticated && (
+          <Card className="mb-4 border-primary/20 bg-primary/5">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-3">
+                Mode tamu aktif. Skor kuis tidak disimpan ke akun.
+              </p>
+              <Button size="sm" onClick={() => router.push("/login?callbackUrl=/quiz")}>
+                Masuk untuk simpan skor
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid grid-cols-1 gap-4">
+          {quizCategories.map((category) => (
+            <Card
+              key={category.id}
+              className="cursor-pointer hover:shadow-md transition-all card-hover"
+              onClick={() => router.push(`/quiz/start/${category.id}`)}
+              data-testid={`category-${category.id}`}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div
+                    className={`w-16 h-16 bg-${category.color}/20 rounded-xl flex items-center justify-center`}
+                  >
+                    <CategoryIcon icon={category.icon} className={`w-8 h-8 text-${category.color}`} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
+                    <div className="flex items-center justify-between">
+                      <Badge variant="secondary">10 Soal</Badge>
+                      <Badge variant="outline">Lanjut ke Mulai Kuis</Badge>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <LazyBottomNavigation />
+    </MobilePageShell>
+  );
+}

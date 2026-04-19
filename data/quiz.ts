@@ -473,3 +473,14 @@ export const quizCategories = [
     color: 'chart-4'
   }
 ] as const;
+
+export type QuizCategory = (typeof quizCategories)[number];
+export type QuizCategoryId = QuizCategory["id"];
+
+export const isQuizCategoryId = (value: string): value is QuizCategoryId => {
+  return quizCategories.some((category) => category.id === value);
+};
+
+export const getQuizCategoryById = (categoryId: string): QuizCategory | undefined => {
+  return quizCategories.find((category) => category.id === categoryId);
+};

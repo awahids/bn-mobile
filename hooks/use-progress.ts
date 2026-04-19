@@ -5,10 +5,17 @@ import type { CreateProgressData, UserProgress } from "@/lib/api-core"
 
 type Module = UserProgress["module"]
 
-export function useProgress(module?: Module) {
+interface ProgressQueryOptions {
+  enabled?: boolean
+}
+
+export function useProgress(module?: Module, options: ProgressQueryOptions = {}) {
+  const { enabled = true } = options
+
   return useQuery<UserProgress[]>({
     queryKey: ["progress", module ?? "all"],
     queryFn: () => api.progress.getProgress(module),
+    enabled,
     retry: false,
   })
 }

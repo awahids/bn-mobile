@@ -249,6 +249,10 @@ export interface AuthLoginResponse {
   tokens: AuthTokenResponse
 }
 
+interface RefreshOptions {
+  emitEvent?: boolean
+}
+
 export const authApi = {
   loginWithGoogle: async (idToken: string): Promise<AuthLoginResponse> => {
     const data = await post<AuthLoginResponse>(
@@ -262,11 +266,28 @@ export const authApi = {
     }
     return data
   },
-  refresh: async (): Promise<AuthTokenResponse> => {
+  loginWithGoogleOAuthCode: async (
+    code: string,
+    redirectUri: string
+  ): Promise<AuthLoginResponse> => {
+    const data = await post<AuthLoginResponse>(
+      "/auth/google/oauth",
+      { code, redirectUri },
+      false
+    )
+    if (data?.tokens?.accessToken) {
+      setAccessToken(data.tokens.accessToken)
+      emitAuthStateChanged("login")
+    }
+    return data
+  },
+  refresh: async (options: RefreshOptions = {}): Promise<AuthTokenResponse> => {
     const data = await post<AuthTokenResponse>("/auth/refresh", undefined, false)
     if (data?.accessToken) {
       setAccessToken(data.accessToken)
-      emitAuthStateChanged("refresh")
+      if (options.emitEvent !== false) {
+        emitAuthStateChanged("refresh")
+      }
     }
     return data
   },
@@ -419,7 +440,15 @@ export interface CreateQuizAttemptData {
   score: number
   totalQuestions: number
   timeSpent: number
-  answers: any[]
+  answers: QuizAnswer[]
+}
+
+export interface QuizAnswer {
+  questionId: string
+  userAnswer: string
+  correctAnswer: string
+  isCorrect: boolean
+  timeSpent?: number
 }
 
 export interface QuizStats {
@@ -563,4 +592,3 @@ export async function withRetry<T>(
 }
 
 export default api
-

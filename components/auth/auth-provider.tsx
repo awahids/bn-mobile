@@ -15,6 +15,7 @@ interface AuthContextValue {
   status: AuthStatus
   isAuthenticated: boolean
   loginWithGoogleIdToken: (idToken: string) => Promise<void>
+  loginWithGoogleOAuthCode: (code: string, redirectUri: string) => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
 }
@@ -37,8 +38,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading")
 
   const refreshUser = async () => {
-    const token = getAccessToken()
+    let token = getAccessToken()
     if (!token) {
+      try {
+        const refreshed = await api.auth.refresh({ emitEvent: false })
+        token = refreshed?.accessToken
+      } catch {
+        // Ignore: missing/expired refresh cookie should settle to unauthenticated.
+      }
+    }
+
+    if (!token) {
+      clearAccessToken()
       setUser(null)
       setStatus("unauthenticated")
       return
@@ -50,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setStatus("authenticated")
     } catch {
       try {
-        await api.auth.refresh()
+        await api.auth.refresh({ emitEvent: false })
         const me = await api.auth.me()
         setUser(toAuthUser(me))
         setStatus("authenticated")
@@ -93,6 +104,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(toAuthUser(result.user))
         setStatus("authenticated")
       },
+      loginWithGoogleOAuthCode: async (code: string, redirectUri: string) => {
+        const result = await api.auth.loginWithGoogleOAuthCode(code, redirectUri)
+        setUser(toAuthUser(result.user))
+        setStatus("authenticated")
+      },
       logout: async () => {
         await api.auth.logout()
         setUser(null)
@@ -112,4 +128,3 @@ export function useAuth() {
   }
   return context
 }
-
