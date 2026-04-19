@@ -11,7 +11,7 @@ import {
   setAccessToken,
 } from "./auth-storage"
 
-const DEFAULT_API_BASE_URL = "http://localhost:8080/api/v1"
+const DEFAULT_API_BASE_URL = "http://43.157.213.220:8080/api/v1"
 const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   process.env.API_BASE_URL ||
@@ -175,7 +175,7 @@ async function apiRequest<T = any>(
     if (response.status === 401 && requireAuth) {
       const refreshedToken = await refreshAccessToken()
       if (refreshedToken) {
-        ;({ response, payload } = await executeRequest(refreshedToken))
+        ; ({ response, payload } = await executeRequest(refreshedToken))
       }
     }
 
@@ -202,8 +202,7 @@ async function apiRequest<T = any>(
 
     throw new ApiError(
       500,
-      `Unexpected error: ${
-        error instanceof Error ? error.message : "Unknown error"
+      `Unexpected error: ${error instanceof Error ? error.message : "Unknown error"
       }`
     )
   }
