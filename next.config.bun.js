@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+const INTERNAL_API_ORIGIN = (process.env.INTERNAL_API_ORIGIN || 'http://43.157.213.220:8080')
+  .replace(/\/+$/, '')
+  .replace(/\/api\/v1$/, '')
+
 const nextConfig = {
   // Configure for serverless deployment
   output: 'standalone',
@@ -134,6 +138,16 @@ const nextConfig = {
   // Environment variables
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
+
+  // Proxy public API calls through Next.js to prevent browser mixed-content errors.
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: `${INTERNAL_API_ORIGIN}/api/v1/:path*`,
+      },
+    ]
   },
 
   // Headers for CORS and security

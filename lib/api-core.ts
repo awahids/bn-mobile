@@ -11,12 +11,53 @@ import {
   setAccessToken,
 } from "./auth-storage"
 
-const DEFAULT_API_BASE_URL = "43.157.213.220:8080/api/v1"
-const API_BASE_URL = (
+const DEFAULT_API_BASE_URL = "/api/v1"
+
+function isHostWithoutProtocol(value: string): boolean {
+  return (
+    /^localhost(?::\d+)?(?:\/.*)?$/i.test(value) ||
+    /^\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?(?:\/.*)?$/.test(value) ||
+    /^[a-z0-9-]+(?:\.[a-z0-9-]+)+(?::\d+)?(?:\/.*)?$/i.test(value)
+  )
+}
+
+function normalizeApiBaseUrl(rawBaseUrl: string): string {
+  const baseUrl = rawBaseUrl.trim().replace(/\/+$/, "")
+  if (!baseUrl) {
+    return DEFAULT_API_BASE_URL
+  }
+
+  const runtimeProtocol =
+    typeof window !== "undefined" ? window.location.protocol : "http:"
+  const isHttpsPage =
+    typeof window !== "undefined" && window.location.protocol === "https:"
+
+  if (baseUrl.startsWith("//")) {
+    return `${runtimeProtocol}${baseUrl}`
+  }
+  if (baseUrl.startsWith("/")) {
+    return baseUrl
+  }
+  if (baseUrl.startsWith("https://")) {
+    return baseUrl
+  }
+  if (baseUrl.startsWith("http://")) {
+    // Avoid mixed-content errors when the app is loaded over HTTPS.
+    return isHttpsPage ? DEFAULT_API_BASE_URL : baseUrl
+  }
+  if (isHostWithoutProtocol(baseUrl)) {
+    // Host-only values (e.g. 43.157.213.220:8080/api/v1) are unsafe on HTTPS pages.
+    return isHttpsPage ? DEFAULT_API_BASE_URL : `${runtimeProtocol}//${baseUrl}`
+  }
+
+  return DEFAULT_API_BASE_URL
+}
+
+const API_BASE_URL = normalizeApiBaseUrl(
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  process.env.API_BASE_URL ||
-  DEFAULT_API_BASE_URL
-).replace(/\/$/, "")
+    process.env.API_BASE_URL ||
+    DEFAULT_API_BASE_URL
+)
 
 // ==================== TYPES ====================
 
