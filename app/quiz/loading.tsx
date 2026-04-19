@@ -4,7 +4,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
-import { BottomNavigation } from "@/components/bottom-navigation"
+import { BottomNavigation } from "@/components/shared/bottom-navigation"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 

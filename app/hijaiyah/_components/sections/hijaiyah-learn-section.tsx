@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { HijaiyahLetter } from "@/data/hijaiyah";
-import type { WritingCanvasRef } from "@/components/writing-canvas";
+import type { WritingCanvasRef } from "@/components/features/hijaiyah/writing-canvas";
 
 interface HijaiyahLearnSectionProps {
   selectedLetter: HijaiyahLetter;

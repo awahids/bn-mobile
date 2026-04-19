@@ -9,8 +9,8 @@ import { getQuizCategoryById, isQuizCategoryId } from "@/data/quiz";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MobilePageShell } from "@/components/page-atoms/mobile-page-shell";
-import { StickyPageHeader } from "@/components/page-atoms/sticky-page-header";
+import { MobilePageShell } from "@/components/shared/mobile-page-shell";
+import { StickyPageHeader } from "@/components/shared/sticky-page-header";
 import { CategoryIcon } from "@/app/quiz/_components/category-icon";
 
 export function QuizStartPageContent() {

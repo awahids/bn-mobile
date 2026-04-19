@@ -1,4 +1,4 @@
-import { ProgressRing } from "@/components/progress-ring";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { cn } from "@/lib/utils";
 import type { ModuleProgressSummary } from "@/app/progress/_hooks/use-progress-page-data";
 

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { LazyBottomNavigation, preloadComponents } from "@/components/lazy";
-import { MobilePageShell } from "@/components/page-atoms/mobile-page-shell";
+import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { usePreloadOnHover } from "@/lib/lazy-loading";
 import { useHijaiyahPageController } from "@/app/hijaiyah/_hooks/use-hijaiyah-page-controller";
 import { HijaiyahHeader } from "@/app/hijaiyah/_components/sections/hijaiyah-header";

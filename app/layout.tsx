@@ -3,7 +3,7 @@ import { Inter, Amiri } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://belajarn.gaji.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://belajar-ngaji.online";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,13 +17,42 @@ const amiri = Amiri({
 });
 
 export const metadata: Metadata = {
-  title: "Belajar Ngaji - Aplikasi Pembelajaran Hijaiyah",
+  title: {
+    default: "Belajar Ngaji - Aplikasi Pembelajaran Hijaiyah",
+    template: "%s | Belajar Ngaji",
+  },
   description: "Aplikasi pembelajaran huruf Hijaiyah, Al-Qur'an, Dhikr, dan Kuis interaktif",
-  keywords: ["hijaiyah", "quran", "dhikr", "islamic", "learning", "arabic"],
-  authors: [{ name: "Belajar Ngaji Team" }],
+  keywords: [
+    "belajar ngaji",
+    "aplikasi ngaji",
+    "belajar mengaji",
+    "aplikasi belajar ngaji terbaik",
+    "belajar hijaiyah",
+    "aplikasi al quran indonesia",
+    "belajar baca quran",
+    "aplikasi tajwid",
+    "belajar tahsin",
+    "dzikir pagi petang",
+    "jadwal sholat indonesia",
+    "kuis islam",
+    "belajar agama islam",
+    "tutor belajar ngaji",
+    "hafalan quran",
+    "bacaan sholat",
+    "ngaji online",
+    "islamic learning app"
+  ],
+  authors: [{ name: "Belajar Ngaji Team", url: siteUrl }],
+  creator: "Belajar Ngaji Team",
+  publisher: "Belajar Ngaji Tracker",
+  applicationName: "Belajar Ngaji",
+  category: "education",
   metadataBase: new URL(siteUrl),
   alternates: {
-    canonical: siteUrl,
+    canonical: "/",
+    languages: {
+      'id-ID': '/id',
+    },
   },
   openGraph: {
     type: "website",
@@ -36,7 +65,7 @@ export const metadata: Metadata = {
         url: "/images/logo/image.png",
         width: 512,
         height: 512,
-        alt: "Belajar Ngaji",
+        alt: "Belajar Ngaji Logo",
       },
     ],
     locale: "id_ID",
@@ -44,6 +73,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@belajarn_gaji",
+    creator: "@belajarn_gaji",
     title: "Belajar Ngaji - Aplikasi Pembelajaran Hijaiyah",
     description: "Belajar Hijaiyah, Al-Qur'an, Dhikr, dan kuis interaktif.",
     images: ["/images/logo/image.png"],
@@ -51,6 +81,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/images/logo/image.png',
@@ -58,6 +95,20 @@ export const metadata: Metadata = {
     apple: '/images/logo/image.png',
   },
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Belajar Ngaji",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    'geo.region': 'ID',
+    'geo.placename': 'Indonesia',
+    'geo.position': '-0.789275;113.921327',
+    'ICBM': '-0.789275, 113.921327',
+  },
 };
 
 export const viewport: Viewport = {
@@ -70,7 +121,7 @@ export const viewport: Viewport = {
   ],
 };
 
-import { PageTransition } from "@/components/page-transition";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export default function RootLayout({
   children,

@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
 import { useProgress, useUpdateProgress } from "@/hooks/use-progress";
 import { hijaiyahLetters } from "@/data/hijaiyah";
-import type { WritingCanvasRef } from "@/components/writing-canvas";
+import type { WritingCanvasRef } from "@/components/features/hijaiyah/writing-canvas";
 
 export function useHijaiyahPageController() {
   const { status, isAuthenticated } = useAuth();

@@ -1,5 +1,5 @@
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import { ProgressRing } from "@/components/progress-ring";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { Button } from "@/components/ui/button";
 
 interface DhikrHeaderProps {

@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { isApiError } from "@/lib/api-client";
-import { AuthError, NetworkError } from "@/components/error-boundary";
-import { BottomNavigation } from "@/components/bottom-navigation";
-import { MobilePageShell } from "@/components/page-atoms/mobile-page-shell";
-import { PageLoadingState } from "@/components/page-atoms/page-loading-state";
+import { AuthError, NetworkError } from "@/components/shared/error-boundary";
+import { BottomNavigation } from "@/components/shared/bottom-navigation";
+import { MobilePageShell } from "@/components/shared/mobile-page-shell";
+import { PageLoadingState } from "@/components/shared/page-loading-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProgressPageData } from "@/app/progress/_hooks/use-progress-page-data";
 import { ProgressHeader } from "@/app/progress/_components/sections/progress-header";

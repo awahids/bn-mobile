@@ -6,11 +6,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense, useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
-import { MobilePageShell } from '@/components/page-atoms/mobile-page-shell'
+import { MobilePageShell } from '@/components/shared/mobile-page-shell'
 import { ArrowLeft } from 'lucide-react'
 
 const LoginForm = dynamic(
-  () => import('@/components/auth/login-form').then((mod) => mod.LoginForm),
+  () => import('@/components/features/auth/login-form').then((mod) => mod.LoginForm),
   {
     ssr: false,
     loading: () => (

@@ -5,7 +5,7 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BottomNavigation } from "@/components/bottom-navigation"
+import { BottomNavigation } from "@/components/shared/bottom-navigation"
 import { ArrowLeft, Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 

@@ -1,5 +1,5 @@
 import { ArrowLeft, Clock } from "lucide-react";
-import { StickyPageHeader } from "@/components/page-atoms/sticky-page-header";
+import { StickyPageHeader } from "@/components/shared/sticky-page-header";
 import { Button } from "@/components/ui/button";
 import type { QuizState } from "@/app/quiz/play/[categoryId]/_hooks/use-quiz-play-controller";
 

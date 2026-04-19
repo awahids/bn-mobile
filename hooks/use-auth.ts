@@ -2,7 +2,7 @@
 
 import { useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth as useAuthContext } from "@/components/auth/auth-provider"
+import { useAuth as useAuthContext } from "@/components/features/auth/auth-provider"
 
 export function useAuth() {
   const auth = useAuthContext()

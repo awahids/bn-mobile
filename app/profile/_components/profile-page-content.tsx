@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { isApiError } from "@/lib/api-client";
-import { AuthError, NetworkError } from "@/components/error-boundary";
-import { BottomNavigation } from "@/components/bottom-navigation";
-import { useTheme } from "@/components/theme-provider";
-import { MobilePageShell } from "@/components/page-atoms/mobile-page-shell";
-import { PageLoadingState } from "@/components/page-atoms/page-loading-state";
+import { AuthError, NetworkError } from "@/components/shared/error-boundary";
+import { BottomNavigation } from "@/components/shared/bottom-navigation";
+import { useTheme } from "@/components/shared/theme-provider";
+import { MobilePageShell } from "@/components/shared/mobile-page-shell";
+import { PageLoadingState } from "@/components/shared/page-loading-state";
 import { useProfilePageData } from "@/app/profile/_hooks/use-profile-page-data";
 import { ProfileHeader } from "@/app/profile/_components/sections/profile-header";
 import { ProfileSummaryCard } from "@/app/profile/_components/sections/profile-summary-card";

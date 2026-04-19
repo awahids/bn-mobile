@@ -1,0 +1,19 @@
+# Belajar Ngaji
+
+> Aplikasi pembelajaran huruf Hijaiyah, Al-Qur'an, Dhikr, dan Kuis interaktif (Islamic Learning App).
+
+Aplikasi "Belajar Ngaji" ditujukan untuk mempermudah umat Islam belajar membaca Al-Qur'an mulai dari tahapan dasar pengenalan huruf Hijaiyah, hingga membaca Surah pendek dan panjang. Kami juga menyediakan fasilitas penunjang ibadah harian seperti panduan Dzikir dan fitur tasbih digital.
+
+## Struktur Navigasi Utama
+
+- [Beranda](/): Melacak *progress* harian, ringkasan *streak* belajar, jadwal sholat, aktivitas fitur terakhir, dan akses cepat modul pembelajaran.
+- [Modul Hijaiyah](/hijaiyah): Belajar 28 huruf Arab dengan simulasi menulis mandiri di kanvas pintar, serta disertai audio *pronunciation* (makhraj) yang jelas.
+- [Modul Al-Qur'an](/quran): Modul membaca Al-Qur'an dengan antarmuka yang bersih. Mendukung fitur audio per ayat untuk mempermudah Murottal/Tahsin.
+- [Modul Dzikir](/dhikr): Tasbih digital dengan bacaan dzikir pagi dan petang sesuai sunnah.
+- [Kuis Agama](/quiz): Bermain dan mengetes pemahaman dengan kuis edukatif tentang pengetahuan Islam, tajwid, dan huruf hijaiyah.
+- [Analitik Belajar](/progress): Pelacakan sejauh mana *progress* pencapaian Anda dalam menggunakan semua modul (Tracking tingkat penyelesaian & Streak).
+- [Profil](/profile): Detail akun pengguna.
+
+## Spesifikasi Teknis
+
+Aplikasi ini dikembangkan di atas platform berbasis Web modern (Next.js 14 App Router) dan tersedia bagi umum. Fokus antarmuka adalah estetika "Premium and Smooth" dengan elemen desain glassmorphism.

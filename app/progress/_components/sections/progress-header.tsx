@@ -1,5 +1,5 @@
 import { ArrowLeft, Flame } from "lucide-react";
-import { StickyPageHeader } from "@/components/page-atoms/sticky-page-header";
+import { StickyPageHeader } from "@/components/shared/sticky-page-header";
 import { Button } from "@/components/ui/button";
 
 interface ProgressHeaderProps {

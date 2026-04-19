@@ -8,8 +8,8 @@ import { quizCategories } from "@/data/quiz";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MobilePageShell } from "@/components/page-atoms/mobile-page-shell";
-import { StickyPageHeader } from "@/components/page-atoms/sticky-page-header";
+import { MobilePageShell } from "@/components/shared/mobile-page-shell";
+import { StickyPageHeader } from "@/components/shared/sticky-page-header";
 import { CategoryIcon } from "./category-icon";
 
 export function QuizCategoryPageContent() {

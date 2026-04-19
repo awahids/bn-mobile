@@ -1,13 +1,18 @@
-// Main components
-export { AudioPlayer } from './audio-player';
-export { BottomNavigation } from './bottom-navigation';
-export { DhikrCounter } from './dhikr-counter';
-export { ProgressRing } from './progress-ring';
-export { ThemeProvider, useTheme } from './theme-provider';
-export { WritingCanvas } from './writing-canvas';
-export type { WritingCanvasRef } from './writing-canvas';
+// Main components (Shared)
+export { BottomNavigation } from './shared/bottom-navigation';
+export { ThemeProvider, useTheme } from './shared/theme-provider';
+export { MobilePageShell } from './shared/mobile-page-shell';
+export { StickyPageHeader } from './shared/sticky-page-header';
+export { PageLoadingState } from './shared/page-loading-state';
+
+// Features components
+export { AudioPlayer } from './features/learning/audio-player';
+export { DhikrCounter } from './features/dhikr/dhikr-counter';
+export { WritingCanvas } from './features/hijaiyah/writing-canvas';
+export type { WritingCanvasRef } from './features/hijaiyah/writing-canvas';
 
 // UI components
+export { ProgressRing } from './ui/progress-ring';
 export * from './ui/accordion';
 export * from './ui/alert';
 export * from './ui/alert-dialog';
