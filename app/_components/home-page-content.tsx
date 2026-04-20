@@ -19,7 +19,6 @@ import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { useAuth } from "@/hooks/use-auth";
 import { hijaiyahLetters } from "@/data/hijaiyah";
 import { getQuranDisplayReference } from "@/data/quran";
-import { getDhikrById } from "@/data/dhikr";
 import { getQuizCategoryById } from "@/data/quiz";
 
 // Section Components
@@ -281,6 +280,12 @@ export function HomePageContent() {
     retry: false,
   });
 
+  const { data: allDhikrs = [] } = useQuery({
+    queryKey: ["dhikrs"],
+    queryFn: () => api.dhikr.getDhikrs(),
+    staleTime: 1000 * 60 * 60 * 24, // 24h
+  });
+
   const { data: quranBookmarks = [] } = useQuery<Bookmark[]>({
     queryKey: ["home-bookmarks", "quran"],
     queryFn: () => api.bookmarks.getBookmarks("quran"),
@@ -490,7 +495,7 @@ export function HomePageContent() {
         const reference = getQuranDisplayReference(item.itemId);
         title = `Membaca ${reference.title}`;
       } else if (item.module === "dhikr") {
-        const dhikr = getDhikrById(item.itemId);
+        const dhikr = allDhikrs.find((d) => d.id === item.itemId);
         title = `Dhikr ${dhikr?.translation || item.itemId}`;
       } else if (item.module === "quiz") {
         const category = getQuizCategoryById(item.itemId);

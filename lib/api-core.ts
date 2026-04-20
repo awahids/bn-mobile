@@ -447,6 +447,20 @@ export const bookmarksApi = {
 
 // ==================== DHIKR API ====================
 
+export interface DhikrItem {
+  id: string
+  arabic: string
+  transliteration: string
+  translation: string
+  meaning: string
+  count: number
+  session: "morning" | "evening" | "both"
+  category: string
+  audioUrl?: string
+  reference?: string
+  faedah?: string
+}
+
 export interface DhikrCounter {
   id: string
   userId: string
@@ -468,6 +482,7 @@ export interface CreateDhikrCounterData {
 }
 
 export const dhikrApi = {
+  getDhikrs: (): Promise<DhikrItem[]> => get<DhikrItem[]>("/dhikrs", false),
   getCounters: (date?: string): Promise<DhikrCounter[]> => {
     const endpoint = date ? `/dhikr/counters?date=${date}` : "/dhikr/counters"
     return get<DhikrCounter[]>(endpoint)

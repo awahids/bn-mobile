@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
-import { dhikrData, getEveningDhikr, getMorningDhikr } from "@/data/dhikr";
+import { DhikrItem } from "@/lib/api-core";
 
 export function useDhikrPageController() {
   const { status, isAuthenticated } = useAuth();
@@ -20,6 +20,12 @@ export function useDhikrPageController() {
   useEffect(() => {
     setToday(new Date().toISOString().split("T")[0]);
   }, []);
+
+  const { data: allDhikrs = [], isLoading: isLoadingDhikrs } = useQuery({
+    queryKey: ["dhikrs"],
+    queryFn: () => api.dhikr.getDhikrs(),
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
 
   const { data: counters = [], error: countersError } = useQuery({
     queryKey: ["dhikr-counters", today],
@@ -51,12 +57,20 @@ export function useDhikrPageController() {
     }
   }, []);
 
-  const getCurrentDhikr = () => {
-    return currentSession === "morning" ? getMorningDhikr() : getEveningDhikr();
-  };
+  const currentDhikrList = useMemo(() => {
+    if (!allDhikrs.length) return [];
+    if (currentSession === "morning") {
+      return allDhikrs.filter(
+        (d: DhikrItem) => d.session === "morning" || d.session === "both"
+      );
+    }
+    return allDhikrs.filter(
+      (d: DhikrItem) => d.session === "evening" || d.session === "both"
+    );
+  }, [allDhikrs, currentSession]);
 
   const getCounterData = (dhikrId: string) => {
-    const target = dhikrData.find((d) => d.id === dhikrId)?.count || 33;
+    const target = allDhikrs.find((d: DhikrItem) => d.id === dhikrId)?.count || 33;
     const guestCounterKey = `${today}:${currentSession}:${dhikrId}`;
 
     if (!isAuthenticated) {
@@ -80,7 +94,7 @@ export function useDhikrPageController() {
   };
 
   const handleCounterUpdate = async (dhikrId: string, newCount: number) => {
-    const dhikr = dhikrData.find((d) => d.id === dhikrId);
+    const dhikr = allDhikrs.find((d: DhikrItem) => d.id === dhikrId);
     if (!dhikr) return;
     if (!today) return;
 
@@ -104,13 +118,12 @@ export function useDhikrPageController() {
   };
 
   const resetAllCounters = async () => {
-    const currentDhikr = getCurrentDhikr();
     if (!today) return;
 
     if (!isAuthenticated) {
       setGuestCounters((prev) => {
         const next = { ...prev };
-        for (const dhikr of currentDhikr) {
+        for (const dhikr of currentDhikrList) {
           next[`${today}:${currentSession}:${dhikr.id}`] = 0;
         }
         return next;
@@ -118,7 +131,7 @@ export function useDhikrPageController() {
       return;
     }
 
-    for (const dhikr of currentDhikr) {
+    for (const dhikr of currentDhikrList) {
       await handleCounterUpdate(dhikr.id, 0);
     }
   };
@@ -130,9 +143,8 @@ export function useDhikrPageController() {
     }
   };
 
-  const currentDhikrList = getCurrentDhikr();
-  const totalCompleted = currentDhikrList.filter((dhikr) => getCounterData(dhikr.id).completed).length;
-  const completionPercentage = Math.round((totalCompleted / currentDhikrList.length) * 100);
+  const totalCompleted = currentDhikrList.filter((dhikr: DhikrItem) => getCounterData(dhikr.id).completed).length;
+  const completionPercentage = currentDhikrList.length > 0 ? Math.round((totalCompleted / currentDhikrList.length) * 100) : 0;
 
   const getTimeBasedGreeting = () => {
     if (typeof window === "undefined") return "Dhikr Pagi";
@@ -149,13 +161,13 @@ export function useDhikrPageController() {
   }, []);
 
   const selectedDhikrTitle = useMemo(
-    () => (selectedDhikr ? dhikrData.find((d) => d.id === selectedDhikr)?.transliteration || "" : ""),
-    [selectedDhikr]
+    () => (selectedDhikr ? allDhikrs.find((d: DhikrItem) => d.id === selectedDhikr)?.transliteration || "" : ""),
+    [selectedDhikr, allDhikrs]
   );
 
   const selectedDhikrAudioUrl = useMemo(
-    () => (selectedDhikr ? dhikrData.find((d) => d.id === selectedDhikr)?.audioUrl || "" : ""),
-    [selectedDhikr]
+    () => (selectedDhikr ? allDhikrs.find((d: DhikrItem) => d.id === selectedDhikr)?.audioUrl || "" : ""),
+    [selectedDhikr, allDhikrs]
   );
 
   return {
@@ -179,5 +191,6 @@ export function useDhikrPageController() {
     playAudio,
     selectedDhikrTitle,
     selectedDhikrAudioUrl,
+    isLoadingDhikrs,
   };
 }

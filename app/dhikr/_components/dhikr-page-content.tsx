@@ -37,12 +37,13 @@ export function DhikrPageContent() {
     playAudio,
     selectedDhikrTitle,
     selectedDhikrAudioUrl,
+    isLoadingDhikrs,
   } = useDhikrPageController();
 
   const audioPlayerPreloadProps = usePreloadOnHover(preloadComponents.audioPlayer);
   const dhikrCounterPreloadProps = usePreloadOnHover(preloadComponents.dhikrCounter);
 
-  if (status === "loading") {
+  if (status === "loading" || isLoadingDhikrs) {
     return <PageLoadingState bottomNav={<LazyBottomNavigation />} />;
   }
 
