@@ -122,6 +122,7 @@ export const viewport: Viewport = {
 };
 
 import { PageTransition } from "@/components/shared/page-transition";
+import { PWAInstallPrompt } from "@/components/shared/pwa-install-prompt";
 
 export default function RootLayout({
   children,
@@ -152,6 +153,7 @@ export default function RootLayout({
           <PageTransition>
             {children}
           </PageTransition>
+          <PWAInstallPrompt />
         </Providers>
       </body>
     </html>
