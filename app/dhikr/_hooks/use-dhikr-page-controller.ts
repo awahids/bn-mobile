@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
-import { DhikrItem } from "@/lib/api-core";
+import { CreateDhikrCounterData, DhikrCounter, DhikrItem } from "@/lib/api-core";
 
 export function useDhikrPageController() {
   const { status, isAuthenticated } = useAuth();
@@ -22,9 +22,14 @@ export function useDhikrPageController() {
   }, []);
 
   const { data: allDhikrs = [], isLoading: isLoadingDhikrs } = useQuery({
-    queryKey: ["dhikrs"],
-    queryFn: () => api.dhikr.getDhikrs(),
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    queryKey: ["dhikrs", "v2"],
+    queryFn: async () => {
+      console.log("Fetching dhikrs from API...");
+      const data = await api.dhikr.getDhikrs();
+      console.log("Fetched dhikrs:", data);
+      return data;
+    },
+    staleTime: 1000 * 60 * 5, // Kurangi jadi 5 menit aja untuk testing
   });
 
   const { data: counters = [], error: countersError } = useQuery({
@@ -35,12 +40,57 @@ export function useDhikrPageController() {
   });
 
   const updateCounter = useMutation({
-    mutationFn: (data: any) => api.dhikr.updateCounter(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dhikr-counters", today] });
+    mutationFn: (data: CreateDhikrCounterData) => api.dhikr.updateCounter(data),
+    onMutate: async (nextData: CreateDhikrCounterData) => {
+      const queryKey = ["dhikr-counters", today] as const;
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousCounters = queryClient.getQueryData<DhikrCounter[]>(queryKey) || [];
+      const existingIndex = previousCounters.findIndex(
+        (counter) =>
+          counter.dhikrId === nextData.dhikrId &&
+          counter.session === nextData.session &&
+          counter.date === nextData.date
+      );
+
+      const fallbackTarget = allDhikrs.find((d: DhikrItem) => d.id === nextData.dhikrId)?.count || 33;
+      const optimisticTarget =
+        nextData.target ??
+        (existingIndex >= 0 ? previousCounters[existingIndex].target : fallbackTarget);
+
+      const optimisticCounter: DhikrCounter = {
+        id:
+          existingIndex >= 0
+            ? previousCounters[existingIndex].id
+            : `optimistic-${nextData.dhikrId}-${nextData.session}-${nextData.date}`,
+        userId: existingIndex >= 0 ? previousCounters[existingIndex].userId : "",
+        dhikrId: nextData.dhikrId,
+        count: nextData.count,
+        target: optimisticTarget,
+        date: nextData.date,
+        session: nextData.session,
+        completed: nextData.completed ?? nextData.count >= optimisticTarget,
+      };
+
+      const nextCounters = [...previousCounters];
+      if (existingIndex >= 0) {
+        nextCounters[existingIndex] = optimisticCounter;
+      } else {
+        nextCounters.push(optimisticCounter);
+      }
+
+      queryClient.setQueryData(queryKey, nextCounters);
+
+      return { previousCounters, queryKey };
     },
-    onError: (error) => {
+    onError: (error, _, context) => {
+      if (context?.previousCounters && context?.queryKey) {
+        queryClient.setQueryData(context.queryKey, context.previousCounters);
+      }
       console.error("🚨 Dhikr counter update failed:", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["dhikr-counters", today] });
     },
   });
 
@@ -83,7 +133,7 @@ export function useDhikrPageController() {
     }
 
     const counter = counters.find(
-      (c: any) => c.dhikrId === dhikrId && c.session === currentSession && c.date === today
+      (c: DhikrCounter) => c.dhikrId === dhikrId && c.session === currentSession && c.date === today
     );
 
     return {

@@ -8,24 +8,24 @@ interface DhikrSessionTabsProps {
 
 export function DhikrSessionTabs({ currentSession, onChangeSession }: DhikrSessionTabsProps) {
   return (
-    <section className="px-6 mb-8">
+    <section className="px-6 mb-6">
       <Tabs value={currentSession} onValueChange={(value) => onChangeSession(value as "morning" | "evening")} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 rounded-3xl bg-primary/5 p-1.5 h-auto">
+        <TabsList className="grid w-full grid-cols-2 rounded-[2rem] bg-black/5 dark:bg-white/5 p-1.5 h-auto border border-white/10">
           <TabsTrigger
             value="morning"
-            className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+            className="rounded-[1.5rem] py-3.5 data-[state=active]:bg-white dark:data-[state=active]:bg-primary data-[state=active]:text-primary dark:data-[state=active]:text-white data-[state=active]:shadow-2xl shadow-primary/20 transition-all duration-500 font-black tracking-tight flex items-center justify-center"
             data-testid="tab-morning"
           >
-            <Sun className="w-4 h-4 mr-2" />
-            <span className="font-bold tracking-tight">Pagi</span>
+            <Sun className="w-4 h-4 mr-2.5" />
+            <span>Pagi</span>
           </TabsTrigger>
           <TabsTrigger
             value="evening"
-            className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+            className="rounded-[1.5rem] py-3.5 data-[state=active]:bg-white dark:data-[state=active]:bg-primary data-[state=active]:text-primary dark:data-[state=active]:text-white data-[state=active]:shadow-2xl shadow-primary/20 transition-all duration-500 font-black tracking-tight flex items-center justify-center"
             data-testid="tab-evening"
           >
-            <Moon className="w-4 h-4 mr-2" />
-            <span className="font-bold tracking-tight">Petang</span>
+            <Moon className="w-4 h-4 mr-2.5" />
+            <span>Petang</span>
           </TabsTrigger>
         </TabsList>
       </Tabs>

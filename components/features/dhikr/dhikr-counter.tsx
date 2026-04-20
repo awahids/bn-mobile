@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import {
+  motion as framerMotion,
+  AnimatePresence as FramerAnimatePresence,
+} from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Minus, Plus, RotateCcw, Check } from "lucide-react";
+import { Minus, Plus, RotateCcw, Check, Sparkles } from "lucide-react";
+
+const motion = framerMotion as any;
+const AnimatePresence = FramerAnimatePresence as any;
 
 interface DhikrCounterProps {
   dhikrId: string;
@@ -23,6 +28,17 @@ export function DhikrCounter({
 }: DhikrCounterProps) {
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // Haptic feedback utility
+  const triggerHaptic = (type: 'light' | 'success') => {
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+      if (type === 'light') {
+        window.navigator.vibrate(10);
+      } else if (type === 'success') {
+        window.navigator.vibrate([20, 50, 40]);
+      }
+    }
+  };
+
   const handleIncrement = () => {
     if (currentCount < targetCount) {
       const newCount = currentCount + 1;
@@ -31,12 +47,20 @@ export function DhikrCounter({
       // Add animation feedback
       setIsAnimating(true);
       setTimeout(() => setIsAnimating(false), 200);
+
+      // Trigger haptic
+      if (newCount === targetCount) {
+        triggerHaptic('success');
+      } else {
+        triggerHaptic('light');
+      }
     }
   };
 
   const handleDecrement = () => {
     if (currentCount > 0) {
       onUpdate(currentCount - 1);
+      triggerHaptic('light');
     }
   };
 
@@ -47,82 +71,155 @@ export function DhikrCounter({
   const progressPercentage = Math.min((currentCount / targetCount) * 100, 100);
 
   return (
-    <div className="space-y-3">
-      {/* Progress Bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Progress</span>
-          <span className="font-medium">
-            {currentCount}/{targetCount}
+    <div className="space-y-6">
+      {/* Progress Bar Container */}
+      <div className="space-y-2.5">
+        <div className="flex justify-between items-end px-1">
+          <span className={`text-[10px] font-black uppercase tracking-widest ${completed ? 'text-white/60' : 'text-muted-foreground/60'}`}>
+            PROGRES HARIAN
+          </span>
+          <span className={`text-sm font-black tabular-nums ${completed ? 'text-white' : 'text-primary'}`}>
+            {currentCount}<span className="opacity-40 font-bold mx-1">/</span>{targetCount}
           </span>
         </div>
-        <Progress
-          value={progressPercentage}
-          className="h-2"
-        />
+        <div className={`w-full h-2 rounded-full overflow-hidden p-0.5 border ${completed ? 'bg-white/10 border-white/20' : 'bg-primary/5 border-primary/10'}`}>
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercentage}%` }}
+            transition={{ duration: 0.5, ease: "circOut" }}
+            className={`h-full rounded-full transition-all duration-300 ${
+              completed 
+                ? 'bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]' 
+                : 'bg-primary shadow-[0_0_8px_rgba(var(--primary),0.3)]'
+            }`}
+          />
+        </div>
       </div>
 
-      {/* Counter Display */}
-      <div className="flex items-center justify-center space-x-4">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleDecrement}
-          disabled={currentCount === 0}
-          className="h-12 w-12 rounded-full"
-          data-testid={`decrement-${dhikrId}`}
-        >
-          <Minus className="w-4 h-4" />
-        </Button>
-
-        <div className="text-center">
-          <div
-            className={`text-3xl font-bold transition-all duration-200 ${isAnimating ? 'scale-110 text-chart-3' : 'text-foreground'
+      {/* Main Interaction Area */}
+      <div className="flex items-center justify-between space-x-4">
+        {/* Reset / Decrement Group */}
+        <div className="flex items-center space-x-2">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleReset}
+              disabled={currentCount === 0}
+              className={`h-11 w-11 rounded-2xl transition-all duration-300 ${
+                completed 
+                  ? 'text-white/40 hover:text-white/80 hover:bg-white/10' 
+                  : 'text-muted-foreground/40 hover:text-primary hover:bg-primary/5'
               }`}
-          >
-            {currentCount}
-          </div>
-          <div className="text-xs text-muted-foreground">
-            {completed ? 'Selesai' : `${targetCount - currentCount} lagi`}
-          </div>
+              data-testid={`reset-${dhikrId}`}
+              title="Reset hitungan"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </Button>
+          </motion.div>
+          
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDecrement}
+              disabled={currentCount === 0}
+              className={`h-11 w-11 rounded-2xl transition-all duration-300 ${
+                completed 
+                  ? 'text-white/40 hover:text-white/80 hover:bg-white/10' 
+                  : 'text-muted-foreground/40 hover:text-primary hover:bg-primary/5'
+              }`}
+              data-testid={`decrement-${dhikrId}`}
+              title="Kurangi satu"
+            >
+              <Minus className="w-4 h-4" />
+            </Button>
+          </motion.div>
         </div>
 
-        <Button
-          variant={completed ? "default" : "outline"}
-          size="icon"
-          onClick={handleIncrement}
-          disabled={completed}
-          className={`h-12 w-12 rounded-full dhikr-counter touch-target ${completed ? 'bg-chart-3 hover:bg-chart-3/90' : ''
-            }`}
-          data-testid={`increment-${dhikrId}`}
-        >
-          {completed ? (
-            <Check className="w-4 h-4" />
-          ) : (
-            <Plus className="w-4 h-4" />
-          )}
-        </Button>
-      </div>
+        {/* Counter Display & Main Increment Button */}
+        <div className="flex-1 flex items-center justify-end space-x-4">
+          <div className="text-right flex flex-col justify-center">
+            <motion.div
+              key={currentCount}
+              initial={{ opacity: 0, y: 10, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className={`text-4xl font-black tabular-nums transition-colors duration-300 ${
+                completed ? 'text-white' : 'text-foreground'
+              }`}
+            >
+              {currentCount}
+            </motion.div>
+            <div className={`text-[10px] font-black uppercase tracking-widest leading-none ${
+              completed ? 'text-white/60' : 'text-muted-foreground/60'
+            }`}>
+              {completed ? 'Selesai' : `${targetCount - currentCount} lagi`}
+            </div>
+          </div>
 
-      {/* Controls */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleReset}
-          className="text-muted-foreground"
-          data-testid={`reset-${dhikrId}`}
-        >
-          <RotateCcw className="w-3 h-3 mr-1" />
-          Reset
-        </Button>
-
-        {completed && (
-          <Badge variant="default" className="bg-chart-3">
-            <Check className="w-3 h-3 mr-1" />
-            Target Tercapai
-          </Badge>
-        )}
+          <motion.div
+            initial={false}
+            animate={isAnimating ? { scale: 0.9 } : { scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative"
+          >
+            <Button
+              variant={completed ? "secondary" : "default"}
+              onClick={handleIncrement}
+              disabled={completed}
+              className={`h-20 w-20 rounded-[2.5rem] shadow-2xl transition-all duration-500 overflow-hidden ${
+                completed 
+                  ? 'bg-white/20 text-white cursor-default border border-white/30 backdrop-blur-md' 
+                  : 'bg-primary text-white hover:bg-primary/90 shadow-primary/30 ring-4 ring-primary/10'
+              }`}
+              data-testid={`increment-${dhikrId}`}
+            >
+              <AnimatePresence mode="wait">
+                {completed ? (
+                  <motion.div
+                    key="checked"
+                    initial={{ scale: 0, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                  >
+                    <Check className="w-8 h-8 stroke-[3.5px]" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="plus"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
+                    <Plus className="w-8 h-8 stroke-[3.5px]" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              {/* Ripple effect placeholder or glow */}
+              {!completed && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={isAnimating ? { opacity: [0.5, 0], scale: [0, 2] } : {}}
+                  className="absolute inset-0 bg-white/40 rounded-full pointer-events-none"
+                />
+              )}
+            </Button>
+            
+            {completed && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute -top-2 -right-2"
+              >
+                <div className="bg-white text-primary p-1.5 rounded-xl shadow-lg ring-2 ring-white/50">
+                  <Sparkles className="w-3.5 h-3.5 fill-primary" />
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
       </div>
     </div>
   );
