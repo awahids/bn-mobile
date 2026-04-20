@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
-import { BookOpen, Brain, BicepsFlexed, Languages } from "lucide-react";
+import { BookOpen, Brain, BicepsFlexed, Flame, Trophy, Languages } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface LearningStats {
   hijaiyah: {
@@ -38,7 +39,7 @@ export interface AchievementItem {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: LucideIcon;
   unlocked: boolean;
   date: string | null;
 }
@@ -158,7 +159,7 @@ export function useProgressPageData() {
         id: "first-letter",
         title: "Huruf Pertama",
         description: "Selesaikan huruf Hijaiyah pertama",
-        icon: "🔤",
+        icon: Languages,
         unlocked: stats.hijaiyah.completed > 0,
         date: "2 hari lalu",
       },
@@ -166,7 +167,7 @@ export function useProgressPageData() {
         id: "week-streak",
         title: "Seminggu Berturut",
         description: "Belajar 7 hari berturut-turut",
-        icon: "🔥",
+        icon: Flame,
         unlocked: (user?.streak || 0) >= 7,
         date: "Hari ini",
       },
@@ -174,7 +175,7 @@ export function useProgressPageData() {
         id: "quiz-master",
         title: "Master Kuis",
         description: "Dapatkan skor 90% atau lebih",
-        icon: "🏆",
+        icon: Trophy,
         unlocked: stats.quiz.bestScore >= 90,
         date: "1 hari lalu",
       },
@@ -182,7 +183,7 @@ export function useProgressPageData() {
         id: "dhikr-complete",
         title: "Dhikr Lengkap",
         description: "Selesaikan dhikr pagi dan petang",
-        icon: "🤲",
+        icon: BicepsFlexed,
         unlocked: false,
         date: null,
       },

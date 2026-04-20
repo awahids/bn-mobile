@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Play } from "lucide-react";
 import { LazyBottomNavigation } from "@/components/lazy";
@@ -16,11 +16,25 @@ import { CategoryIcon } from "@/app/quiz/_components/category-icon";
 export function QuizStartPageContent() {
   const params = useParams<{ categoryId: string }>();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   const categoryId = params?.categoryId ?? "";
   const isValidCategory = isQuizCategoryId(categoryId);
   const category = isValidCategory ? getQuizCategoryById(categoryId) : undefined;
+
+  const handleStartQuiz = useCallback(() => {
+    if (isLoading) {
+      return;
+    }
+
+    const callbackUrl = `/quiz/play/${categoryId}`;
+    if (!isAuthenticated) {
+      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      return;
+    }
+
+    router.push(callbackUrl);
+  }, [categoryId, isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     if (!category) {
@@ -49,13 +63,13 @@ export function QuizStartPageContent() {
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-4 text-center">
               <p className="text-sm text-muted-foreground mb-3">
-                Mode tamu aktif. Skor kuis tidak disimpan ke akun.
+                Login diperlukan sebelum mulai kuis.
               </p>
               <Button
                 size="sm"
-                onClick={() => router.push(`/login?callbackUrl=/quiz/start/${category.id}`)}
+                onClick={() => router.push(`/login?callbackUrl=${encodeURIComponent(`/quiz/start/${category.id}`)}`)}
               >
-                Masuk untuk simpan skor
+                Masuk untuk mulai kuis
               </Button>
             </CardContent>
           </Card>
@@ -91,12 +105,13 @@ export function QuizStartPageContent() {
         </Card>
 
         <Button
-          onClick={() => router.push(`/quiz/play/${category.id}`)}
+          onClick={handleStartQuiz}
           className="w-full h-12 text-lg font-semibold"
+          disabled={isLoading}
           data-testid="start-quiz"
         >
           <Play className="w-5 h-5 mr-2" />
-          Mulai Kuis
+          {isLoading ? "Memeriksa sesi..." : "Mulai Kuis"}
         </Button>
 
         <Button variant="outline" onClick={() => router.push("/quiz")} className="w-full">

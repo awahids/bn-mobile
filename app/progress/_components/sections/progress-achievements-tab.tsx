@@ -15,8 +15,12 @@ export function ProgressAchievementsTab({ achievements }: ProgressAchievementsTa
           <Card key={achievement.id} className={achievement.unlocked ? "bg-chart-1/5 border-chart-1" : ""}>
             <CardContent className="p-4">
               <div className="flex items-center space-x-4">
-                <div className={`text-3xl ${achievement.unlocked ? "" : "grayscale opacity-50"}`}>
-                  {achievement.icon}
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50 ${
+                    achievement.unlocked ? "text-chart-1" : "text-muted-foreground"
+                  }`}
+                >
+                  <achievement.icon className={`h-6 w-6 ${achievement.unlocked ? "" : "opacity-50"}`} />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold mb-1">{achievement.title}</h3>

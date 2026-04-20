@@ -16,7 +16,7 @@ import { QuizFinishedSection } from "@/app/quiz/play/[categoryId]/_components/se
 export function QuizPlayPageContent() {
   const params = useParams<{ categoryId: string }>();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   const routeCategoryId = params?.categoryId;
   const categoryId = routeCategoryId && isQuizCategoryId(routeCategoryId) ? routeCategoryId : null;
@@ -51,6 +51,14 @@ export function QuizPlayPageContent() {
     }
   }, [category, categoryId, router]);
 
+  useEffect(() => {
+    if (!categoryId || !category || isLoading || isAuthenticated) {
+      return;
+    }
+
+    router.replace(`/login?callbackUrl=${encodeURIComponent(`/quiz/play/${categoryId}`)}`);
+  }, [category, categoryId, isAuthenticated, isLoading, router]);
+
   const goToStartPage = useCallback(() => {
     if (!categoryId) {
       router.push("/quiz");
@@ -75,7 +83,7 @@ export function QuizPlayPageContent() {
     [router]
   );
 
-  if (!categoryId || !category) {
+  if (!categoryId || !category || (!isLoading && !isAuthenticated)) {
     return null;
   }
 

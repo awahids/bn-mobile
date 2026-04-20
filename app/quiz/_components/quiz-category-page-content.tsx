@@ -45,10 +45,10 @@ export function QuizCategoryPageContent() {
           <Card className="mb-4 border-primary/20 bg-primary/5">
             <CardContent className="p-4 text-center">
               <p className="text-sm text-muted-foreground mb-3">
-                Mode tamu aktif. Skor kuis tidak disimpan ke akun.
+                Login diperlukan untuk mulai kuis.
               </p>
               <Button size="sm" onClick={() => router.push("/login?callbackUrl=/quiz")}>
-                Masuk untuk simpan skor
+                Masuk untuk mulai kuis
               </Button>
             </CardContent>
           </Card>

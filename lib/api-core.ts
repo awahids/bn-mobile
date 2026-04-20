@@ -29,9 +29,6 @@ function normalizeApiBaseUrl(rawBaseUrl: string): string {
 
   const runtimeProtocol =
     typeof window !== "undefined" ? window.location.protocol : "http:"
-  const isHttpsPage =
-    typeof window !== "undefined" && window.location.protocol === "https:"
-
   if (baseUrl.startsWith("//")) {
     return `${runtimeProtocol}${baseUrl}`
   }
@@ -42,12 +39,11 @@ function normalizeApiBaseUrl(rawBaseUrl: string): string {
     return baseUrl
   }
   if (baseUrl.startsWith("http://")) {
-    // Avoid mixed-content errors when the app is loaded over HTTPS.
-    return isHttpsPage ? DEFAULT_API_BASE_URL : baseUrl
+    // Respect explicit backend URL even when protocol differs from page protocol.
+    return baseUrl
   }
   if (isHostWithoutProtocol(baseUrl)) {
-    // Host-only values (e.g. 43.157.213.220:8080/api/v1) are unsafe on HTTPS pages.
-    return isHttpsPage ? DEFAULT_API_BASE_URL : `${runtimeProtocol}//${baseUrl}`
+    return `${runtimeProtocol}//${baseUrl}`
   }
 
   return DEFAULT_API_BASE_URL
