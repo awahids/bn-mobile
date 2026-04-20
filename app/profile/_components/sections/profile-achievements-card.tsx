@@ -1,4 +1,4 @@
-import { Award } from "lucide-react";
+import { Award, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +18,9 @@ export function ProfileAchievementsCard({ onSeeAll }: ProfileAchievementsCardPro
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-3">
-          <div className="text-3xl">🔥</div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50 text-chart-1">
+            <Flame className="w-6 h-6" />
+          </div>
           <div className="flex-1">
             <h3 className="font-medium">Seminggu Berturut</h3>
             <p className="text-sm text-muted-foreground">Belajar 7 hari berturut-turut</p>

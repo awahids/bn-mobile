@@ -389,6 +389,20 @@ export interface CreateProgressData {
   timeSpent?: number
 }
 
+export interface AchievementItem {
+  id: string
+  title: string
+  description: string
+  icon: string
+  unlocked: boolean
+  date: string | null
+}
+
+export interface WeeklyActivityItem {
+  day: string
+  completed: boolean
+}
+
 export const progressApi = {
   getProgress: (module?: string): Promise<UserProgress[]> => {
     const endpoint = module ? `/progress?module=${module}` : "/progress"
@@ -398,6 +412,10 @@ export const progressApi = {
     get<UserProgress | null>(`/progress/${module}/${itemId}`),
   updateProgress: (data: CreateProgressData): Promise<UserProgress> =>
     post<UserProgress>("/progress", data),
+  getAchievements: (): Promise<AchievementItem[]> =>
+    get<AchievementItem[]>("/progress/achievements"),
+  getWeeklyActivity: (): Promise<WeeklyActivityItem[]> =>
+    get<WeeklyActivityItem[]>("/progress/activity"),
 }
 
 // ==================== BOOKMARKS API ====================

@@ -5,6 +5,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { BookOpen, Brain, BicepsFlexed, Flame, Trophy, Languages } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+export const IconMap: Record<string, LucideIcon> = {
+  Languages,
+  BookOpen,
+  Brain,
+  BicepsFlexed,
+  Flame,
+  Trophy,
+};
+
 interface LearningStats {
   hijaiyah: {
     completed: number;
@@ -111,6 +120,18 @@ export function useProgressPageData() {
     retry: false,
   });
 
+  const { data: rawAchievements = [] } = useQuery({
+    queryKey: ["achievements"],
+    queryFn: () => api.progress.getAchievements(),
+    enabled: status === "authenticated",
+  });
+
+  const { data: rawWeeklyActivity = [] } = useQuery({
+    queryKey: ["weekly-activity"],
+    queryFn: () => api.progress.getWeeklyActivity(),
+    enabled: status === "authenticated",
+  });
+
   const recentProgress = useMemo(() => progressData.slice(0, 10), [progressData]);
 
   const stats = useMemo(() => calculateStats(progressData, quizStats), [progressData, quizStats]);
@@ -154,65 +175,30 @@ export function useProgressPageData() {
   );
 
   const achievements: AchievementItem[] = useMemo(
-    () => [
-      {
-        id: "first-letter",
-        title: "Huruf Pertama",
-        description: "Selesaikan huruf Hijaiyah pertama",
-        icon: Languages,
-        unlocked: stats.hijaiyah.completed > 0,
-        date: "2 hari lalu",
-      },
-      {
-        id: "week-streak",
-        title: "Seminggu Berturut",
-        description: "Belajar 7 hari berturut-turut",
-        icon: Flame,
-        unlocked: (user?.streak || 0) >= 7,
-        date: "Hari ini",
-      },
-      {
-        id: "quiz-master",
-        title: "Master Kuis",
-        description: "Dapatkan skor 90% atau lebih",
-        icon: Trophy,
-        unlocked: stats.quiz.bestScore >= 90,
-        date: "1 hari lalu",
-      },
-      {
-        id: "dhikr-complete",
-        title: "Dhikr Lengkap",
-        description: "Selesaikan dhikr pagi dan petang",
-        icon: BicepsFlexed,
-        unlocked: false,
-        date: null,
-      },
-    ],
-    [stats.hijaiyah.completed, stats.quiz.bestScore, user?.streak]
+    () =>
+      rawAchievements.map((item) => ({
+        ...item,
+        icon: IconMap[item.icon] || Trophy,
+      })),
+    [rawAchievements]
   );
 
   const weeklyActivity: WeeklyActivityItem[] = useMemo(
-    () =>
-      isAuthenticated
-        ? [
-            { day: "Sen", completed: true },
-            { day: "Sel", completed: true },
-            { day: "Rab", completed: false },
-            { day: "Kam", completed: true },
-            { day: "Jum", completed: true },
-            { day: "Sab", completed: false },
-            { day: "Min", completed: true },
-          ]
-        : [
-            { day: "Sen", completed: false },
-            { day: "Sel", completed: false },
-            { day: "Rab", completed: false },
-            { day: "Kam", completed: false },
-            { day: "Jum", completed: false },
-            { day: "Sab", completed: false },
-            { day: "Min", completed: false },
-          ],
-    [isAuthenticated]
+    () => {
+      if (!isAuthenticated || rawWeeklyActivity.length === 0) {
+        return [
+          { day: "Sen", completed: false },
+          { day: "Sel", completed: false },
+          { day: "Rab", completed: false },
+          { day: "Kam", completed: false },
+          { day: "Jum", completed: false },
+          { day: "Sab", completed: false },
+          { day: "Min", completed: false },
+        ];
+      }
+      return rawWeeklyActivity;
+    },
+    [isAuthenticated, rawWeeklyActivity]
   );
 
   const displayStreak = isAuthenticated ? (user?.streak || 0) : 0;
