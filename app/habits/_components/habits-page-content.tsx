@@ -2,27 +2,27 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Cell
 } from "recharts";
-import { 
-  Plus, 
-  Bell, 
-  BellOff, 
-  CheckCircle2, 
-  Circle, 
-  Flame, 
-  Clock, 
-  Pencil, 
-  Trash2, 
-  ChevronRight, 
-  Loader2, 
-  Send, 
+import {
+  Plus,
+  Bell,
+  BellOff,
+  CheckCircle2,
+  Circle,
+  Flame,
+  Clock,
+  Pencil,
+  Trash2,
+  ChevronRight,
+  Loader2,
+  Send,
   Bot,
   X,
   Leaf
@@ -36,10 +36,10 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { 
-  ChartContainer, 
-  ChartTooltip, 
-  ChartTooltipContent 
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent
 } from "@/components/ui/chart";
 import api, { getErrorMessage, isApiError } from "@/lib/api";
 
@@ -48,37 +48,47 @@ import { HabitsHeader } from "./sections/habits-header";
 import { HabitsQuickSwitch } from "./sections/habits-quick-switch";
 
 const getLast7Days = () => Array.from({ length: 7 }, (_, i) => {
-  const d = new Date(); 
+  const d = new Date();
   d.setDate(d.getDate() - (6 - i));
   return d.toISOString().split("T")[0];
 });
 
 const QUICK_PROMPTS = [
   "Evaluasi habit saya",
-  "Saran habit Islami harian",
-  "Motivasi untuk istiqamah",
+  "Saran habit harian",
+  "Motivasi biar konsisten",
+  "Buat rencana 7 hari",
+  "Apa prioritas saya hari ini?",
+  "Review progres minggu ini",
+  "Bantu saya mulai dari nol",
+  "Cara keluar dari rasa malas",
+  "Perbaiki rutinitas pagi saya",
+  "Perbaiki rutinitas malam saya",
+  "Target kecil yang realistis",
+  "Strategi saat habit terlewat",
 ];
 
 export function HabitsPageContent() {
   const router = useRouter();
-  const { 
-    habits, 
-    completions, 
-    loaded, 
-    toggleHabit, 
-    saveHabit, 
-    deleteHabit, 
-    stats 
+  const {
+    habits,
+    completions,
+    loaded,
+    toggleHabit,
+    saveHabit,
+    deleteHabit,
+    stats,
+    isSyncing
   } = useHabits();
 
   const [tab, setTab] = useState<"dashboard" | "progress" | "coach">("dashboard");
   const [modal, setModal] = useState(false);
   const [editH, setEditH] = useState<Habit | null>(null);
-  const [form, setForm] = useState({ 
-    name: "", 
-    category: "Health", 
-    reminderTime: "", 
-    reminderEnabled: false 
+  const [form, setForm] = useState({
+    name: "",
+    category: "Health",
+    reminderTime: "",
+    reminderEnabled: false
   });
   const [aiMsg, setAiMsg] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -123,27 +133,27 @@ export function HabitsPageContent() {
     setModal(false);
   };
 
-  const openAdd = () => { 
-    setForm({ name: "", category: "Health", reminderTime: "", reminderEnabled: false }); 
-    setEditH(null); 
-    setModal(true); 
+  const openAdd = () => {
+    setForm({ name: "", category: "Health", reminderTime: "", reminderEnabled: false });
+    setEditH(null);
+    setModal(true);
   };
-  
-  const openEdit = (h: Habit) => { 
-    setForm({ 
-      name: h.name, 
-      category: h.category, 
-      reminderTime: h.reminderTime || "", 
-      reminderEnabled: !!h.reminderEnabled 
-    }); 
-    setEditH(h); 
-    setModal(true); 
+
+  const openEdit = (h: Habit) => {
+    setForm({
+      name: h.name,
+      category: h.category,
+      reminderTime: h.reminderTime || "",
+      reminderEnabled: !!h.reminderEnabled
+    });
+    setEditH(h);
+    setModal(true);
   };
 
   const askAI = async (prompt: string) => {
-    setAiLoading(true); 
+    setAiLoading(true);
     setAiMsg("");
-    
+
     const summary = habits.length ? habits.map(h => {
       const s = getStreak(h.id, completions);
       const w = getLast7Days().filter(d => completions[d]?.[h.id]).length;
@@ -161,7 +171,7 @@ export function HabitsPageContent() {
       setAiMsg(
         data?.content || "Coach belum memberi respons. Silakan coba lagi."
       );
-    } catch (error) { 
+    } catch (error) {
       if (isApiError(error) && error.status === 401) {
         setAiMsg("Silakan login untuk menggunakan AI Coach.");
         return;
@@ -169,7 +179,7 @@ export function HabitsPageContent() {
       const message = getErrorMessage(error);
       setAiMsg(
         message || "Tidak bisa terhubung ke AI Coach. Silakan coba lagi."
-      ); 
+      );
     } finally {
       setAiLoading(false);
     }
@@ -191,13 +201,13 @@ export function HabitsPageContent() {
 
   return (
     <MobilePageShell className="pb-32">
-      <HabitsHeader 
-        rate={stats.rate} 
-        onBack={() => router.push("/")} 
+      <HabitsHeader
+        rate={stats.rate}
+        onBack={() => router.push("/")}
       />
 
       <div className="px-6 py-8">
-        
+
         {/* --- DASHBOARD --- */}
         {tab === "dashboard" && (
           <div className="space-y-6">
@@ -234,7 +244,15 @@ export function HabitsPageContent() {
             )}
 
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xl font-black text-foreground tracking-tight">Habit Saya</h3>
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-black text-foreground tracking-tight">Habit Saya</h3>
+                {isSyncing && (
+                  <div className="flex items-center gap-2 text-primary animate-pulse-soft">
+                    <Loader2 size={16} className="animate-spin" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Sinkronisasi...</span>
+                  </div>
+                )}
+              </div>
               <Button onClick={openAdd} size="sm" className="rounded-full px-4 gap-2 font-black text-xs uppercase tracking-widest h-10">
                 <Plus size={16} /> Tambah
               </Button>
@@ -254,16 +272,16 @@ export function HabitsPageContent() {
                   const done = !!completions[today()]?.[h.id];
                   const streak = getStreak(h.id, completions);
                   const color = CAT_COLOR[h.category] || "#6b7280";
-                  
+
                   return (
-                    <div 
-                      key={h.id} 
+                    <div
+                      key={h.id}
                       className={cn(
                         "group relative glass p-5 rounded-[2rem] border-transparent transition-all duration-300 flex items-center gap-5",
                         done ? "bg-primary/5 border-primary/10" : "hover:border-primary/20"
                       )}
                     >
-                      <button 
+                      <button
                         onClick={() => toggleHabit(h.id)}
                         className={cn(
                           "transition-transform active:scale-95",
@@ -272,19 +290,19 @@ export function HabitsPageContent() {
                       >
                         {done ? <CheckCircle2 size={40} /> : <Circle size={40} />}
                       </button>
-                      
+
                       <div className="flex-1 min-w-0">
                         <h4 className={cn("font-black text-lg tracking-tight truncate", done && "text-primary/40 line-through")}>{h.name}</h4>
                         <div className="flex flex-wrap gap-3 mt-2">
-                          <Badge 
-                            variant="secondary" 
+                          <Badge
+                            variant="secondary"
                             className="rounded-lg text-[9px] font-black uppercase px-2 py-0.5"
                             style={{ backgroundColor: `${color}15`, color: color }}
                           >
                             {h.category}
                           </Badge>
                           {h.reminderEnabled && h.reminderTime && (
-                           <div className="flex items-center gap-1.5 text-[10px] font-black text-muted-foreground/60 uppercase">
+                            <div className="flex items-center gap-1.5 text-[10px] font-black text-muted-foreground/60 uppercase">
                               <Clock size={12} /> {h.reminderTime}
                             </div>
                           )}
@@ -295,8 +313,8 @@ export function HabitsPageContent() {
                           )}
                         </div>
                       </div>
-                      
-                      <button 
+
+                      <button
                         onClick={() => openEdit(h)}
                         className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground/30 hover:text-foreground hover:bg-muted transition-all"
                       >
@@ -316,30 +334,30 @@ export function HabitsPageContent() {
             <section>
               <h3 className="text-sm font-black tracking-widest mb-6 text-foreground/60 uppercase px-1">Aktivitas Mingguan</h3>
               <div className="glass p-8 rounded-[2.5rem] border-primary/5 h-72">
-                <ChartContainer config={{ 
-                  completed: { label: "Habit Selesai", color: "hsl(var(--primary))" } 
+                <ChartContainer config={{
+                  completed: { label: "Habit Selesai", color: "hsl(var(--primary))" }
                 }}>
                   <BarChart data={weeklyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="day" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      fontSize={11} 
+                    <XAxis
+                      dataKey="day"
+                      axisLine={false}
+                      tickLine={false}
+                      fontSize={11}
                       fontFamily="inherit"
                       fontWeight="black"
                     />
-                    <YAxis 
-                      axisLine={false} 
-                      tickLine={false} 
-                      fontSize={11} 
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      fontSize={11}
                       fontWeight="black"
                       allowDecimals={false}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar 
-                      dataKey="completed" 
-                      radius={[8, 8, 0, 0]} 
+                    <Bar
+                      dataKey="completed"
+                      radius={[8, 8, 0, 0]}
                       maxBarSize={32}
                     >
                       {weeklyData.map((entry, index) => (
@@ -362,7 +380,7 @@ export function HabitsPageContent() {
                   const days = getLast7Days();
                   const weekDone = days.filter(d => completions[d]?.[h.id]).length;
                   const percent = Math.round((weekDone / 7) * 100);
-                  
+
                   return (
                     <Card key={h.id} className="glass p-6 rounded-[2.5rem] border-primary/5 space-y-6 overflow-hidden relative border-none">
                       <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl -mr-12 -mt-12 rounded-full" />
@@ -378,17 +396,17 @@ export function HabitsPageContent() {
                         </div>
                         <div className="text-3xl font-black text-primary leading-none">{percent}%</div>
                       </div>
-                      
+
                       <div className="flex gap-2.5 relative z-10">
                         {days.map((d, i) => {
                           const isDone = !!completions[d]?.[h.id];
                           return (
                             <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                              <div 
+                              <div
                                 className={cn(
                                   "w-full h-10 rounded-xl transition-all border duration-500",
-                                  isDone 
-                                    ? "bg-primary border-primary shadow-lg shadow-primary/20" 
+                                  isDone
+                                    ? "bg-primary border-primary shadow-lg shadow-primary/20"
                                     : "bg-muted/30 border-white/5"
                                 )}
                               />
@@ -423,11 +441,11 @@ export function HabitsPageContent() {
 
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
               {QUICK_PROMPTS.map(q => (
-                <Button 
-                  key={q} 
-                  variant="outline" 
-                  size="sm" 
-                  disabled={aiLoading} 
+                <Button
+                  key={q}
+                  variant="outline"
+                  size="sm"
+                  disabled={aiLoading}
                   onClick={() => askAI(q)}
                   className="rounded-full whitespace-nowrap bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-100 dark:border-indigo-900 text-indigo-700 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest px-5 h-9"
                 >
@@ -443,14 +461,14 @@ export function HabitsPageContent() {
                     &ldquo;{aiMsg}&rdquo;
                   </div>
                 )}
-                
+
                 {aiLoading && (
                   <div className="flex flex-col items-center justify-center py-20 gap-4 text-indigo-500/50">
                     <Loader2 size={40} className="animate-spin" />
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">Berpikir...</p>
                   </div>
                 )}
-                
+
                 {!aiMsg && !aiLoading && (
                   <div className="flex flex-col items-center justify-center py-24 opacity-20 text-center px-10">
                     <Bot size={64} className="mb-6" />
@@ -460,15 +478,15 @@ export function HabitsPageContent() {
               </div>
 
               <div className="flex gap-3">
-                <Input 
-                  value={aiInput} 
+                <Input
+                  value={aiInput}
                   onChange={e => setAiInput(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter" && aiInput.trim()) { askAI(aiInput); setAiInput(""); } }}
                   placeholder="Kirim pesan ke Coach..."
                   className="rounded-2xl border-indigo-100 dark:border-indigo-900 bg-background/80 h-14 text-sm px-6 font-medium shadow-inner"
                 />
-                <Button 
-                  onClick={() => { if (aiInput.trim()) { askAI(aiInput); setAiInput(""); } }} 
+                <Button
+                  onClick={() => { if (aiInput.trim()) { askAI(aiInput); setAiInput(""); } }}
                   disabled={aiLoading || !aiInput.trim()}
                   className="rounded-2xl w-14 h-14 p-0 bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-400/20 text-white"
                 >
@@ -480,14 +498,14 @@ export function HabitsPageContent() {
         )}
       </div>
 
-      <HabitsQuickSwitch 
-        currentTab={tab} 
-        onChangeTab={setTab} 
+      <HabitsQuickSwitch
+        currentTab={tab}
+        onChangeTab={setTab}
       />
 
       {/* Add/Edit Modal */}
       {modal && (
-        <div 
+        <div
           className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in"
           onClick={e => e.target === e.currentTarget && setModal(false)}
         >
@@ -503,10 +521,10 @@ export function HabitsPageContent() {
               <div className="space-y-6">
                 <div className="space-y-2 px-1">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">Nama Habit</label>
-                  <Input 
-                    value={form.name} 
-                    onChange={e => setForm(p => ({ ...p, name: e.target.value }))} 
-                    placeholder="Contoh: Minum Air Putih..." 
+                  <Input
+                    value={form.name}
+                    onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                    placeholder="Contoh: Minum Air Putih..."
                     className="rounded-2xl h-14 px-5 text-sm font-semibold border-muted bg-muted/30"
                   />
                 </div>
@@ -515,13 +533,13 @@ export function HabitsPageContent() {
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Pilih Kategori</label>
                   <div className="flex flex-wrap justify-center gap-2.5">
                     {CATEGORIES.map(c => (
-                      <button 
-                        key={c} 
-                        onClick={() => setForm(p => ({ ...p, category: c }))} 
+                      <button
+                        key={c}
+                        onClick={() => setForm(p => ({ ...p, category: c }))}
                         className={cn(
                           "px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border-2",
-                          form.category === c 
-                            ? "bg-primary border-primary text-white shadow-lg shadow-primary/20" 
+                          form.category === c
+                            ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
                             : "bg-muted/50 border-transparent text-muted-foreground/60 hover:bg-muted"
                         )}
                       >
@@ -542,7 +560,7 @@ export function HabitsPageContent() {
                         <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">Notifikasi harian</p>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setForm(p => ({ ...p, reminderEnabled: !p.reminderEnabled }))}
                       className={cn(
                         "w-14 h-8 rounded-full relative transition-all duration-300",
@@ -555,13 +573,13 @@ export function HabitsPageContent() {
                       )} />
                     </button>
                   </div>
-                  
+
                   {form.reminderEnabled && (
                     <div className="animate-in slide-in-from-top-4 duration-300">
-                      <Input 
-                        type="time" 
-                        value={form.reminderTime} 
-                        onChange={e => setForm(p => ({ ...p, reminderTime: e.target.value }))} 
+                      <Input
+                        type="time"
+                        value={form.reminderTime}
+                        onChange={e => setForm(p => ({ ...p, reminderTime: e.target.value }))}
                         className="rounded-2xl h-14 bg-background px-6 font-black tracking-widest text-lg text-center"
                       />
                     </div>
@@ -573,11 +591,11 @@ export function HabitsPageContent() {
                 <Button onClick={onSave} className="h-16 rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-primary/30">
                   {editH ? "SIMPAN PERUBAHAN" : "MULAI HABIT INI"}
                 </Button>
-                
+
                 {editH && (
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => deleteHabit(editH.id)} 
+                  <Button
+                    variant="ghost"
+                    onClick={() => deleteHabit(editH.id)}
                     className="h-12 rounded-[1.5rem] font-black text-destructive/60 hover:bg-destructive/5 uppercase text-[10px] tracking-widest"
                   >
                     <Trash2 size={16} className="mr-2" /> HAPUS HABIT

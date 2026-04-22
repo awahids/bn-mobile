@@ -445,6 +445,67 @@ export const bookmarksApi = {
   deleteBookmark: (id: string): Promise<void> => del<void>(`/bookmarks/${id}`),
 }
 
+// ==================== HABITS API ====================
+
+export interface HabitItem {
+  id: string
+  userId: string
+  name: string
+  category: string
+  reminderTime: string
+  reminderEnabled: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface HabitCompletionItem {
+  id: string
+  userId: string
+  habitId: string
+  date: string
+  completed: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface HabitsPayload {
+  habits: HabitItem[]
+  completions: HabitCompletionItem[]
+}
+
+export interface CreateHabitData {
+  name: string
+  category: string
+  reminderTime: string
+  reminderEnabled: boolean
+}
+
+export interface UpdateHabitData {
+  name?: string
+  category?: string
+  reminderTime?: string
+  reminderEnabled?: boolean
+}
+
+export interface SetHabitCompletionData {
+  habitId: string
+  date: string
+  completed: boolean
+}
+
+export const habitsApi = {
+  getHabits: (): Promise<HabitsPayload> => get<HabitsPayload>("/habits"),
+  createHabit: (data: CreateHabitData): Promise<HabitItem> =>
+    post<HabitItem>("/habits", data),
+  updateHabit: (id: string, data: UpdateHabitData): Promise<HabitItem> =>
+    patch<HabitItem>(`/habits/${id}`, data),
+  deleteHabit: (id: string): Promise<void> => del<void>(`/habits/${id}`),
+  setCompletion: (
+    data: SetHabitCompletionData
+  ): Promise<HabitCompletionItem | null> =>
+    post<HabitCompletionItem | null>("/habits/completions", data),
+}
+
 // ==================== DHIKR API ====================
 
 export interface DhikrItem {
@@ -601,6 +662,7 @@ export const api = {
   user: userApi,
   progress: progressApi,
   bookmarks: bookmarksApi,
+  habits: habitsApi,
   dhikr: dhikrApi,
   quiz: quizApi,
   utility: utilityApi,
