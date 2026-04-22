@@ -20,6 +20,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { hijaiyahLetters } from "@/data/hijaiyah";
 import { getQuranDisplayReference } from "@/data/quran";
 import { getQuizCategoryById } from "@/data/quiz";
+import { useHabits } from "@/hooks/use-habits";
+
 
 // Section Components
 import { HeroSection } from "@/components/sections/home/hero-section";
@@ -198,7 +200,9 @@ function saveStoredPrayerTimes(todayKey: string, coords: Coordinates, prayerTime
 
 export function HomePageContent() {
   const { status } = useAuth();
+  const { stats: habitStats, loaded: habitsLoaded } = useHabits();
   const isAuthenticated = status === "authenticated";
+
   const todayKey = useMemo(() => toLocalDateKey(), []);
 
   // Prefetch learning routes since users are likely to navigate to them from home
@@ -430,8 +434,14 @@ export function HomePageContent() {
         bestScore: clampPercentage(quizBestScore),
         attempts: totalQuizAttempts,
       },
+      habits: habitsLoaded ? {
+        rate: habitStats.rate,
+        itemsDone: habitStats.doneToday,
+        totalItems: habitStats.totalHabits,
+      } : undefined,
     };
-  }, [dhikrCounters, hijaiyahProgress, quranBookmarks, quranProgress, quizAttempts, quizStats]);
+  }, [dhikrCounters, hijaiyahProgress, quranBookmarks, quranProgress, quizAttempts, quizStats, habitStats, habitsLoaded]);
+
 
   const continueLearningItems = useMemo(() => {
     const latestHijaiyah = [...hijaiyahProgress]

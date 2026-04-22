@@ -27,7 +27,8 @@
   --chart-2: 42 90% 55%;
   --chart-3: 200 70% 45%;
   --chart-4: 340 70% 55%;
-  --chart-5: 100 50% 45%;
+  --chart-5: 270 70% 55%;
+  --chart-6: 30 90% 50%;
 }
 
 .dark {
@@ -50,6 +51,8 @@
   --border: 165 20% 15%;
   --input: 165 20% 15%;
   --ring: 165 75% 45%;
+  --chart-5: 270 70% 60%;
+  --chart-6: 30 90% 55%;
 }
 
 @layer base {
@@ -150,10 +153,12 @@
 }
 
 /* Custom Safe Areas */
+.safe-area-top,
 .safe-p-top {
   padding-top: max(1rem, env(safe-area-inset-top));
 }
 
+.safe-area-bottom,
 .safe-p-bottom {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }

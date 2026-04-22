@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Languages, BookOpen, BicepsFlexed, Brain, Bookmark, Trophy } from "lucide-react";
+import { Bookmark, ChevronRight, Trophy } from "lucide-react";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import { MODULES } from "@/data/modules";
+import { cn } from "@/lib/utils";
 
 interface LearningModulesSectionProps {
   stats: {
@@ -10,93 +12,118 @@ interface LearningModulesSectionProps {
     quran: { bookmarked: number; total: number; lastReadLabel: string };
     dhikr: { todayCount: number; progress: number };
     quiz: { bestScore: number; attempts: number };
+    habits?: { rate: number; itemsDone: number; totalItems: number };
   };
 }
 
 export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
+  // Show only top 4 modules on home page
+  const topModules = MODULES.slice(0, 4);
+
   return (
     <section className="px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-foreground">Modul Pilihan</h3>
-        <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-tighter">Explore All</span>
+        <Link
+          href="/modules"
+          className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-full uppercase tracking-tighter hover:bg-primary/20 active:scale-95 transition-all"
+        >
+          Explore All
+          <ChevronRight size={14} />
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {/* Hijaiyah Module */}
-        <Link href="/hijaiyah" prefetch={true} className="group" data-testid="module-hijaiyah">
-          <div className="relative glass p-5 rounded-[2rem] border-primary/5 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 active:scale-95">
-            <div className="w-14 h-14 bg-gradient-to-br from-chart-1 to-chart-1/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-1/10 group-hover:animate-float">
-              <Languages className="text-white w-full h-full" />
-            </div>
-            <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Hijaiyah</h4>
-            <p className="text-xs text-muted-foreground mb-4">28 Huruf Arab</p>
-            <div className="flex items-center justify-between bg-primary/5 p-2 rounded-2xl">
-              <span className="text-[10px] font-black text-primary uppercase">{stats.hijaiyah.completed}/{stats.hijaiyah.total}</span>
-              <ProgressRing
-                progress={stats.hijaiyah.progress}
-                size={24}
-                className="text-primary"
-              />
-            </div>
-          </div>
-        </Link>
+        {topModules.map((module) => {
+          const Icon = module.icon;
 
-        {/* Al-Quran Module */}
-        <Link href="/quran" prefetch={true} className="group" data-testid="module-quran">
-          <div className="relative glass p-5 rounded-[2rem] border-secondary/5 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 active:scale-95">
-            <div className="w-14 h-14 bg-gradient-to-br from-chart-2 to-chart-2/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-2/10 group-hover:animate-float">
-              <BookOpen className="text-white w-full h-full" />
-            </div>
-            <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Al-Qur&apos;an</h4>
-            <p className="text-xs text-muted-foreground mb-4">114 Surah</p>
-            <div className="flex items-center justify-between bg-accent/5 p-2 rounded-2xl">
-              <span className="text-[10px] font-black text-accent uppercase">
-                {stats.quran.lastReadLabel}
-              </span>
-              <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center p-1.5 shadow-sm">
-                <Bookmark className="text-white w-full h-full" />
+          return (
+            <Link key={module.id} href={module.href} prefetch={true} className="group" data-testid={`module-${module.id}`}>
+              <div className={cn(
+                "relative glass p-5 rounded-[2rem] transition-all duration-300 active:scale-95 flex flex-col h-full bg-card/40 dark:bg-card/20",
+                "border hover:shadow-xl",
+                module.borderAccentClass,
+                module.glowClass,
+                `hover:${module.glowClass.replace("shadow-", "shadow-").replace("/5", "/10")}`
+              )}>
+                <div className={cn(
+                  "w-14 h-14 bg-gradient-to-br rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg group-hover:animate-float",
+                  module.gradientClass,
+                  module.shadowClass
+                )}>
+                  <Icon className="text-white w-full h-full" />
+                </div>
+                <h4 className="font-black text-card-foreground text-lg mb-1 leading-none tracking-tighter">
+                  {module.title}
+                </h4>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter opacity-60 mb-4">{module.subtitle}</p>
+
+                {/* Bottom section with flex-grow to push to bottom */}
+                <div className="mt-auto">
+                    {/* Stats Rendering based on module type */}
+                    {module.id === "hijaiyah" && (
+                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
+                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
+                        {stats.hijaiyah.completed}/{stats.hijaiyah.total}
+                        </span>
+                        <ProgressRing
+                        progress={stats.hijaiyah.progress}
+                        size={24}
+                        className={module.colorClass}
+                        />
+                    </div>
+                    )}
+
+                    {module.id === "quran" && (
+                    <div className={cn("flex items-center justify-between p-2 rounded-2xl min-h-[40px] border", module.bgAccentClass, module.borderAccentClass)}>
+                        <span className={cn("text-[10px] font-black uppercase leading-tight max-w-[70%] truncate", module.colorClass)}>
+                        {stats.quran.lastReadLabel}
+                        </span>
+                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center p-1.5 shadow-sm shrink-0", module.colorClass.replace("text-", "bg-"))}>
+                        <Bookmark className="text-white w-full h-full" />
+                        </div>
+                    </div>
+                    )}
+
+                    {module.id === "dhikr" && (
+                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
+                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>{stats.dhikr.todayCount}x</span>
+                        <ProgressRing
+                        progress={stats.dhikr.progress}
+                        size={24}
+                        className={module.colorClass}
+                        />
+                    </div>
+                    )}
+
+                    {module.id === "quiz" && (
+                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
+                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
+                        {stats.quiz.bestScore}%
+                        </span>
+                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center p-1.5 shadow-sm", module.colorClass.replace("text-", "bg-"))}>
+                        <Trophy className="text-white w-full h-full" />
+                        </div>
+                    </div>
+                    )}
+
+                    {module.id === "habits" && stats.habits && (
+                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
+                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
+                        {stats.habits.itemsDone}/{stats.habits.totalItems}
+                        </span>
+                        <ProgressRing
+                        progress={stats.habits.rate}
+                        size={24}
+                        className={module.colorClass}
+                        />
+                    </div>
+                    )}
+                </div>
               </div>
-            </div>
-          </div>
-        </Link>
-
-        {/* Dhikr Module */}
-        <Link href="/dhikr" prefetch={true} className="group" data-testid="module-dhikr">
-          <div className="relative glass p-5 rounded-[2rem] border-chart-3/5 transition-all duration-300 hover:shadow-xl hover:shadow-chart-3/5 active:scale-95">
-            <div className="w-14 h-14 bg-gradient-to-br from-chart-3 to-chart-3/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-3/10 group-hover:animate-float">
-              <BicepsFlexed className="text-white w-full h-full" />
-            </div>
-            <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Dhikr</h4>
-            <p className="text-xs text-muted-foreground mb-4">Pagi & Petang</p>
-            <div className="flex items-center justify-between bg-chart-3/5 p-2 rounded-2xl">
-              <span className="text-[10px] font-black text-chart-3 uppercase">{stats.dhikr.todayCount}x</span>
-              <ProgressRing
-                progress={stats.dhikr.progress}
-                size={24}
-                className="text-chart-3"
-              />
-            </div>
-          </div>
-        </Link>
-
-        {/* Quiz Module */}
-        <Link href="/quiz" prefetch={true} className="group" data-testid="module-quiz">
-          <div className="relative glass p-5 rounded-[2rem] border-chart-4/5 transition-all duration-300 hover:shadow-xl hover:shadow-chart-4/5 active:scale-95">
-            <div className="w-14 h-14 bg-gradient-to-br from-chart-4 to-chart-4/40 rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg shadow-chart-4/10 group-hover:animate-float">
-              <Brain className="text-white w-full h-full" />
-            </div>
-            <h4 className="font-bold text-card-foreground text-lg mb-1 leading-none">Kuis</h4>
-            <p className="text-xs text-muted-foreground mb-4">4 Kategori</p>
-            <div className="flex items-center justify-between bg-chart-4/5 p-2 rounded-2xl">
-              <span className="text-[10px] font-black text-chart-4 uppercase">
-                Skor: {stats.quiz.bestScore}%
-              </span>
-              <div className="w-6 h-6 bg-chart-4 rounded-full flex items-center justify-center p-1.5 shadow-sm">
-                <Trophy className="text-white w-full h-full" />
-              </div>
-            </div>
-          </div>
-        </Link>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

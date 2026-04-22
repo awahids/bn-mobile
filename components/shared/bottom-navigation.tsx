@@ -8,16 +8,54 @@ import { Home, BookOpen, TrendingUp, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
-const navItems = [
-  { path: "/", label: "Beranda", icon: Home },
-  { path: "/hijaiyah", label: "Belajar", icon: BookOpen },
-  { path: "/progress", label: "Progress", icon: TrendingUp },
-  { path: "/profile", label: "Profil", icon: User },
+type NavItem = {
+  path: string;
+  label: string;
+  icon: typeof Home;
+  isActive: (pathname: string) => boolean;
+};
+
+const LEARNING_ROUTE_PREFIXES = [
+  "/modules",
+  "/hijaiyah",
+  "/quran",
+  "/dhikr",
+  "/quiz",
+  "/habits",
 ];
+
+const navItems = [
+  {
+    path: "/",
+    label: "Beranda",
+    icon: Home,
+    isActive: (pathname: string) => pathname === "/",
+  },
+  {
+    path: "/modules",
+    label: "Belajar",
+    icon: BookOpen,
+    isActive: (pathname: string) =>
+      LEARNING_ROUTE_PREFIXES.some((prefix) => pathname.startsWith(prefix)),
+  },
+  {
+    path: "/progress",
+    label: "Progress",
+    icon: TrendingUp,
+    isActive: (pathname: string) => pathname.startsWith("/progress"),
+  },
+  {
+    path: "/profile",
+    label: "Profil",
+    icon: User,
+    isActive: (pathname: string) => pathname.startsWith("/profile"),
+  },
+] satisfies NavItem[];
 
 export function BottomNavigation() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const bottomOffset = "max(0.75rem, env(safe-area-inset-bottom))";
 
   useEffect(() => {
     setMounted(true);
@@ -27,20 +65,15 @@ export function BottomNavigation() {
     return null;
   }
 
-  const isActive = (path: string) => {
-    if (!pathname) return false;
-    if (path === "/") {
-      return pathname === "/";
-    }
-    return pathname.startsWith(path);
-  };
-
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[400px] pointer-events-none">
-      <nav className="glass rounded-[2.5rem] border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-1.5 pointer-events-auto overflow-hidden">
+    <div
+      className="fixed left-1/2 -translate-x-1/2 z-50"
+      style={{ bottom: bottomOffset, width: "min(92vw, 28rem)" }}
+    >
+      <nav className="glass rounded-[2.5rem] border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-1.5 overflow-hidden">
         <div className="flex items-center justify-between relative px-1">
-          {navItems.map(({ path, label, icon: Icon }) => {
-            const active = isActive(path);
+          {navItems.map(({ path, label, icon: Icon, isActive }) => {
+            const active = pathname ? isActive(pathname) : false;
 
             return (
               <Link
@@ -48,10 +81,12 @@ export function BottomNavigation() {
                 href={path}
                 prefetch={true}
                 className={cn(
-                  "relative flex flex-col items-center justify-center min-w-[64px] h-12 px-3 transition-all duration-500 rounded-[1.75rem] group outline-none",
+                  "relative flex flex-col items-center justify-center min-w-[64px] h-12 px-3 transition-all duration-500 rounded-[1.75rem] group outline-none touch-manipulation",
                   active ? "text-primary flex-[1.6]" : "text-muted-foreground flex-1"
                 )}
                 data-testid={`nav-${label.toLowerCase()}`}
+                aria-current={active ? "page" : undefined}
+                aria-label={label}
               >
                 <motion.div whileTap={{ scale: 0.9 }}>
                   <div className="flex flex-col items-center justify-center w-full h-full">
@@ -100,4 +135,3 @@ export function BottomNavigation() {
     </div>
   );
 }
-
