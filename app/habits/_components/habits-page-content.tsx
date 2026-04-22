@@ -11,7 +11,6 @@ import {
   Cell
 } from "recharts";
 import { 
-  Sparkles, 
   Plus, 
   Bell, 
   BellOff, 
@@ -42,6 +41,7 @@ import {
   ChartTooltip, 
   ChartTooltipContent 
 } from "@/components/ui/chart";
+import api, { getErrorMessage, isApiError } from "@/lib/api";
 
 // Custom Sections
 import { HabitsHeader } from "./sections/habits-header";
@@ -53,7 +53,11 @@ const getLast7Days = () => Array.from({ length: 7 }, (_, i) => {
   return d.toISOString().split("T")[0];
 });
 
-const QUICK_PROMPTS = ["Analyze my habits", "Suggest new habits", "Motivate me"];
+const QUICK_PROMPTS = [
+  "Evaluasi habit saya",
+  "Saran habit Islami harian",
+  "Motivasi untuk istiqamah",
+];
 
 export function HabitsPageContent() {
   const router = useRouter();
@@ -144,24 +148,28 @@ export function HabitsPageContent() {
       const s = getStreak(h.id, completions);
       const w = getLast7Days().filter(d => completions[d]?.[h.id]).length;
       return `- ${h.name} (${h.category}): ${w}/7 days, ${s}-day streak`;
-    }).join("\n") : "No habits yet.";
+    }).join("\n") : "Belum ada habit.";
 
     try {
-      const res = await fetch("/api/v1/ai/coach", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: "You are a supportive, motivating habit coach. Be warm, practical, and concise. No emojis.",
-          message: `My habits:\n${summary}\n\nToday: ${stats.rate}% complete\n\nRequest: ${prompt}`
-        })
-      });
-      
-      if (!res.ok) throw new Error();
-      
-      const data = await res.json();
-      setAiMsg(data.data?.content || data.content || "Could not get a response.");
-    } catch { 
-      setAiMsg("Could not connect to coach backend. Please try again."); 
+      const data = await api.post<{ content?: string }>(
+        "/ai/coach",
+        {
+          message: `Ringkasan habit saya:\n${summary}\n\nProgress hari ini: ${stats.rate}% selesai\n\nPermintaan: ${prompt}`
+        }
+      );
+
+      setAiMsg(
+        data?.content || "Coach belum memberi respons. Silakan coba lagi."
+      );
+    } catch (error) { 
+      if (isApiError(error) && error.status === 401) {
+        setAiMsg("Silakan login untuk menggunakan AI Coach.");
+        return;
+      }
+      const message = getErrorMessage(error);
+      setAiMsg(
+        message || "Tidak bisa terhubung ke AI Coach. Silakan coba lagi."
+      ); 
     } finally {
       setAiLoading(false);
     }
@@ -432,7 +440,7 @@ export function HabitsPageContent() {
               <div className="flex-1 overflow-y-auto space-y-6 pr-2 scrollbar-none">
                 {aiMsg && (
                   <div className="glass p-6 rounded-[2rem] border-indigo-100/50 bg-indigo-50/20 text-sm leading-relaxed font-semibold text-foreground/80 animate-in fade-in slide-in-from-bottom-4 shadow-sm italic px-8">
-                    "{aiMsg}"
+                    &ldquo;{aiMsg}&rdquo;
                   </div>
                 )}
                 
