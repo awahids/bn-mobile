@@ -18,6 +18,8 @@ export interface ModuleConfig {
   borderAccentClass: string;
   /** Tailwind shadow/glow color class */
   glowClass: string;
+  /** Tailwind hover shadow/glow class */
+  hoverGlowClass: string;
 }
 
 export const MODULES: ModuleConfig[] = [
@@ -27,12 +29,13 @@ export const MODULES: ModuleConfig[] = [
     subtitle: "28 Huruf Arab",
     href: "/hijaiyah",
     icon: Languages,
-    colorClass: "text-chart-1",
-    gradientClass: "from-chart-1 to-chart-1/40",
-    shadowClass: "shadow-chart-1/20",
-    bgAccentClass: "bg-chart-1/10",
-    borderAccentClass: "border-chart-1/20",
-    glowClass: "shadow-chart-1/5",
+    colorClass: "text-primary",
+    gradientClass: "from-primary to-primary/40",
+    shadowClass: "shadow-primary/20",
+    bgAccentClass: "bg-primary/10",
+    borderAccentClass: "border-primary/20",
+    glowClass: "shadow-primary/5",
+    hoverGlowClass: "hover:shadow-primary/10",
   },
   {
     id: "quran",
@@ -41,11 +44,12 @@ export const MODULES: ModuleConfig[] = [
     href: "/quran",
     icon: BookOpen,
     colorClass: "text-accent",
-    gradientClass: "from-chart-2 to-chart-2/40",
-    shadowClass: "shadow-chart-2/20",
-    bgAccentClass: "bg-chart-2/10",
-    borderAccentClass: "border-chart-2/20",
-    glowClass: "shadow-chart-2/5",
+    gradientClass: "from-accent to-accent/40",
+    shadowClass: "shadow-accent/20",
+    bgAccentClass: "bg-accent/10",
+    borderAccentClass: "border-accent/20",
+    glowClass: "shadow-accent/5",
+    hoverGlowClass: "hover:shadow-accent/10",
   },
   {
     id: "dhikr",
@@ -59,6 +63,7 @@ export const MODULES: ModuleConfig[] = [
     bgAccentClass: "bg-chart-3/10",
     borderAccentClass: "border-chart-3/20",
     glowClass: "shadow-chart-3/5",
+    hoverGlowClass: "hover:shadow-chart-3/10",
   },
   {
     id: "quiz",
@@ -72,6 +77,7 @@ export const MODULES: ModuleConfig[] = [
     bgAccentClass: "bg-chart-4/10",
     borderAccentClass: "border-chart-4/20",
     glowClass: "shadow-chart-4/5",
+    hoverGlowClass: "hover:shadow-chart-4/10",
   },
   {
     id: "habits",
@@ -85,6 +91,7 @@ export const MODULES: ModuleConfig[] = [
     bgAccentClass: "bg-chart-5/10",
     borderAccentClass: "border-chart-5/20",
     glowClass: "shadow-chart-5/5",
+    hoverGlowClass: "hover:shadow-chart-5/10",
   },
   {
     id: "sekolah-islam",
@@ -98,5 +105,6 @@ export const MODULES: ModuleConfig[] = [
     bgAccentClass: "bg-chart-6/10",
     borderAccentClass: "border-chart-6/20",
     glowClass: "shadow-chart-6/5",
+    hoverGlowClass: "hover:shadow-chart-6/10",
   },
 ];

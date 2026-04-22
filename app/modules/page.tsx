@@ -6,12 +6,6 @@ import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
 import { MODULES } from "@/data/modules";
 
-function getHoverGlowClass(glowClass: string) {
-  return glowClass.endsWith("/5")
-    ? `hover:${glowClass.slice(0, -2)}/10`
-    : `hover:${glowClass}`;
-}
-
 export default function ModulesPage() {
   return (
     <MobilePageShell className="pb-24">
@@ -24,8 +18,8 @@ export default function ModulesPage() {
             </div>
           </Link>
           <div>
-            <h1 className="text-2xl font-black tracking-tighter text-foreground">Semua Modul</h1>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pilih materi belajar anda</p>
+            <h1 className="text-2xl font-black tracking-tighter text-foreground text-balance">Semua Modul</h1>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Pilih materi belajar anda</p>
           </div>
         </div>
       </div>
@@ -34,29 +28,28 @@ export default function ModulesPage() {
         <div className="grid grid-cols-2 gap-4">
           {MODULES.map((module) => {
             const Icon = module.icon;
-            const hoverGlowClass = getHoverGlowClass(module.glowClass);
 
             return (
               <Link key={module.id} href={module.href} className="group">
                 <div
-                  className={`relative glass p-5 rounded-[2rem] transition-all duration-300 active:scale-95 flex flex-col h-full bg-card/40 dark:bg-card/20 border hover:shadow-xl ${module.borderAccentClass} ${module.glowClass} ${hoverGlowClass}`}
+                  className={`relative glass p-5 rounded-[2.5rem] transition-all duration-300 active:scale-95 flex flex-col h-full bg-card/40 dark:bg-card/20 border hover:shadow-xl ${module.borderAccentClass} ${module.glowClass} ${module.hoverGlowClass}`}
                 >
                   <div
                     className={`w-14 h-14 bg-gradient-to-br rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg group-hover:animate-float ${module.gradientClass} ${module.shadowClass}`}
                   >
-                    <Icon className="text-white w-full h-full" />
+                    <Icon className="text-white w-7 h-7" />
                   </div>
-                  <h4 className="font-black text-card-foreground text-lg mb-1 leading-none tracking-tighter">
+                  <h4 className="font-black text-card-foreground text-xl mb-1 leading-none tracking-tighter">
                     {module.title}
                   </h4>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter opacity-60">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-70">
                     {module.subtitle}
                   </p>
-                  <div className="mt-auto pt-4 flex justify-end">
+                  <div className="mt-8 pt-4 flex justify-end">
                     <div
-                      className={`w-8 h-8 rounded-full border flex items-center justify-center transition-colors duration-300 ${module.bgAccentClass} ${module.borderAccentClass} ${module.colorClass}`}
+                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ${module.bgAccentClass} ${module.borderAccentClass} ${module.colorClass}`}
                     >
-                      <ChevronRight size={16} />
+                      <ChevronRight size={20} />
                     </div>
                   </div>
                 </div>

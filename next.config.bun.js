@@ -2,6 +2,7 @@
 const INTERNAL_API_ORIGIN = (process.env.INTERNAL_API_ORIGIN || 'http://43.157.213.220:8080')
   .replace(/\/+$/, '')
   .replace(/\/api\/v1$/, '')
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
 
 const nextConfig = {
   // Configure for serverless deployment
@@ -152,7 +153,7 @@ const nextConfig = {
 
   // Headers for CORS and security
   async headers() {
-    return [
+    const baseHeaders = [
       {
         source: '/api/:path*',
         headers: [
@@ -161,6 +162,29 @@ const nextConfig = {
           { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
         ],
       },
+    ];
+
+    if (!IS_PRODUCTION) {
+      return [
+        ...baseHeaders,
+        {
+          source: '/_next/static/:path*',
+          headers: [
+            { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
+          ],
+        },
+        {
+          source: '/',
+          headers: [
+            { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
+            { key: 'Clear-Site-Data', value: '"cache"' },
+          ],
+        },
+      ];
+    }
+
+    return [
+      ...baseHeaders,
       // Static asset caching with prefetch hints
       {
         source: '/audio/:path*',

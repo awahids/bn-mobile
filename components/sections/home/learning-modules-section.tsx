@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Bookmark, ChevronRight, Trophy } from "lucide-react";
 import { ProgressRing } from "@/components/ui/progress-ring";
@@ -17,6 +18,12 @@ interface LearningModulesSectionProps {
 }
 
 export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    setHasHydrated(true);
+  }, []);
+
   // Show only top 4 modules on home page
   const topModules = MODULES.slice(0, 4);
 
@@ -44,7 +51,7 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
                 "border hover:shadow-xl",
                 module.borderAccentClass,
                 module.glowClass,
-                `hover:${module.glowClass.replace("shadow-", "shadow-").replace("/5", "/10")}`
+                module.hoverGlowClass
               )}>
                 <div className={cn(
                   "w-14 h-14 bg-gradient-to-br rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg group-hover:animate-float",
@@ -64,10 +71,10 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
                     {module.id === "hijaiyah" && (
                     <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
                         <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
-                        {stats.hijaiyah.completed}/{stats.hijaiyah.total}
+                        {hasHydrated ? `${stats.hijaiyah.completed}/${stats.hijaiyah.total}` : "—"}
                         </span>
                         <ProgressRing
-                        progress={stats.hijaiyah.progress}
+                        progress={hasHydrated ? stats.hijaiyah.progress : 0}
                         size={24}
                         className={module.colorClass}
                         />
@@ -77,7 +84,7 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
                     {module.id === "quran" && (
                     <div className={cn("flex items-center justify-between p-2 rounded-2xl min-h-[40px] border", module.bgAccentClass, module.borderAccentClass)}>
                         <span className={cn("text-[10px] font-black uppercase leading-tight max-w-[70%] truncate", module.colorClass)}>
-                        {stats.quran.lastReadLabel}
+                        {hasHydrated ? stats.quran.lastReadLabel : "Al-Qur'an"}
                         </span>
                         <div className={cn("w-6 h-6 rounded-full flex items-center justify-center p-1.5 shadow-sm shrink-0", module.colorClass.replace("text-", "bg-"))}>
                         <Bookmark className="text-white w-full h-full" />
@@ -87,9 +94,9 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
 
                     {module.id === "dhikr" && (
                     <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
-                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>{stats.dhikr.todayCount}x</span>
+                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>{hasHydrated ? stats.dhikr.todayCount : 0}x</span>
                         <ProgressRing
-                        progress={stats.dhikr.progress}
+                        progress={hasHydrated ? stats.dhikr.progress : 0}
                         size={24}
                         className={module.colorClass}
                         />
@@ -99,7 +106,7 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
                     {module.id === "quiz" && (
                     <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
                         <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
-                        {stats.quiz.bestScore}%
+                        {hasHydrated ? `${stats.quiz.bestScore}%` : "0%"}
                         </span>
                         <div className={cn("w-6 h-6 rounded-full flex items-center justify-center p-1.5 shadow-sm", module.colorClass.replace("text-", "bg-"))}>
                         <Trophy className="text-white w-full h-full" />
@@ -110,10 +117,10 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
                     {module.id === "habits" && stats.habits && (
                     <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
                         <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
-                        {stats.habits.itemsDone}/{stats.habits.totalItems}
+                        {hasHydrated ? `${stats.habits.itemsDone}/${stats.habits.totalItems}` : "—"}
                         </span>
                         <ProgressRing
-                        progress={stats.habits.rate}
+                        progress={hasHydrated ? stats.habits.rate : 0}
                         size={24}
                         className={module.colorClass}
                         />
