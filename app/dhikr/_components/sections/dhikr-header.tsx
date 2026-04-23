@@ -20,7 +20,7 @@ export function DhikrHeader({
   onResetAll,
 }: DhikrHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-sm safe-p-top">
       <div className="flex items-center justify-between px-6 py-3">
         <div className="flex items-center space-x-3">
           <Button

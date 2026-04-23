@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, type Bookmark as ApiBookmark } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
 import { BookOpen, Calendar, Flame, type LucideIcon } from "lucide-react";
+import { disableWebPushSubscription, ensureWebPushSubscription } from "@/lib/web-push";
 
 export interface ProfileUser {
   username: string;
@@ -24,6 +25,12 @@ export function useProfilePageData() {
 
   const [notifications, setNotifications] = useState(true);
   const [audioEnabled, setAudioEnabled] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setNotifications(Notification.permission === "granted");
+    }
+  }, []);
 
   const {
     data: userData,
@@ -103,6 +110,30 @@ export function useProfilePageData() {
     await logout();
   };
 
+  const onChangeNotifications = (checked: boolean) => {
+    if (!isAuthenticated) {
+      setNotifications(false);
+      return;
+    }
+
+    void (async () => {
+      try {
+        if (checked) {
+          const permission = await ensureWebPushSubscription();
+          setNotifications(permission === "granted");
+          return;
+        }
+        await disableWebPushSubscription();
+        setNotifications(false);
+      } catch (error) {
+        console.error("Failed to toggle notifications:", error);
+        if (!checked) {
+          setNotifications(false);
+        }
+      }
+    })();
+  };
+
   return {
     status,
     isAuthenticated,
@@ -116,7 +147,7 @@ export function useProfilePageData() {
     bookmarksError,
     deleteBookmarkMutation,
     notifications,
-    setNotifications,
+    setNotifications: onChangeNotifications,
     audioEnabled,
     setAudioEnabled,
     signOut,

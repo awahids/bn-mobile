@@ -65,7 +65,7 @@ export function ProfilePageContent() {
     <MobilePageShell>
       <ProfileHeader isAuthenticated={isAuthenticated} onBackHome={() => router.push("/")} />
 
-      <div className="p-4 pb-24">
+      <div className="p-4 pb-32">
         <ProfileSummaryCard
           isAuthenticated={isAuthenticated}
           sessionUser={sessionUser}

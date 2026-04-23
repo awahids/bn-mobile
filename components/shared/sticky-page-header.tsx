@@ -19,7 +19,7 @@ export function StickyPageHeader({
   contentClassName,
 }: StickyPageHeaderProps) {
   return (
-    <header className={cn("sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border", className)}>
+    <header className={cn("sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-p-top", className)}>
       <div className={cn("flex items-center justify-between p-4", contentClassName)}>
         <div className="flex items-center space-x-3">
           {leftSlot}

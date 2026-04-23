@@ -43,7 +43,7 @@ export function ProgressPageContent() {
   }
 
   return (
-    <MobilePageShell>
+    <MobilePageShell className="pb-32">
       <ProgressHeader streak={displayStreak} onBackHome={() => router.push("/")} />
 
       <Tabs defaultValue="overview" className="w-full">

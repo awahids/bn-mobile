@@ -39,7 +39,7 @@ export function HijaiyahPageContent() {
   const writingCanvasPreloadProps = usePreloadOnHover(preloadComponents.writingCanvas);
 
   return (
-    <MobilePageShell className="overflow-x-hidden">
+    <MobilePageShell className="pb-32 overflow-x-hidden">
       <HijaiyahHeader
         completedCount={completedCount}
         overallProgress={overallProgress}

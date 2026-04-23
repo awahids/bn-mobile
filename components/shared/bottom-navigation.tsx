@@ -22,6 +22,7 @@ const LEARNING_ROUTE_PREFIXES = [
   "/dhikr",
   "/quiz",
   "/habits",
+  "/sekolah-islam",
 ];
 
 const navItems = [

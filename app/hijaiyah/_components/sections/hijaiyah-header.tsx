@@ -10,7 +10,7 @@ interface HijaiyahHeaderProps {
 
 export function HijaiyahHeader({ completedCount, overallProgress, onBackHome }: HijaiyahHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 glass border-b border-primary/10">
+    <header className="sticky top-0 z-50 glass border-b border-primary/10 safe-p-top">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center space-x-4">
           <Button

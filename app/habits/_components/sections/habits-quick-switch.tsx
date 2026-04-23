@@ -17,7 +17,10 @@ export function HabitsQuickSwitch({ currentTab, onChangeTab }: HabitsQuickSwitch
   ] as const;
 
   return (
-    <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-40">
+    <div 
+      className="fixed left-1/2 transform -translate-x-1/2 z-40"
+      style={{ bottom: "calc(max(0.75rem, env(safe-area-inset-bottom)) + 5rem)" }}
+    >
       <div className="flex bg-card/80 backdrop-blur-xl border border-primary/10 rounded-full p-1.5 shadow-2xl shadow-primary/20">
         {tabs.map((tab) => (
           <Button

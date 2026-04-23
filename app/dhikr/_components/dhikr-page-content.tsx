@@ -56,7 +56,7 @@ export function DhikrPageContent() {
   }
 
   return (
-    <MobilePageShell className="overflow-x-hidden">
+    <MobilePageShell className="pb-32 overflow-x-hidden">
       <DhikrHeader
         greeting={timeBasedGreeting}
         totalCompleted={totalCompleted}

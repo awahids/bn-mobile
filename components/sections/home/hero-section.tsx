@@ -13,7 +13,7 @@ export function HeroSection({ user }: HeroSectionProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <section className="relative overflow-hidden pt-8 pb-12 px-6 mesh-gradient rounded-b-[2.5rem] shadow-xl shadow-primary/5">
+    <section className="relative overflow-hidden pt-8 pb-12 px-6 mesh-gradient rounded-b-[2.5rem] shadow-xl shadow-primary/5 safe-p-top">
       <div className="relative z-10 flex flex-col space-y-6">
         <header className="flex items-center justify-between">
           <div className="flex items-center space-x-3">

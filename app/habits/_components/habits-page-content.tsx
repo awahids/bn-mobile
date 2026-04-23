@@ -30,6 +30,7 @@ import {
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
 import { useHabits, CATEGORIES, CAT_COLOR, today, getStreak, Habit, dateKeyFromDate } from "@/hooks/use-habits";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ import {
   ChartTooltipContent
 } from "@/components/ui/chart";
 import api, { getErrorMessage, isApiError } from "@/lib/api";
+import { ensureWebPushSubscription } from "@/lib/web-push";
 
 // Custom Sections
 import { HabitsHeader } from "./sections/habits-header";
@@ -70,6 +72,7 @@ const QUICK_PROMPTS = [
 
 export function HabitsPageContent() {
   const router = useRouter();
+  const { status, isAuthenticated } = useAuth();
   const {
     habits,
     completions,
@@ -94,6 +97,9 @@ export function HabitsPageContent() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiInput, setAiInput] = useState("");
   const [notif, setNotif] = useState<NotificationPermission>("default");
+  const [notifSyncing, setNotifSyncing] = useState(false);
+  const [notifError, setNotifError] = useState("");
+  const [pushReady, setPushReady] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
@@ -103,6 +109,7 @@ export function HabitsPageContent() {
 
   useEffect(() => {
     if (notif !== "granted") return;
+    if (status === "authenticated" && isAuthenticated && pushReady) return;
     const iv = setInterval(() => {
       const now = new Date();
       const t = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -114,12 +121,53 @@ export function HabitsPageContent() {
       });
     }, 60000);
     return () => clearInterval(iv);
-  }, [habits, completions, notif]);
+  }, [habits, completions, notif, status, isAuthenticated, pushReady]);
+
+  useEffect(() => {
+    if (notif !== "granted" || status !== "authenticated" || !isAuthenticated) {
+      return;
+    }
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        await ensureWebPushSubscription();
+        if (!cancelled) {
+          setNotifError("");
+          setPushReady(true);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setPushReady(false);
+          setNotifError(getErrorMessage(error) || "Gagal sinkronisasi push notification.");
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [notif, status, isAuthenticated]);
 
   const requestNotif = async () => {
-    if (typeof window === "undefined" || !("Notification" in window)) return;
-    const p = await Notification.requestPermission();
-    setNotif(p);
+    if (status !== "authenticated" || !isAuthenticated) {
+      router.push("/login?callbackUrl=/habits");
+      return;
+    }
+
+    setNotifSyncing(true);
+    try {
+      const permission = await ensureWebPushSubscription();
+      setNotif(permission);
+      setNotifError("");
+      setPushReady(permission === "granted");
+    } catch (error) {
+      const message = getErrorMessage(error);
+      setPushReady(false);
+      setNotifError(message || "Gagal mengaktifkan push notification.");
+    } finally {
+      setNotifSyncing(false);
+    }
   };
 
   const onSave = () => {
@@ -237,10 +285,22 @@ export function HabitsPageContent() {
                     <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter">Bantu anda tetap konsisten</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" onClick={requestNotif} className="rounded-full border-primary/20 hover:bg-primary/5 text-primary text-xs font-black h-9">
-                  AKTIFKAN
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={requestNotif}
+                  disabled={notifSyncing}
+                  className="rounded-full border-primary/20 hover:bg-primary/5 text-primary text-xs font-black h-9"
+                >
+                  {notifSyncing ? "MENYAMBUNG..." : "AKTIFKAN"}
                 </Button>
               </div>
+            )}
+
+            {notifError && (
+              <Card className="p-4 rounded-2xl border-destructive/20 bg-destructive/5 text-destructive text-xs font-semibold">
+                {notifError}
+              </Card>
             )}
 
             <div className="flex items-center justify-between px-1">

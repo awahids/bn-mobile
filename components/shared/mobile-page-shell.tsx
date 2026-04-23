@@ -8,7 +8,7 @@ interface MobilePageShellProps {
 
 export function MobilePageShell({ children, className }: MobilePageShellProps) {
   return (
-    <div className={cn("min-h-screen max-w-md mx-auto bg-background relative safe-area-top safe-area-bottom", className)}>
+    <div className={cn("min-h-screen max-w-md mx-auto bg-background relative", className)}>
       {children}
     </div>
   );

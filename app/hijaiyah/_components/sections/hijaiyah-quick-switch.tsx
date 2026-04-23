@@ -7,7 +7,10 @@ interface HijaiyahQuickSwitchProps {
 
 export function HijaiyahQuickSwitch({ currentTab, onChangeTab }: HijaiyahQuickSwitchProps) {
   return (
-    <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 z-30">
+    <div 
+      className="fixed left-1/2 transform -translate-x-1/2 z-30"
+      style={{ bottom: "calc(max(0.75rem, env(safe-area-inset-bottom)) + 5.5rem)" }}
+    >
       <div className="flex bg-card border border-border rounded-full p-1 shadow-lg">
         <Button
           variant={currentTab === "learn" ? "default" : "ghost"}

@@ -47,7 +47,7 @@ function LoginContent() {
 
   return (
     <MobilePageShell className="flex flex-col">
-      <header className="flex items-center justify-between p-4">
+      <header className="flex items-center justify-between p-4 safe-p-top">
         <Button
           variant="ghost"
           size="icon"

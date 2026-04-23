@@ -555,7 +555,7 @@ export function HomePageContent() {
   }
 
   return (
-    <MobilePageShell>
+    <MobilePageShell className="pb-32">
       <HeroSection user={user} />
       
       <LearningModulesSection stats={learningStats} />

@@ -506,6 +506,74 @@ export const habitsApi = {
     post<HabitCompletionItem | null>("/habits/completions", data),
 }
 
+// ==================== PUSH API ====================
+
+export interface PushPublicKeyResponse {
+  publicKey: string
+}
+
+export interface PushSubscriptionData {
+  endpoint: string
+  expirationTime?: number | null
+  keys: {
+    p256dh: string
+    auth: string
+  }
+  timezone?: string
+}
+
+export const pushApi = {
+  getPublicKey: (): Promise<PushPublicKeyResponse> =>
+    get<PushPublicKeyResponse>("/push/public-key", false),
+  upsertSubscription: (data: PushSubscriptionData): Promise<void> =>
+    post<void>("/push/subscriptions", data),
+  deleteSubscription: (endpoint: string): Promise<void> =>
+    del<void>(`/push/subscriptions?endpoint=${encodeURIComponent(endpoint)}`),
+}
+
+// ==================== SCHOOLS API ====================
+
+export interface SchoolCreatedBy {
+  id: string
+  name: string
+  username?: string | null
+}
+
+export type SchoolJenjang = "TK" | "SD" | "SMP" | "SMA" | "SMK" | "MI" | "MTs" | "MA" | "Lainnya"
+export type SchoolStatus = "negeri" | "swasta"
+
+export interface SchoolItem {
+  id: string
+  name: string
+  location: string
+  jenjang: SchoolJenjang
+  statusSekolah: SchoolStatus
+  monthlyFee: number
+  mapUrl: string
+  contact: string
+  description: string
+  createdBy: SchoolCreatedBy
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateSchoolData {
+  name: string
+  location: string
+  jenjang: SchoolJenjang
+  statusSekolah: SchoolStatus
+  monthlyFee: number
+  mapUrl: string
+  contact?: string
+  description?: string
+}
+
+export const schoolsApi = {
+  getSchools: (): Promise<SchoolItem[]> => get<SchoolItem[]>("/schools", false),
+  createSchool: (data: CreateSchoolData): Promise<SchoolItem> =>
+    post<SchoolItem>("/schools", data),
+}
+
 // ==================== DHIKR API ====================
 
 export interface DhikrItem {
@@ -663,6 +731,8 @@ export const api = {
   progress: progressApi,
   bookmarks: bookmarksApi,
   habits: habitsApi,
+  push: pushApi,
+  schools: schoolsApi,
   dhikr: dhikrApi,
   quiz: quizApi,
   utility: utilityApi,
