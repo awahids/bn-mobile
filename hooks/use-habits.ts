@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import api, {
   isApiError,
   type HabitCompletionItem,
@@ -8,6 +8,7 @@ import { useAuth } from "./use-auth";
 
 const LOCAL_HABITS_KEY = "bn_local_habits";
 const LOCAL_COMPLETIONS_KEY = "bn_local_completions";
+const LOCAL_HABIT_ID_PREFIX = "local-";
 
 export interface Habit {
   id: string;
@@ -35,7 +36,18 @@ export const CAT_COLOR: Record<string, string> = {
   Other: "#6b7280"
 };
 
-export const today = () => new Date().toISOString().split("T")[0];
+function padTwoDigits(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
+export function dateKeyFromDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = padTwoDigits(date.getMonth() + 1);
+  const day = padTwoDigits(date.getDate());
+  return `${year}-${month}-${day}`;
+}
+
+export const today = () => dateKeyFromDate(new Date());
 
 export function getStreak(habitId: string, completions: Completions) {
   const d = new Date();
@@ -43,7 +55,7 @@ export function getStreak(habitId: string, completions: Completions) {
   if (!completions[t]?.[habitId]) d.setDate(d.getDate() - 1);
   let streak = 0;
   while (true) {
-    const ds = d.toISOString().split("T")[0];
+    const ds = dateKeyFromDate(d);
     if (completions[ds]?.[habitId]) {
       streak++;
       d.setDate(d.getDate() - 1);
@@ -91,12 +103,28 @@ function removeCompletionForHabit(prev: Completions, habitID: string): Completio
   return next;
 }
 
+function addCompletionEntry(target: Completions, date: string, habitID: string) {
+  if (!target[date]) {
+    target[date] = {};
+  }
+  target[date][habitID] = true;
+}
+
+function hasCompletionEntries(entries: Completions): boolean {
+  return Object.values(entries).some((dayEntries) => Object.keys(dayEntries).length > 0);
+}
+
+function isLocalHabitID(id: string): boolean {
+  return id.startsWith(LOCAL_HABIT_ID_PREFIX);
+}
+
 export function useHabits() {
   const { isAuthenticated, status } = useAuth();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completions, setCompletions] = useState<Completions>({});
   const [loaded, setLoaded] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const syncAttemptedRef = useRef(false);
 
   // Helper to load from local storage
   const loadLocal = useCallback(() => {
@@ -146,68 +174,101 @@ export function useHabits() {
 
   // Sync logic
   useEffect(() => {
-    if (status === "authenticated" && !isSyncing) {
-      const localHabitsStr = localStorage.getItem(LOCAL_HABITS_KEY);
-      const localCompletionsStr = localStorage.getItem(LOCAL_COMPLETIONS_KEY);
-
-      if (localHabitsStr || localCompletionsStr) {
-        void (async () => {
-          setIsSyncing(true);
-          try {
-            const localHabits: Habit[] = localHabitsStr ? JSON.parse(localHabitsStr) : [];
-            const localCompletions: Completions = localCompletionsStr ? JSON.parse(localCompletionsStr) : {};
-
-            // Map local IDs to server IDs
-            const idMap: Record<string, string> = {};
-
-            // Sync habits
-            for (const habit of localHabits) {
-              try {
-                const created = await api.habits.createHabit({
-                  name: habit.name,
-                  category: habit.category,
-                  reminderTime: habit.reminderTime,
-                  reminderEnabled: habit.reminderEnabled,
-                });
-                idMap[habit.id] = created.id;
-              } catch (e) {
-                console.error(`Failed to sync habit ${habit.name}:`, e);
-              }
-            }
-
-            // Sync completions
-            for (const [date, entry] of Object.entries(localCompletions)) {
-              for (const [localId, completed] of Object.entries(entry)) {
-                const serverId = idMap[localId];
-                if (serverId && completed) {
-                  try {
-                    await api.habits.setCompletion({
-                      habitId: serverId,
-                      date,
-                      completed: true,
-                    });
-                  } catch (e) {
-                    console.error(`Failed to sync completion for ${date}:`, e);
-                  }
-                }
-              }
-            }
-
-            // Clear local storage after sync
-            localStorage.removeItem(LOCAL_HABITS_KEY);
-            localStorage.removeItem(LOCAL_COMPLETIONS_KEY);
-            
-            // Reload habits from server
-            await loadHabits();
-          } catch (e) {
-            console.error("Sync failed:", e);
-          } finally {
-            setIsSyncing(false);
-          }
-        })();
-      }
+    if (status !== "authenticated") {
+      syncAttemptedRef.current = false;
     }
-  }, [status, loadHabits, isSyncing]);
+  }, [status]);
+
+  useEffect(() => {
+    if (status !== "authenticated" || isSyncing || syncAttemptedRef.current) {
+      return;
+    }
+
+    const localHabitsStr = localStorage.getItem(LOCAL_HABITS_KEY);
+    const localCompletionsStr = localStorage.getItem(LOCAL_COMPLETIONS_KEY);
+    if (!localHabitsStr && !localCompletionsStr) {
+      return;
+    }
+
+    syncAttemptedRef.current = true;
+    void (async () => {
+      setIsSyncing(true);
+      try {
+        const localHabits: Habit[] = localHabitsStr ? JSON.parse(localHabitsStr) : [];
+        const localCompletions: Completions = localCompletionsStr ? JSON.parse(localCompletionsStr) : {};
+        const idMap: Record<string, string> = {};
+        const remainingHabits: Habit[] = [];
+        const remainingCompletions: Completions = {};
+
+        for (const habit of localHabits) {
+          if (!isLocalHabitID(habit.id)) {
+            idMap[habit.id] = habit.id;
+            continue;
+          }
+
+          try {
+            const created = await api.habits.createHabit({
+              name: habit.name,
+              category: habit.category,
+              reminderTime: habit.reminderTime,
+              reminderEnabled: habit.reminderEnabled,
+            });
+            idMap[habit.id] = created.id;
+          } catch (error) {
+            remainingHabits.push(habit);
+            console.error(`Failed to sync habit ${habit.name}:`, error);
+          }
+        }
+
+        for (const [date, entry] of Object.entries(localCompletions)) {
+          for (const [habitRef, completed] of Object.entries(entry)) {
+            if (!completed) {
+              continue;
+            }
+
+            let serverHabitID = idMap[habitRef];
+            if (!serverHabitID && !isLocalHabitID(habitRef)) {
+              serverHabitID = habitRef;
+            }
+
+            if (!serverHabitID) {
+              addCompletionEntry(remainingCompletions, date, habitRef);
+              continue;
+            }
+
+            try {
+              await api.habits.setCompletion({
+                habitId: serverHabitID,
+                date,
+                completed: true,
+              });
+            } catch (error) {
+              if (!isApiError(error) || error.status !== 404) {
+                const remainingHabitRef = isLocalHabitID(serverHabitID)
+                  ? habitRef
+                  : serverHabitID;
+                addCompletionEntry(remainingCompletions, date, remainingHabitRef);
+              }
+              console.error(`Failed to sync completion for ${date} (${habitRef}):`, error);
+            }
+          }
+        }
+
+        if (remainingHabits.length > 0 || hasCompletionEntries(remainingCompletions)) {
+          saveLocal(remainingHabits, remainingCompletions);
+        } else {
+          localStorage.removeItem(LOCAL_HABITS_KEY);
+          localStorage.removeItem(LOCAL_COMPLETIONS_KEY);
+        }
+
+        await loadHabits();
+      } catch (error) {
+        console.error("Sync failed:", error);
+      } finally {
+        setIsSyncing(false);
+      }
+    })();
+  }, [status, loadHabits, isSyncing, saveLocal]);
 
   useEffect(() => {
     void loadHabits();
@@ -269,7 +330,7 @@ export function useHabits() {
           } else {
             const newHabit: Habit = {
               ...habit,
-              id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+              id: `${LOCAL_HABIT_ID_PREFIX}${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
               createdAt: today(),
             };
             const nextHabits = [...habits, newHabit];

@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
-import { useHabits, CATEGORIES, CAT_COLOR, today, getStreak, Habit } from "@/hooks/use-habits";
+import { useHabits, CATEGORIES, CAT_COLOR, today, getStreak, Habit, dateKeyFromDate } from "@/hooks/use-habits";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +50,7 @@ import { HabitsQuickSwitch } from "./sections/habits-quick-switch";
 const getLast7Days = () => Array.from({ length: 7 }, (_, i) => {
   const d = new Date();
   d.setDate(d.getDate() - (6 - i));
-  return d.toISOString().split("T")[0];
+  return dateKeyFromDate(d);
 });
 
 const QUICK_PROMPTS = [
