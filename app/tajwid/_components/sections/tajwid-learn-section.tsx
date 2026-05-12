@@ -41,11 +41,11 @@ function HighlightedAyah({
 
   return (
     <span className="font-arabic text-3xl leading-[1.9] text-foreground" dir="rtl">
-      {after}
+      {before}
       <span className="rounded-md bg-chart-2/15 px-1.5 font-black text-chart-2">
         {match}
       </span>
-      {before}
+      {after}
     </span>
   );
 }
