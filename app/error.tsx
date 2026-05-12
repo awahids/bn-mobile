@@ -8,6 +8,7 @@
  */
 
 import { useEffect } from 'react'
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertTriangle, RefreshCw, Home } from "lucide-react"
@@ -18,6 +19,8 @@ interface ErrorProps {
 }
 
 export default function Error({ error, reset }: ErrorProps) {
+  const router = useRouter()
+
   useEffect(() => {
     // Log the error to an error reporting service
     console.error('Application error:', error)
@@ -61,7 +64,7 @@ export default function Error({ error, reset }: ErrorProps) {
               </Button>
 
               <Button
-                onClick={() => window.location.href = '/'}
+                onClick={() => router.push('/')}
                 className="w-full"
                 variant="outline"
               >

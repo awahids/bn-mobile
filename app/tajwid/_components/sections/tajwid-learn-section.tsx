@@ -22,6 +22,36 @@ const categoryLabels: Record<TajwidRuleAPI["category"], string> = {
   waqf: "Waqf",
 };
 
+function getFocusedExcerpt(fullText: string, highlightedText: string) {
+  if (!highlightedText || !fullText.includes(highlightedText)) return fullText;
+
+  const contextChars = 24;
+  const startIndex = fullText.indexOf(highlightedText);
+  const endIndex = startIndex + highlightedText.length;
+
+  let excerptStart = Math.max(0, startIndex - contextChars);
+  let excerptEnd = Math.min(fullText.length, endIndex + contextChars);
+
+  if (excerptStart > 0) {
+    const nextSpace = fullText.indexOf(" ", excerptStart);
+    if (nextSpace !== -1 && nextSpace < startIndex) {
+      excerptStart = nextSpace + 1;
+    }
+  }
+
+  if (excerptEnd < fullText.length) {
+    const prevSpace = fullText.lastIndexOf(" ", excerptEnd);
+    if (prevSpace !== -1 && prevSpace > endIndex) {
+      excerptEnd = prevSpace;
+    }
+  }
+
+  const excerpt = fullText.slice(excerptStart, excerptEnd).trim();
+  const prefix = excerptStart > 0 ? "…" : "";
+  const suffix = excerptEnd < fullText.length ? "…" : "";
+  return `${prefix}${excerpt}${suffix}`;
+}
+
 function HighlightedAyah({
   full_text,
   highlighted_text,
@@ -172,7 +202,7 @@ export function TajwidLearnSection({
               Contoh Ayat
             </h3>
             <p className="text-sm text-muted-foreground">
-              Bagian yang relevan diberi highlight agar cepat dikenali.
+              Potongan terkait diberi highlight, lalu full ayat ditampilkan di bawahnya.
             </p>
           </div>
         </div>
@@ -183,11 +213,23 @@ export function TajwidLearnSection({
               key={`${selectedRule.id}-${example.surah_name}-${example.ayah_number}`}
               className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4"
             >
+              <p className="mb-2 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                Potongan Terkait
+              </p>
               <div className="rounded-[1.25rem] bg-muted/40 px-4 py-5 text-right">
                 <HighlightedAyah
-                  full_text={example.full_text}
+                  full_text={getFocusedExcerpt(example.full_text, example.highlighted_text)}
                   highlighted_text={example.highlighted_text}
                 />
+              </div>
+
+              <p className="mb-2 mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                Full Ayat
+              </p>
+              <div className="rounded-[1.25rem] bg-muted/20 px-4 py-5 text-right">
+                <span className="font-arabic text-3xl leading-[1.9] text-foreground" dir="rtl">
+                  {example.full_text}
+                </span>
               </div>
 
               <div className="mt-4 flex items-start justify-between gap-3">

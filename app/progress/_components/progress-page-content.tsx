@@ -39,7 +39,7 @@ export function ProgressPageContent() {
   }
 
   if (isAuthenticated && userError && isApiError(userError) && userError.status === 0) {
-    return <NetworkError onRetry={() => window.location.reload()} />;
+    return <NetworkError onRetry={() => router.refresh()} />;
   }
 
   return (

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import {
   api,
   isApiError,
@@ -199,6 +200,7 @@ function saveStoredPrayerTimes(todayKey: string, coords: Coordinates, prayerTime
 }
 
 export function HomePageContent() {
+  const router = useRouter();
   const { status } = useAuth();
   const { stats: habitStats, loaded: habitsLoaded } = useHabits();
   const { data: hijaiyahLettersData = [] } = useHijaiyahLetters();
@@ -563,7 +565,7 @@ export function HomePageContent() {
 
   // Handle critical errors
   if (userError && isApiError(userError) && userError.status === 0) {
-    return <NetworkError onRetry={() => window.location.reload()} />
+    return <NetworkError onRetry={() => router.refresh()} />
   }
 
   return (

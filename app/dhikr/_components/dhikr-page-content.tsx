@@ -52,7 +52,7 @@ export function DhikrPageContent() {
   }
 
   if (isAuthenticated && countersError && isApiError(countersError) && countersError.status === 0) {
-    return <NetworkError onRetry={() => window.location.reload()} />;
+    return <NetworkError onRetry={() => router.refresh()} />;
   }
 
   return (

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
+import { usePrefetchCommonRoutes } from "@/lib/prefetch";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -11,6 +12,7 @@ interface PageTransitionProps {
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
   const [isHydrated, setIsHydrated] = useState(false);
+  usePrefetchCommonRoutes();
 
   useEffect(() => {
     setIsHydrated(true);

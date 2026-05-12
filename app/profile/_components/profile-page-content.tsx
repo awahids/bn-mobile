@@ -50,10 +50,10 @@ export function ProfilePageContent() {
   }
 
   if (isAuthenticated && userError && isApiError(userError) && userError.status === 0) {
-    return <NetworkError onRetry={() => window.location.reload()} />;
+    return <NetworkError onRetry={() => router.refresh()} />;
   }
   if (isAuthenticated && bookmarksError && isApiError(bookmarksError) && bookmarksError.status === 0) {
-    return <NetworkError onRetry={() => window.location.reload()} />;
+    return <NetworkError onRetry={() => router.refresh()} />;
   }
 
   const handleSignOut = async () => {
