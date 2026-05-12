@@ -1,12 +1,13 @@
 "use client"
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { api, type AuthUser } from "@/lib/api-core"
 import {
   clearAccessToken,
   getAccessToken,
   onAuthStateChanged,
 } from "@/lib/auth-storage"
+import { disableWebPushSubscription } from "@/lib/web-push"
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated"
 
@@ -36,6 +37,7 @@ function toAuthUser(user: AuthUser): AuthUser {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [status, setStatus] = useState<AuthStatus>("loading")
+  const wasAuthenticatedRef = useRef(false)
 
   const refreshUser = useCallback(async () => {
     let token = getAccessToken()
@@ -94,6 +96,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [refreshUser])
 
+  useEffect(() => {
+    const isAuthenticated = status === "authenticated" && !!user
+
+    if (wasAuthenticatedRef.current && !isAuthenticated) {
+      void disableWebPushSubscription()
+    }
+
+    wasAuthenticatedRef.current = isAuthenticated
+  }, [status, user])
+
   const value = useMemo<AuthContextValue>(() => {
     return {
       user,
@@ -110,6 +122,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setStatus("authenticated")
       },
       logout: async () => {
+        try {
+          await disableWebPushSubscription()
+        } catch {
+          // Do not block logout if push cleanup fails.
+        }
         await api.auth.logout()
         setUser(null)
         setStatus("unauthenticated")

@@ -98,22 +98,6 @@ export function HabitsPageContent() {
   }, []);
 
   useEffect(() => {
-    if (notif !== "granted") return;
-    if (status === "authenticated" && isAuthenticated && pushReady) return;
-    const iv = setInterval(() => {
-      const now = new Date();
-      const t = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-      const td = today();
-      habits.forEach(h => {
-        if (h.reminderEnabled && h.reminderTime === t && !completions[td]?.[h.id]) {
-          new Notification("HabitFlow Reminder", { body: `Time to: ${h.name}` });
-        }
-      });
-    }, 60000);
-    return () => clearInterval(iv);
-  }, [habits, completions, notif, status, isAuthenticated, pushReady]);
-
-  useEffect(() => {
     if (notif !== "granted" || status !== "authenticated" || !isAuthenticated) {
       return;
     }
