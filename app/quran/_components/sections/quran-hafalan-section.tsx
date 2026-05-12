@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,6 +63,12 @@ export function QuranHafalanSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
+  // Keep a ref so the effect below can read the latest progressMap without
+  // subscribing to it as a dependency — prevents the effect from re-running
+  // (and re-jumping the ayah index) every time the user answers an ayah.
+  const progressMapRef = useRef(progressMap);
+  progressMapRef.current = progressMap;
+
   useEffect(() => {
     if (!selectedSurahId || ayahs.length === 0) {
       setCurrentAyahIndex(0);
@@ -72,7 +78,7 @@ export function QuranHafalanSection({
 
     const firstIncompleteIndex = ayahs.findIndex((ayah) => {
       const itemId = `${selectedSurahId}:${ayah.number}`;
-      return !progressMap[itemId]?.completed;
+      return !progressMapRef.current[itemId]?.completed;
     });
 
     if (firstIncompleteIndex === -1) {
@@ -81,7 +87,10 @@ export function QuranHafalanSection({
       setCurrentAyahIndex(firstIncompleteIndex);
     }
     setIsAnswerRevealed(false);
-  }, [ayahs, progressMap, selectedSurahId]);
+    // progressMap intentionally excluded — changes during active practice must
+    // not re-jump the index; handleSelfCheck + moveNextAyah own that navigation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ayahs, selectedSurahId]);
 
   const selectedSurah = useMemo(
     () => surahs.find((surah) => surah.id === selectedSurahId) ?? null,
@@ -237,8 +246,13 @@ export function QuranHafalanSection({
         <Card>
           <CardContent className="p-4">
             <div className="mb-3 flex items-center justify-between">
-              <div className="rounded-full bg-chart-2 px-3 py-1 text-xs font-bold text-white">
-                Ayat {currentAyah.number}
+              <div className="flex items-center gap-2">
+                <div className="rounded-full bg-chart-2 px-3 py-1 text-xs font-bold text-white">
+                  Ayat {currentAyah.number}
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {currentProgressEntry.consecutiveCorrect}/2 benar beruntun
+                </span>
               </div>
               <Button variant="ghost" size="icon" onClick={() => onPlayAyah(currentAyah)}>
                 <Volume2 className="h-4 w-4" />

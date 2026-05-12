@@ -32,6 +32,8 @@ export function useQuranPageController() {
   const [hafalanProgressMap, setHafalanProgressMap] = useState<HafalanProgressMap>({});
   const [hafalanHydrated, setHafalanHydrated] = useState(false);
   const syncAttemptedRef = useRef(false);
+  const hafalanProgressMapRef = useRef(hafalanProgressMap);
+  hafalanProgressMapRef.current = hafalanProgressMap;
   const updateProgress = useUpdateProgress();
 
   useEffect(() => {
@@ -177,7 +179,7 @@ export function useQuranPageController() {
     syncAttemptedRef.current = true;
 
     void (async () => {
-      const merged = mergeHafalanProgressMaps(hafalanProgressMap, serverHafalanProgressMap);
+      const merged = mergeHafalanProgressMaps(hafalanProgressMapRef.current, serverHafalanProgressMap);
       const shouldSync = Object.entries(merged).filter(([itemId, mergedEntry]) => {
         const serverEntry = serverHafalanProgressMap[itemId];
         if (!serverEntry) {
@@ -206,14 +208,10 @@ export function useQuranPageController() {
       writeHafalanProgressToStorage(merged);
       queryClient.invalidateQueries({ queryKey: ["progress"] });
     })();
-  }, [
-    hafalanHydrated,
-    hafalanProgressMap,
-    isHafalanProgressFetched,
-    queryClient,
-    serverHafalanProgressMap,
-    status,
-  ]);
+    // hafalanProgressMap intentionally excluded — read via ref so the effect
+    // only fires when auth/fetch state changes, not on every progress update.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hafalanHydrated, isHafalanProgressFetched, queryClient, serverHafalanProgressMap, status]);
 
   const changeTab = (tab: "read" | "hafalan") => {
     setCurrentTab(tab);

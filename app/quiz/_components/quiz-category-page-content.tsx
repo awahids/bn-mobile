@@ -47,7 +47,7 @@ export function QuizCategoryPageContent() {
         <div className="mb-6">
           <h2 className="text-xl font-bold mb-2">Pilih Kategori Kuis</h2>
           <p className="text-sm text-muted-foreground">
-            Kategori dipilih dulu, lalu lanjut ke halaman mulai kuis.
+            Pilih kategori, lalu mulai kuis.
           </p>
         </div>
 
@@ -83,7 +83,7 @@ export function QuizCategoryPageContent() {
                     <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
                     <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
                     <div className="flex items-center justify-between">
-                      <Badge variant="secondary">30 Soal</Badge>
+                      <Badge variant="secondary">10 Soal</Badge>
                       <Badge variant="outline">3 Level</Badge>
                     </div>
                   </div>

@@ -4,11 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  Brain,
   CheckCircle2,
+  Headphones,
   Loader2,
+  MapPin,
   RefreshCcw,
   Save,
-  Shuffle,
   Volume2,
   XCircle,
 } from "lucide-react";
@@ -151,10 +153,33 @@ function calculateScore(answers: QuizAnswer[]) {
 }
 
 function getQuestionTypeLabel(type: QuizType) {
-  if (type === "identify") return "Identify Rule";
-  if (type === "spot") return "Find the Spot";
-  return "Identify by Audio";
+  if (type === "identify") return "Tebak Hukum";
+  if (type === "spot") return "Cari Bagian";
+  return "Dengar & Tebak";
 }
+
+const TYPE_CONFIG = {
+  identify: {
+    icon: Brain,
+    headerBg: "bg-chart-2/8",
+    border: "border-chart-2/25",
+    iconColor: "text-chart-2",
+  },
+  spot: {
+    icon: MapPin,
+    headerBg: "bg-amber-500/8",
+    border: "border-amber-500/20",
+    iconColor: "text-amber-600",
+  },
+  audio: {
+    icon: Headphones,
+    headerBg: "bg-violet-500/8",
+    border: "border-violet-500/20",
+    iconColor: "text-violet-600",
+  },
+} as const;
+
+const ANSWER_LETTERS = ["A", "B", "C", "D"] as const;
 
 function buildAnswerFromQuestion(question: MixedQuestion, selectedKey: string): {
   isCorrect: boolean;
@@ -294,10 +319,10 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
           timeSpent,
         });
 
-        setSaveMessage("Hasil Tajwid Quiz acak tersimpan.");
+        setSaveMessage("Hasil kuis tajwid acak tersimpan.");
         return true;
       } catch {
-        setSaveError("Gagal menyimpan hasil quiz. Coba lagi.");
+        setSaveError("Gagal menyimpan hasil kuis. Coba lagi.");
         return false;
       }
     },
@@ -350,7 +375,7 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
 
     if (!isAuthenticated) {
       lockGuestQuiz();
-      setSaveMessage("Sesi gratis selesai. Login untuk lanjut quiz berikutnya.");
+      setSaveMessage("Sesi gratis selesai. Masuk untuk lanjut kuis berikutnya.");
       return;
     }
 
@@ -378,7 +403,7 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
       audioRef.current = player;
       await player.play();
     } catch {
-      setAudioPromptError("Gagal memutar audio ayat. Coba ulang.");
+      setAudioPromptError("Gagal memutar audio ayat. Coba lagi.");
     } finally {
       setIsAudioLoading(false);
     }
@@ -386,237 +411,326 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
 
   const correctKey = getCorrectKey(question);
   const hasAnswered = selectedAnswer !== null;
+  const config = TYPE_CONFIG[question.type];
+  const TypeIcon = config.icon;
+
+  const feedback = hasAnswered
+    ? (() => {
+        if (selectedAnswer === correctKey) return { ok: true, text: "Benar!" };
+        if (question.type === "spot")
+          return { ok: false, text: "Salah. Perhatikan pilihan yang disorot hijau." };
+        const correctName =
+          question.payload.options.find((o) => o.id === correctKey)?.name ?? correctKey;
+        return { ok: false, text: `Salah. Jawaban: ${correctName}` };
+      })()
+    : null;
 
   return (
-    <section className="px-6 pb-36 pt-6">
-      <div className="mb-6 rounded-[2rem] border border-chart-2/15 bg-gradient-to-br from-chart-2/12 via-background to-background p-5">
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-chart-2">
-          Tajwid Quiz
-        </p>
-        <h2 className="mt-2 text-2xl font-black tracking-tight text-foreground">
-          Quiz Acak Semua Tipe
-        </h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Tipe soal diacak otomatis: Identify Rule, Find the Spot, atau Identify by Audio.
-        </p>
-
-        {!isAuthenticated && (
-          <div className="mt-3 flex items-center justify-between rounded-xl bg-amber-500/10 px-3 py-2">
-            <p className="text-xs font-semibold text-amber-700">
-              Guest hanya bisa 1 soal quiz. Login untuk lanjut semua soal.
-            </p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-full"
-              onClick={() => router.push("/login?callbackUrl=/tajwid")}
-            >
-              Login
-            </Button>
-          </div>
-        )}
-
-        {saveMessage && <p className="mt-2 text-xs font-semibold text-emerald-600">{saveMessage}</p>}
-        {saveError && <p className="mt-2 text-xs font-semibold text-red-600">{saveError}</p>}
+    <section className="space-y-4 px-4 pb-36 pt-4">
+      {/* Score strip */}
+      <div className="flex items-center justify-between px-1">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-2xl font-black text-foreground">{stats.correct}</span>
+          <span className="text-sm text-muted-foreground">/ {stats.total} benar</span>
+          {stats.total > 0 && (
+            <span className="text-xs text-muted-foreground">({scorePercent}%)</span>
+          )}
+        </div>
+        <Badge variant="outline" className="rounded-full">
+          Soal #{questionNumber}
+        </Badge>
       </div>
 
+      {/* Guest locked */}
       {!isAuthenticated && isGuestQuizLocked && (
-        <div className="mb-4 rounded-[1.5rem] border border-amber-300/70 bg-amber-500/10 p-4">
-          <p className="text-sm font-semibold text-amber-800">
-            Jatah guest sudah habis. Login untuk membuka semua quiz tajwid.
+        <div className="rounded-2xl border border-amber-300/60 bg-amber-50 p-4 dark:bg-amber-950/20">
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-400">
+            Kuota tamu sudah habis. Masuk untuk melanjutkan semua kuis tajwid.
           </p>
           <Button
-            className="mt-3 rounded-xl"
+            className="mt-3 w-full"
             onClick={() => router.push("/login?callbackUrl=/tajwid")}
           >
-            Login untuk Lanjut
+            Masuk untuk Lanjut
           </Button>
         </div>
       )}
 
-      <div className="rounded-[1.75rem] border border-border/60 bg-card/80 p-5">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <Badge className="rounded-full bg-chart-2/10 text-chart-2 hover:bg-chart-2/10">
-            Skor: {stats.correct}/{stats.total} ({scorePercent}%)
-          </Badge>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="rounded-full">
-              Soal #{questionNumber}
-            </Badge>
-            <Badge variant="outline" className="rounded-full">
-              Tipe: {getQuestionTypeLabel(question.type)}
-            </Badge>
-            <Badge variant="outline" className="rounded-full">
-              Pending simpan: {sessionAnswers.length}
-            </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goNextQuestion}
-              disabled={!isAuthenticated && isGuestQuizLocked}
-            >
-              <RefreshCcw className="mr-2 h-4 w-4" />
-              Lewati
-            </Button>
+      {/* Question card */}
+      <div className={`overflow-hidden rounded-2xl border bg-card ${config.border}`}>
+        {/* Type header */}
+        <div className={`flex items-center justify-between px-4 py-2.5 ${config.headerBg}`}>
+          <div className="flex items-center gap-2">
+            <TypeIcon className={`h-3.5 w-3.5 ${config.iconColor}`} />
+            <span className={`text-[11px] font-bold uppercase tracking-wider ${config.iconColor}`}>
+              {getQuestionTypeLabel(question.type)}
+            </span>
           </div>
+          <button
+            type="button"
+            className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
+            onClick={goNextQuestion}
+            disabled={!isAuthenticated && isGuestQuizLocked}
+          >
+            <RefreshCcw className="h-3 w-3" />
+            Lewati
+          </button>
         </div>
 
-        {question.type === "identify" && (
-          <>
-            <p className="text-sm font-bold text-foreground">
-              Hukum tajwid apa yang paling tepat untuk potongan ayat berikut?
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Pilih satu jawaban, lalu lanjut ke soal berikutnya.
-            </p>
-            <div className="mt-3 rounded-xl bg-muted/40 p-4 text-right">
-              <span className="font-arabic text-2xl leading-[1.9] text-foreground" dir="rtl">
+        <div className="space-y-4 p-4">
+          {/* Prompt */}
+          <div>
+            {question.type === "identify" && (
+              <>
+                <p className="text-sm font-semibold leading-snug text-foreground">
+                  Hukum tajwid apa yang paling tepat untuk potongan ayat berikut?
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">Pilih satu jawaban.</p>
+              </>
+            )}
+            {question.type === "spot" && (
+              <>
+                <p className="text-sm font-semibold leading-snug text-foreground">
+                  Cari bagian yang menunjukkan hukum{" "}
+                  <span className={config.iconColor}>{question.payload.targetRule.name}</span>.
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Pilih potongan teks yang paling sesuai dengan aturan yang dituju.
+                </p>
+              </>
+            )}
+            {question.type === "audio" && (
+              <>
+                <p className="text-sm font-semibold leading-snug text-foreground">
+                  Dengarkan audio ayat, lalu pilih hukum tajwid yang paling tepat.
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Putar audio dulu, baru pilih jawaban.
+                </p>
+              </>
+            )}
+          </div>
+
+          {/* Verse / audio */}
+          {question.type === "identify" && (
+            <div className="rounded-xl bg-muted/50 px-4 py-3 text-right">
+              <p className="font-arabic text-2xl leading-[2] text-foreground" dir="rtl">
                 {getFocusedExcerpt(
                   question.payload.example.full_text,
                   question.payload.example.highlighted_text
                 )}
-              </span>
+              </p>
             </div>
-          </>
-        )}
+          )}
 
-        {question.type === "spot" && (
-          <>
-            <p className="text-sm font-bold text-foreground">
-              Cari bagian ayat yang menunjukkan hukum{" "}
-              <strong>{question.payload.targetRule.name}</strong>.
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Pilih potongan teks yang paling sesuai dengan rule target.
-            </p>
-            <div className="mt-3 rounded-xl bg-muted/40 p-4 text-right">
-              <span className="font-arabic text-2xl leading-[1.9] text-foreground" dir="rtl">
+          {question.type === "spot" && (
+            <div className="rounded-xl bg-muted/50 px-4 py-3 text-right">
+              <p className="font-arabic text-2xl leading-[2] text-foreground" dir="rtl">
                 {question.payload.example.full_text}
-              </span>
+              </p>
             </div>
-          </>
-        )}
+          )}
 
-        {question.type === "audio" && (
-          <>
-            <p className="text-sm font-bold text-foreground">
-              Dengarkan audio ayat, lalu pilih hukum tajwid yang paling tepat.
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Putar audio dulu, baru pilih jawaban.
-            </p>
-            <div className="mt-3 rounded-xl bg-muted/40 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs font-semibold text-muted-foreground">
-                  {question.payload.example.surah_name} : {question.payload.example.ayah_number}
-                </p>
+          {question.type === "audio" && (
+            <div className="rounded-xl bg-muted/50 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] text-muted-foreground">Ayat</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    {question.payload.example.surah_name} · {question.payload.example.ayah_number}
+                  </p>
+                </div>
                 <Button
                   type="button"
+                  size="sm"
+                  variant="outline"
                   onClick={() => void playAudioPrompt()}
                   disabled={isAudioLoading || (!isAuthenticated && isGuestQuizLocked)}
-                  className="rounded-xl"
+                  className="shrink-0 rounded-xl"
                 >
                   {isAudioLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <Volume2 className="mr-2 h-4 w-4" />
                   )}
-                  Putar Audio
+                  {isAudioLoading ? "Memuat..." : "Putar Audio"}
                 </Button>
               </div>
               {audioPromptError && (
-                <p className="mt-2 text-xs font-semibold text-red-600">{audioPromptError}</p>
+                <p className="mt-2 text-xs text-red-600">{audioPromptError}</p>
               )}
             </div>
-          </>
-        )}
-
-        <div className="mt-4 grid grid-cols-1 gap-2">
-          {question.type !== "spot" &&
-            question.payload.options.map((option) => {
-              const isSelected = selectedAnswer === option.id;
-              const showAsCorrect = selectedAnswer && option.id === correctKey;
-              const showAsWrong = isSelected && option.id !== correctKey;
-
-              return (
-                <Button
-                  key={option.id}
-                  type="button"
-                  variant="outline"
-                  className={`justify-start rounded-xl ${
-                    showAsCorrect
-                      ? "border-emerald-500 bg-emerald-500/10 text-emerald-700"
-                      : showAsWrong
-                        ? "border-red-500 bg-red-500/10 text-red-700"
-                        : ""
-                  }`}
-                  onClick={() => void submitAnswer(option.id)}
-                  disabled={!!selectedAnswer || (!isAuthenticated && isGuestQuizLocked)}
-                >
-                  {showAsCorrect && <CheckCircle2 className="mr-2 h-4 w-4" />}
-                  {showAsWrong && <XCircle className="mr-2 h-4 w-4" />}
-                  {option.name}
-                </Button>
-              );
-            })}
-
-          {question.type === "spot" &&
-            question.payload.options.map((option) => {
-              const isSelected = selectedAnswer === option;
-              const showAsCorrect = selectedAnswer && option === correctKey;
-              const showAsWrong = isSelected && option !== correctKey;
-
-              return (
-                <Button
-                  key={option}
-                  type="button"
-                  variant="outline"
-                  className={`justify-end rounded-xl text-right font-arabic text-xl ${
-                    showAsCorrect
-                      ? "border-emerald-500 bg-emerald-500/10 text-emerald-700"
-                      : showAsWrong
-                        ? "border-red-500 bg-red-500/10 text-red-700"
-                        : ""
-                  }`}
-                  onClick={() => void submitAnswer(option)}
-                  disabled={!!selectedAnswer || (!isAuthenticated && isGuestQuizLocked)}
-                >
-                  {option}
-                </Button>
-              );
-            })}
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {hasAnswered && !(!isAuthenticated && isGuestQuizLocked) && (
-            <Button
-              type="button"
-              onClick={goNextQuestion}
-              className="rounded-xl bg-chart-2 text-white hover:bg-chart-2/90"
-            >
-              Lanjut Soal Berikutnya
-            </Button>
           )}
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-xl"
-            onClick={() => void flushSession()}
-            disabled={!isAuthenticated || sessionAnswers.length === 0 || submitAttempt.isPending}
-          >
-            {submitAttempt.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 h-4 w-4" />
+
+          {/* Answer options */}
+          <div className="space-y-2">
+            {question.type !== "spot" &&
+              question.payload.options.map((option, idx) => {
+                const isSelected = selectedAnswer === option.id;
+                const showAsCorrect = !!selectedAnswer && option.id === correctKey;
+                const showAsWrong = isSelected && option.id !== correctKey;
+                const isDimmed = !!selectedAnswer && !showAsCorrect && !showAsWrong;
+                const letter = ANSWER_LETTERS[idx] ?? String(idx + 1);
+
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => void submitAnswer(option.id)}
+                    disabled={!!selectedAnswer || (!isAuthenticated && isGuestQuizLocked)}
+                    className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors disabled:cursor-default ${
+                      showAsCorrect
+                        ? "border-emerald-500 bg-emerald-500/10 text-emerald-700"
+                        : showAsWrong
+                          ? "border-red-400 bg-red-500/10 text-red-700"
+                          : isDimmed
+                            ? "border-border/40 bg-muted/20 text-muted-foreground"
+                            : "border-border bg-background text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                        showAsCorrect
+                          ? "bg-emerald-500 text-white"
+                          : showAsWrong
+                            ? "bg-red-500 text-white"
+                            : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {showAsCorrect ? (
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                      ) : showAsWrong ? (
+                        <XCircle className="h-3.5 w-3.5" />
+                      ) : (
+                        letter
+                      )}
+                    </span>
+                    <span className="text-sm font-medium">{option.name}</span>
+                  </button>
+                );
+              })}
+
+            {question.type === "spot" &&
+              question.payload.options.map((option, idx) => {
+                const isSelected = selectedAnswer === option;
+                const showAsCorrect = !!selectedAnswer && option === correctKey;
+                const showAsWrong = isSelected && option !== correctKey;
+                const isDimmed = !!selectedAnswer && !showAsCorrect && !showAsWrong;
+                const letter = ANSWER_LETTERS[idx] ?? String(idx + 1);
+
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => void submitAnswer(option)}
+                    disabled={!!selectedAnswer || (!isAuthenticated && isGuestQuizLocked)}
+                    className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 transition-colors disabled:cursor-default ${
+                      showAsCorrect
+                        ? "border-emerald-500 bg-emerald-500/10 text-emerald-700"
+                        : showAsWrong
+                          ? "border-red-400 bg-red-500/10 text-red-700"
+                          : isDimmed
+                            ? "border-border/40 bg-muted/20 text-muted-foreground"
+                            : "border-border bg-background text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                        showAsCorrect
+                          ? "bg-emerald-500 text-white"
+                          : showAsWrong
+                            ? "bg-red-500 text-white"
+                            : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {showAsCorrect ? (
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                      ) : showAsWrong ? (
+                        <XCircle className="h-3.5 w-3.5" />
+                      ) : (
+                        letter
+                      )}
+                    </span>
+                    <span className="w-full font-arabic text-xl" dir="rtl">
+                      {option}
+                    </span>
+                  </button>
+                );
+              })}
+          </div>
+
+          {/* Feedback after answering */}
+          {feedback && (
+            <div
+              className={`flex items-start gap-2 rounded-xl px-4 py-3 ${
+                feedback.ok
+                  ? "bg-emerald-500/10 text-emerald-700"
+                  : "bg-red-500/10 text-red-700"
+              }`}
+            >
+              {feedback.ok ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+              ) : (
+                <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              )}
+              <p className="text-sm font-semibold">{feedback.text}</p>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="space-y-2 pt-1">
+            {hasAnswered && !(!isAuthenticated && isGuestQuizLocked) && (
+              <Button
+                type="button"
+                onClick={goNextQuestion}
+                className="w-full bg-chart-2 text-white hover:bg-chart-2/90"
+              >
+                Soal Berikutnya
+              </Button>
             )}
-            Simpan Hasil
-          </Button>
-          <Badge variant="outline" className="rounded-full">
-            <Shuffle className="mr-1 h-3 w-3" />
-            Acak Antar Tipe
-          </Badge>
+            {isAuthenticated && sessionAnswers.length > 0 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs text-muted-foreground"
+                onClick={() => void flushSession()}
+                disabled={submitAttempt.isPending}
+              >
+                {submitAttempt.isPending ? (
+                  <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+                ) : (
+                  <Save className="mr-1.5 h-3 w-3" />
+                )}
+                Simpan {sessionAnswers.length} jawaban ke server
+              </Button>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Status messages */}
+      {saveMessage && (
+        <p className="text-center text-xs font-medium text-emerald-600">{saveMessage}</p>
+      )}
+      {saveError && (
+        <p className="text-center text-xs font-medium text-red-600">{saveError}</p>
+      )}
+
+      {/* Guest upsell */}
+      {!isAuthenticated && !isGuestQuizLocked && (
+        <div className="flex items-center justify-between rounded-xl bg-muted/50 px-4 py-3">
+          <p className="text-xs text-muted-foreground">Masuk untuk menyimpan progres kuis.</p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-full text-xs"
+            onClick={() => router.push("/login?callbackUrl=/tajwid")}
+          >
+            Masuk
+          </Button>
+        </div>
+      )}
     </section>
   );
 }

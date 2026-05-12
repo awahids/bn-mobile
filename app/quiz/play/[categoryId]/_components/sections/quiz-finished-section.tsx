@@ -36,10 +36,10 @@ export function QuizFinishedSection({
         <Card className="mb-4 border-primary/20 bg-primary/5">
           <CardContent className="p-4 text-center">
             <p className="text-sm text-muted-foreground mb-3">
-              Hasil kuis ini hanya tersimpan sementara karena Anda belum login.
+              Hasil kuis ini belum tersimpan karena Anda belum masuk.
             </p>
             <Button size="sm" onClick={() => onGoLogin(`/quiz/start/${categoryId}`)}>
-              Masuk untuk simpan hasil berikutnya
+              Masuk untuk menyimpan hasil berikutnya
             </Button>
           </CardContent>
         </Card>
@@ -60,7 +60,7 @@ export function QuizFinishedSection({
           </div>
 
           <h2 className="text-2xl font-bold mb-2">Kuis Selesai!</h2>
-          <p className="text-muted-foreground mb-4">Berikut adalah hasil kuis Anda</p>
+          <p className="text-muted-foreground mb-4">Berikut hasil kuis Anda</p>
 
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="text-center">

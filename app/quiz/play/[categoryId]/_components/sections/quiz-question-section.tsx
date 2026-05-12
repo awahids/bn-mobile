@@ -30,7 +30,7 @@ export function QuizQuestionSection({
       <Card className="mb-6">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-muted-foreground">Progress</span>
+            <span className="text-sm text-muted-foreground">Progres</span>
             <span className="text-sm font-medium">
               {currentQuestionIndex + 1}/{totalQuestions}
             </span>
