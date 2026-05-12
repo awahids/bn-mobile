@@ -12,7 +12,7 @@ export function useTajwidPageController() {
   const { status, isAuthenticated } = useAuth();
   const { data: rules = [] } = useTajwidRules();
   const [selectedRule, setSelectedRule] = useState<TajwidRuleAPI | null>(null);
-  const [currentTab, setCurrentTab] = useState<"learn" | "overview">("learn");
+  const [currentTab, setCurrentTab] = useState<"learn" | "overview" | "quiz">("learn");
   const [audioPlayerVisible, setAudioPlayerVisible] = useState(false);
   const [loadingExampleAudioKey, setLoadingExampleAudioKey] = useState<string | null>(null);
   const [guestCompletedRules, setGuestCompletedRules] = useState<string[]>([]);

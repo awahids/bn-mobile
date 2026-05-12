@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 
 interface TajwidQuickSwitchProps {
-  currentTab: "learn" | "overview";
-  onChangeTab: (tab: "learn" | "overview") => void;
+  currentTab: "learn" | "overview" | "quiz";
+  onChangeTab: (tab: "learn" | "overview" | "quiz") => void;
 }
 
 export function TajwidQuickSwitch({
@@ -32,6 +32,15 @@ export function TajwidQuickSwitch({
           data-testid="tab-overview"
         >
           Semua Aturan
+        </Button>
+        <Button
+          variant={currentTab === "quiz" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => onChangeTab("quiz")}
+          className="rounded-full"
+          data-testid="tab-quiz"
+        >
+          Quiz
         </Button>
       </div>
     </div>

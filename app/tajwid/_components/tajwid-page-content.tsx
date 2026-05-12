@@ -7,6 +7,7 @@ import { useTajwidPageController } from "@/app/tajwid/_hooks/use-tajwid-page-con
 import { TajwidHeader } from "@/app/tajwid/_components/sections/tajwid-header";
 import { TajwidLearnSection } from "@/app/tajwid/_components/sections/tajwid-learn-section";
 import { TajwidOverviewSection } from "@/app/tajwid/_components/sections/tajwid-overview-section";
+import { TajwidQuizSection } from "@/app/tajwid/_components/sections/tajwid-quiz-section";
 import { TajwidQuickSwitch } from "@/app/tajwid/_components/sections/tajwid-quick-switch";
 import { TajwidAudioPlayer } from "@/app/tajwid/_components/sections/tajwid-audio-player";
 
@@ -71,6 +72,8 @@ export function TajwidPageContent() {
           }}
         />
       )}
+
+      {currentTab === "quiz" && <TajwidQuizSection rules={rules} />}
 
       <TajwidQuickSwitch currentTab={currentTab} onChangeTab={setCurrentTab} />
 
