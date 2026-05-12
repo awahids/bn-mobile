@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
-  Crosshair,
-  HelpCircle,
   Loader2,
   RefreshCcw,
   Save,
+  Shuffle,
   Volume2,
   XCircle,
 } from "lucide-react";
@@ -21,15 +20,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { TajwidExampleAPI, TajwidRuleAPI } from "@/lib/api-core";
 
-type QuizMode = "identify" | "spot" | "audio";
+type QuizType = "identify" | "spot" | "audio";
 
 const AUTO_SAVE_ANSWER_COUNT = 5;
 const GUEST_QUIZ_LIMIT_STORAGE_KEY = "bn_tajwid_guest_quiz_limit_v1";
-const QUIZ_CATEGORY_BY_MODE: Record<QuizMode, string> = {
-  identify: "tajwid_identify",
-  spot: "tajwid_spot",
-  audio: "tajwid_audio",
-};
+const TAJWID_MIXED_CATEGORY = "tajwid_mixed";
 
 interface IdentifyQuestion {
   example: TajwidExampleAPI;
@@ -49,6 +44,11 @@ interface AudioQuestion {
   correctRule: TajwidRuleAPI;
   options: TajwidRuleAPI[];
 }
+
+type MixedQuestion =
+  | { type: "identify"; payload: IdentifyQuestion }
+  | { type: "spot"; payload: SpotQuestion }
+  | { type: "audio"; payload: AudioQuestion };
 
 interface TajwidQuizSectionProps {
   rules: TajwidRuleAPI[];
@@ -125,10 +125,90 @@ function buildAudioQuestion(rules: TajwidRuleAPI[]): AudioQuestion | null {
   return { example, correctRule, options };
 }
 
+function buildMixedQuestion(rules: TajwidRuleAPI[]): MixedQuestion | null {
+  const sequence = shuffle<QuizType>(["identify", "spot", "audio"]);
+  for (const type of sequence) {
+    if (type === "identify") {
+      const payload = buildIdentifyQuestion(rules);
+      if (payload) return { type, payload };
+    }
+    if (type === "spot") {
+      const payload = buildSpotQuestion(rules);
+      if (payload) return { type, payload };
+    }
+    if (type === "audio") {
+      const payload = buildAudioQuestion(rules);
+      if (payload) return { type, payload };
+    }
+  }
+  return null;
+}
+
 function calculateScore(answers: QuizAnswer[]) {
   if (answers.length === 0) return 0;
   const correct = answers.filter((item) => item.isCorrect).length;
   return Math.round((correct / answers.length) * 100);
+}
+
+function getQuestionTypeLabel(type: QuizType) {
+  if (type === "identify") return "Identify Rule";
+  if (type === "spot") return "Find the Spot";
+  return "Identify by Audio";
+}
+
+function buildAnswerFromQuestion(question: MixedQuestion, selectedKey: string): {
+  isCorrect: boolean;
+  answer: QuizAnswer;
+} {
+  if (question.type === "identify") {
+    const { payload } = question;
+    const selectedRuleName =
+      payload.options.find((option) => option.id === selectedKey)?.name ?? selectedKey;
+    return {
+      isCorrect: selectedKey === payload.correctRule.id,
+      answer: {
+        questionId: `identify:${payload.correctRule.id}:${payload.example.surah_name}:${payload.example.ayah_number}`,
+        userAnswer: selectedRuleName,
+        correctAnswer: payload.correctRule.name,
+        isCorrect: selectedKey === payload.correctRule.id,
+        timeSpent: 0,
+      },
+    };
+  }
+
+  if (question.type === "spot") {
+    const { payload } = question;
+    return {
+      isCorrect: selectedKey === payload.correctSpot,
+      answer: {
+        questionId: `spot:${payload.targetRule.id}:${payload.example.surah_name}:${payload.example.ayah_number}`,
+        userAnswer: selectedKey,
+        correctAnswer: payload.correctSpot,
+        isCorrect: selectedKey === payload.correctSpot,
+        timeSpent: 0,
+      },
+    };
+  }
+
+  const { payload } = question;
+  const selectedRuleName =
+    payload.options.find((option) => option.id === selectedKey)?.name ?? selectedKey;
+  return {
+    isCorrect: selectedKey === payload.correctRule.id,
+    answer: {
+      questionId: `audio:${payload.correctRule.id}:${payload.example.surah_name}:${payload.example.ayah_number}`,
+      userAnswer: selectedRuleName,
+      correctAnswer: payload.correctRule.name,
+      isCorrect: selectedKey === payload.correctRule.id,
+      timeSpent: 0,
+    },
+  };
+}
+
+function getCorrectKey(question: MixedQuestion): string {
+  if (question.type === "identify") return question.payload.correctRule.id;
+  if (question.type === "spot") return question.payload.correctSpot;
+  return question.payload.correctRule.id;
 }
 
 export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
@@ -137,28 +217,18 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
   const queryClient = useQueryClient();
   const updateProgress = useUpdateProgress();
 
-  const [mode, setMode] = useState<QuizMode>("identify");
-  const [identifyQuestion, setIdentifyQuestion] = useState<IdentifyQuestion | null>(null);
-  const [spotQuestion, setSpotQuestion] = useState<SpotQuestion | null>(null);
-  const [audioQuestion, setAudioQuestion] = useState<AudioQuestion | null>(null);
-  const [identifyAnswer, setIdentifyAnswer] = useState<string | null>(null);
-  const [spotAnswer, setSpotAnswer] = useState<string | null>(null);
-  const [audioAnswer, setAudioAnswer] = useState<string | null>(null);
-  const [identifyStats, setIdentifyStats] = useState({ correct: 0, total: 0 });
-  const [spotStats, setSpotStats] = useState({ correct: 0, total: 0 });
-  const [audioStats, setAudioStats] = useState({ correct: 0, total: 0 });
-  const [identifySessionAnswers, setIdentifySessionAnswers] = useState<QuizAnswer[]>([]);
-  const [spotSessionAnswers, setSpotSessionAnswers] = useState<QuizAnswer[]>([]);
-  const [audioSessionAnswers, setAudioSessionAnswers] = useState<QuizAnswer[]>([]);
+  const [question, setQuestion] = useState<MixedQuestion | null>(null);
+  const [questionNumber, setQuestionNumber] = useState(1);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [stats, setStats] = useState({ correct: 0, total: 0 });
+  const [sessionAnswers, setSessionAnswers] = useState<QuizAnswer[]>([]);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isGuestQuizLocked, setIsGuestQuizLocked] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [audioPromptError, setAudioPromptError] = useState<string | null>(null);
 
-  const identifySessionStartRef = useRef<number>(Date.now());
-  const spotSessionStartRef = useRef<number>(Date.now());
-  const audioSessionStartRef = useRef<number>(Date.now());
+  const sessionStartRef = useRef<number>(Date.now());
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const submitAttempt = useMutation({
@@ -171,18 +241,8 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
 
   useEffect(() => {
     if (rules.length === 0) return;
-    setIdentifyQuestion((prev) => prev ?? buildIdentifyQuestion(rules));
-    setSpotQuestion((prev) => prev ?? buildSpotQuestion(rules));
-    setAudioQuestion((prev) => prev ?? buildAudioQuestion(rules));
+    setQuestion((prev) => prev ?? buildMixedQuestion(rules));
   }, [rules]);
-
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -195,33 +255,30 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
     setIsGuestQuizLocked(stored === "locked");
   }, [isAuthenticated]);
 
-  const identifyScore = useMemo(() => {
-    if (!identifyStats.total) return 0;
-    return Math.round((identifyStats.correct / identifyStats.total) * 100);
-  }, [identifyStats.correct, identifyStats.total]);
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
 
-  const spotScore = useMemo(() => {
-    if (!spotStats.total) return 0;
-    return Math.round((spotStats.correct / spotStats.total) * 100);
-  }, [spotStats.correct, spotStats.total]);
+  const scorePercent = useMemo(() => {
+    if (!stats.total) return 0;
+    return Math.round((stats.correct / stats.total) * 100);
+  }, [stats.correct, stats.total]);
 
-  const audioScore = useMemo(() => {
-    if (!audioStats.total) return 0;
-    return Math.round((audioStats.correct / audioStats.total) * 100);
-  }, [audioStats.correct, audioStats.total]);
-
-  const persistModeAttempt = useCallback(
-    async (targetMode: QuizMode, answers: QuizAnswer[], startedAtMs: number) => {
+  const persistSessionAttempt = useCallback(
+    async (answers: QuizAnswer[], startedAtMs: number) => {
       if (!isAuthenticated || answers.length === 0) return false;
 
       const score = calculateScore(answers);
       const timeSpent = Math.max(1, Math.floor((Date.now() - startedAtMs) / 1000));
-      const category = QUIZ_CATEGORY_BY_MODE[targetMode];
 
       try {
         setSaveError(null);
         await submitAttempt.mutateAsync({
-          category,
+          category: TAJWID_MIXED_CATEGORY,
           score,
           totalQuestions: answers.length,
           timeSpent,
@@ -230,20 +287,14 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
 
         updateProgress.mutate({
           module: "quiz",
-          itemId: category,
+          itemId: TAJWID_MIXED_CATEGORY,
           progress: 100,
           completed: true,
           score,
           timeSpent,
         });
 
-        const modeLabel =
-          targetMode === "identify"
-            ? "Identify Rule"
-            : targetMode === "spot"
-              ? "Find the Spot"
-              : "Identify by Audio";
-        setSaveMessage(`Hasil quiz ${modeLabel} tersimpan.`);
+        setSaveMessage("Hasil Tajwid Quiz acak tersimpan.");
         return true;
       } catch {
         setSaveError("Gagal menyimpan hasil quiz. Coba lagi.");
@@ -253,7 +304,7 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
     [isAuthenticated, submitAttempt, updateProgress]
   );
 
-  if (rules.length < 2) {
+  if (rules.length < 2 || !question) {
     return null;
   }
 
@@ -264,72 +315,38 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
     }
   };
 
-  const nextIdentifyQuestion = () => {
+  const goNextQuestion = () => {
     if (!isAuthenticated && isGuestQuizLocked) return;
-    setIdentifyQuestion(buildIdentifyQuestion(rules));
-    setIdentifyAnswer(null);
-  };
-
-  const nextSpotQuestion = () => {
-    if (!isAuthenticated && isGuestQuizLocked) return;
-    setSpotQuestion(buildSpotQuestion(rules));
-    setSpotAnswer(null);
-  };
-
-  const nextAudioQuestion = () => {
-    if (!isAuthenticated && isGuestQuizLocked) return;
-    setAudioQuestion(buildAudioQuestion(rules));
-    setAudioAnswer(null);
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setQuestion(buildMixedQuestion(rules));
+    setSelectedAnswer(null);
     setAudioPromptError(null);
+    setQuestionNumber((prev) => prev + 1);
   };
 
-  const flushIdentifySession = async () => {
-    const saved = await persistModeAttempt("identify", identifySessionAnswers, identifySessionStartRef.current);
+  const flushSession = async () => {
+    const saved = await persistSessionAttempt(sessionAnswers, sessionStartRef.current);
     if (saved) {
-      setIdentifySessionAnswers([]);
-      identifySessionStartRef.current = Date.now();
+      setSessionAnswers([]);
+      sessionStartRef.current = Date.now();
     }
   };
 
-  const flushSpotSession = async () => {
-    const saved = await persistModeAttempt("spot", spotSessionAnswers, spotSessionStartRef.current);
-    if (saved) {
-      setSpotSessionAnswers([]);
-      spotSessionStartRef.current = Date.now();
-    }
-  };
-
-  const flushAudioSession = async () => {
-    const saved = await persistModeAttempt("audio", audioSessionAnswers, audioSessionStartRef.current);
-    if (saved) {
-      setAudioSessionAnswers([]);
-      audioSessionStartRef.current = Date.now();
-    }
-  };
-
-  const submitIdentifyAnswer = async (ruleId: string) => {
-    if (!identifyQuestion || identifyAnswer) return;
+  const submitAnswer = async (answerKey: string) => {
+    if (selectedAnswer) return;
     if (!isAuthenticated && isGuestQuizLocked) return;
 
-    setIdentifyAnswer(ruleId);
-    const isCorrect = ruleId === identifyQuestion.correctRule.id;
-    setIdentifyStats((prev) => ({
+    setSelectedAnswer(answerKey);
+    const { isCorrect, answer } = buildAnswerFromQuestion(question, answerKey);
+    setStats((prev) => ({
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
     }));
 
-    const selectedRuleName =
-      identifyQuestion.options.find((option) => option.id === ruleId)?.name ?? ruleId;
-    const answer: QuizAnswer = {
-      questionId: `identify:${identifyQuestion.correctRule.id}:${identifyQuestion.example.surah_name}:${identifyQuestion.example.ayah_number}`,
-      userAnswer: selectedRuleName,
-      correctAnswer: identifyQuestion.correctRule.name,
-      isCorrect,
-      timeSpent: 0,
-    };
-
-    const nextAnswers = [...identifySessionAnswers, answer];
-    setIdentifySessionAnswers(nextAnswers);
+    const nextAnswers = [...sessionAnswers, answer];
+    setSessionAnswers(nextAnswers);
 
     if (!isAuthenticated) {
       lockGuestQuiz();
@@ -338,98 +355,22 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
     }
 
     if (nextAnswers.length >= AUTO_SAVE_ANSWER_COUNT) {
-      const saved = await persistModeAttempt("identify", nextAnswers, identifySessionStartRef.current);
+      const saved = await persistSessionAttempt(nextAnswers, sessionStartRef.current);
       if (saved) {
-        setIdentifySessionAnswers([]);
-        identifySessionStartRef.current = Date.now();
-      }
-    }
-  };
-
-  const submitSpotAnswer = async (spot: string) => {
-    if (!spotQuestion || spotAnswer) return;
-    if (!isAuthenticated && isGuestQuizLocked) return;
-
-    setSpotAnswer(spot);
-    const isCorrect = spot === spotQuestion.correctSpot;
-    setSpotStats((prev) => ({
-      correct: prev.correct + (isCorrect ? 1 : 0),
-      total: prev.total + 1,
-    }));
-
-    const answer: QuizAnswer = {
-      questionId: `spot:${spotQuestion.targetRule.id}:${spotQuestion.example.surah_name}:${spotQuestion.example.ayah_number}`,
-      userAnswer: spot,
-      correctAnswer: spotQuestion.correctSpot,
-      isCorrect,
-      timeSpent: 0,
-    };
-
-    const nextAnswers = [...spotSessionAnswers, answer];
-    setSpotSessionAnswers(nextAnswers);
-
-    if (!isAuthenticated) {
-      lockGuestQuiz();
-      setSaveMessage("Sesi gratis selesai. Login untuk lanjut quiz berikutnya.");
-      return;
-    }
-
-    if (nextAnswers.length >= AUTO_SAVE_ANSWER_COUNT) {
-      const saved = await persistModeAttempt("spot", nextAnswers, spotSessionStartRef.current);
-      if (saved) {
-        setSpotSessionAnswers([]);
-        spotSessionStartRef.current = Date.now();
-      }
-    }
-  };
-
-  const submitAudioAnswer = async (ruleId: string) => {
-    if (!audioQuestion || audioAnswer) return;
-    if (!isAuthenticated && isGuestQuizLocked) return;
-
-    setAudioAnswer(ruleId);
-    const isCorrect = ruleId === audioQuestion.correctRule.id;
-    setAudioStats((prev) => ({
-      correct: prev.correct + (isCorrect ? 1 : 0),
-      total: prev.total + 1,
-    }));
-
-    const selectedRuleName =
-      audioQuestion.options.find((option) => option.id === ruleId)?.name ?? ruleId;
-    const answer: QuizAnswer = {
-      questionId: `audio:${audioQuestion.correctRule.id}:${audioQuestion.example.surah_name}:${audioQuestion.example.ayah_number}`,
-      userAnswer: selectedRuleName,
-      correctAnswer: audioQuestion.correctRule.name,
-      isCorrect,
-      timeSpent: 0,
-    };
-
-    const nextAnswers = [...audioSessionAnswers, answer];
-    setAudioSessionAnswers(nextAnswers);
-
-    if (!isAuthenticated) {
-      lockGuestQuiz();
-      setSaveMessage("Sesi gratis selesai. Login untuk lanjut quiz berikutnya.");
-      return;
-    }
-
-    if (nextAnswers.length >= AUTO_SAVE_ANSWER_COUNT) {
-      const saved = await persistModeAttempt("audio", nextAnswers, audioSessionStartRef.current);
-      if (saved) {
-        setAudioSessionAnswers([]);
-        audioSessionStartRef.current = Date.now();
+        setSessionAnswers([]);
+        sessionStartRef.current = Date.now();
       }
     }
   };
 
   const playAudioPrompt = async () => {
-    if (!audioQuestion) return;
+    if (question.type !== "audio") return;
     if (!isAuthenticated && isGuestQuizLocked) return;
 
     setIsAudioLoading(true);
     setAudioPromptError(null);
     try {
-      const audioUrl = await fetchTajwidExampleAudioUrl(audioQuestion.example);
+      const audioUrl = await fetchTajwidExampleAudioUrl(question.payload.example);
       if (audioRef.current) {
         audioRef.current.pause();
       }
@@ -443,6 +384,9 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
     }
   };
 
+  const correctKey = getCorrectKey(question);
+  const hasAnswered = selectedAnswer !== null;
+
   return (
     <section className="px-6 pb-36 pt-6">
       <div className="mb-6 rounded-[2rem] border border-chart-2/15 bg-gradient-to-br from-chart-2/12 via-background to-background p-5">
@@ -450,11 +394,12 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
           Tajwid Quiz
         </p>
         <h2 className="mt-2 text-2xl font-black tracking-tight text-foreground">
-          Validasi Pemahaman Tajwid
+          Quiz Acak Semua Tipe
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Mode 1: Identify Rule. Mode 2: Find the Spot.
+          Tipe soal diacak otomatis: Identify Rule, Find the Spot, atau Identify by Audio.
         </p>
+
         {!isAuthenticated && (
           <div className="mt-3 flex items-center justify-between rounded-xl bg-amber-500/10 px-3 py-2">
             <p className="text-xs font-semibold text-amber-700">
@@ -470,38 +415,9 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
             </Button>
           </div>
         )}
+
         {saveMessage && <p className="mt-2 text-xs font-semibold text-emerald-600">{saveMessage}</p>}
         {saveError && <p className="mt-2 text-xs font-semibold text-red-600">{saveError}</p>}
-      </div>
-
-      <div className="mb-4 flex gap-2">
-        <Button
-          variant={mode === "identify" ? "default" : "outline"}
-          className="rounded-full"
-          onClick={() => setMode("identify")}
-          disabled={!isAuthenticated && isGuestQuizLocked}
-        >
-          <HelpCircle className="mr-2 h-4 w-4" />
-          Identify Rule
-        </Button>
-        <Button
-          variant={mode === "spot" ? "default" : "outline"}
-          className="rounded-full"
-          onClick={() => setMode("spot")}
-          disabled={!isAuthenticated && isGuestQuizLocked}
-        >
-          <Crosshair className="mr-2 h-4 w-4" />
-          Find the Spot
-        </Button>
-        <Button
-          variant={mode === "audio" ? "default" : "outline"}
-          className="rounded-full"
-          onClick={() => setMode("audio")}
-          disabled={!isAuthenticated && isGuestQuizLocked}
-        >
-          <Volume2 className="mr-2 h-4 w-4" />
-          Identify by Audio
-        </Button>
       </div>
 
       {!isAuthenticated && isGuestQuizLocked && (
@@ -518,45 +434,109 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
         </div>
       )}
 
-      {mode === "identify" && identifyQuestion && (
-        <div className="rounded-[1.75rem] border border-border/60 bg-card/80 p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <Badge className="rounded-full bg-chart-2/10 text-chart-2 hover:bg-chart-2/10">
-              Skor: {identifyStats.correct}/{identifyStats.total} ({identifyScore}%)
+      <div className="rounded-[1.75rem] border border-border/60 bg-card/80 p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <Badge className="rounded-full bg-chart-2/10 text-chart-2 hover:bg-chart-2/10">
+            Skor: {stats.correct}/{stats.total} ({scorePercent}%)
+          </Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="rounded-full">
+              Soal #{questionNumber}
             </Badge>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="rounded-full">
-                Pending simpan: {identifySessionAnswers.length}
-              </Badge>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={nextIdentifyQuestion}
-              >
-                <RefreshCcw className="mr-2 h-4 w-4" />
-                Soal Baru
-              </Button>
+            <Badge variant="outline" className="rounded-full">
+              Tipe: {getQuestionTypeLabel(question.type)}
+            </Badge>
+            <Badge variant="outline" className="rounded-full">
+              Pending simpan: {sessionAnswers.length}
+            </Badge>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goNextQuestion}
+              disabled={!isAuthenticated && isGuestQuizLocked}
+            >
+              <RefreshCcw className="mr-2 h-4 w-4" />
+              Lewati
+            </Button>
+          </div>
+        </div>
+
+        {question.type === "identify" && (
+          <>
+            <p className="text-sm font-bold text-foreground">
+              Hukum tajwid apa yang paling tepat untuk potongan ayat berikut?
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Pilih satu jawaban, lalu lanjut ke soal berikutnya.
+            </p>
+            <div className="mt-3 rounded-xl bg-muted/40 p-4 text-right">
+              <span className="font-arabic text-2xl leading-[1.9] text-foreground" dir="rtl">
+                {getFocusedExcerpt(
+                  question.payload.example.full_text,
+                  question.payload.example.highlighted_text
+                )}
+              </span>
             </div>
-          </div>
+          </>
+        )}
 
-          <p className="text-sm font-bold text-foreground">
-            Hukum tajwid apa yang paling tepat untuk potongan ayat berikut?
-          </p>
-          <div className="mt-3 rounded-xl bg-muted/40 p-4 text-right">
-            <span className="font-arabic text-2xl leading-[1.9] text-foreground" dir="rtl">
-              {getFocusedExcerpt(
-                identifyQuestion.example.full_text,
-                identifyQuestion.example.highlighted_text
+        {question.type === "spot" && (
+          <>
+            <p className="text-sm font-bold text-foreground">
+              Cari bagian ayat yang menunjukkan hukum{" "}
+              <strong>{question.payload.targetRule.name}</strong>.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Pilih potongan teks yang paling sesuai dengan rule target.
+            </p>
+            <div className="mt-3 rounded-xl bg-muted/40 p-4 text-right">
+              <span className="font-arabic text-2xl leading-[1.9] text-foreground" dir="rtl">
+                {question.payload.example.full_text}
+              </span>
+            </div>
+          </>
+        )}
+
+        {question.type === "audio" && (
+          <>
+            <p className="text-sm font-bold text-foreground">
+              Dengarkan audio ayat, lalu pilih hukum tajwid yang paling tepat.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Putar audio dulu, baru pilih jawaban.
+            </p>
+            <div className="mt-3 rounded-xl bg-muted/40 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs font-semibold text-muted-foreground">
+                  {question.payload.example.surah_name} : {question.payload.example.ayah_number}
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => void playAudioPrompt()}
+                  disabled={isAudioLoading || (!isAuthenticated && isGuestQuizLocked)}
+                  className="rounded-xl"
+                >
+                  {isAudioLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Volume2 className="mr-2 h-4 w-4" />
+                  )}
+                  Putar Audio
+                </Button>
+              </div>
+              {audioPromptError && (
+                <p className="mt-2 text-xs font-semibold text-red-600">{audioPromptError}</p>
               )}
-            </span>
-          </div>
+            </div>
+          </>
+        )}
 
-          <div className="mt-4 grid grid-cols-1 gap-2">
-            {identifyQuestion.options.map((option) => {
-              const isSelected = identifyAnswer === option.id;
-              const isCorrectOption = identifyQuestion.correctRule.id === option.id;
-              const showAsCorrect = identifyAnswer && isCorrectOption;
-              const showAsWrong = isSelected && !isCorrectOption;
+        <div className="mt-4 grid grid-cols-1 gap-2">
+          {question.type !== "spot" &&
+            question.payload.options.map((option) => {
+              const isSelected = selectedAnswer === option.id;
+              const showAsCorrect = selectedAnswer && option.id === correctKey;
+              const showAsWrong = isSelected && option.id !== correctKey;
 
               return (
                 <Button
@@ -570,8 +550,8 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
                         ? "border-red-500 bg-red-500/10 text-red-700"
                         : ""
                   }`}
-                  onClick={() => void submitIdentifyAnswer(option.id)}
-                  disabled={!!identifyAnswer || (!isAuthenticated && isGuestQuizLocked)}
+                  onClick={() => void submitAnswer(option.id)}
+                  disabled={!!selectedAnswer || (!isAuthenticated && isGuestQuizLocked)}
                 >
                   {showAsCorrect && <CheckCircle2 className="mr-2 h-4 w-4" />}
                   {showAsWrong && <XCircle className="mr-2 h-4 w-4" />}
@@ -579,59 +559,12 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
                 </Button>
               );
             })}
-          </div>
 
-          <div className="mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-xl"
-              onClick={() => void flushIdentifySession()}
-              disabled={!isAuthenticated || identifySessionAnswers.length === 0 || submitAttempt.isPending}
-            >
-              {submitAttempt.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Simpan Hasil Identify
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {mode === "spot" && spotQuestion && (
-        <div className="rounded-[1.75rem] border border-border/60 bg-card/80 p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <Badge className="rounded-full bg-chart-2/10 text-chart-2 hover:bg-chart-2/10">
-              Skor: {spotStats.correct}/{spotStats.total} ({spotScore}%)
-            </Badge>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="rounded-full">
-                Pending simpan: {spotSessionAnswers.length}
-              </Badge>
-              <Button variant="ghost" size="sm" onClick={nextSpotQuestion}>
-                <RefreshCcw className="mr-2 h-4 w-4" />
-                Soal Baru
-              </Button>
-            </div>
-          </div>
-
-          <p className="text-sm font-bold text-foreground">
-            Cari bagian ayat yang menunjukkan hukum <strong>{spotQuestion.targetRule.name}</strong>.
-          </p>
-          <div className="mt-3 rounded-xl bg-muted/40 p-4 text-right">
-            <span className="font-arabic text-2xl leading-[1.9] text-foreground" dir="rtl">
-              {spotQuestion.example.full_text}
-            </span>
-          </div>
-
-          <div className="mt-4 grid grid-cols-1 gap-2">
-            {spotQuestion.options.map((option) => {
-              const isSelected = spotAnswer === option;
-              const isCorrectOption = spotQuestion.correctSpot === option;
-              const showAsCorrect = spotAnswer && isCorrectOption;
-              const showAsWrong = isSelected && !isCorrectOption;
+          {question.type === "spot" &&
+            question.payload.options.map((option) => {
+              const isSelected = selectedAnswer === option;
+              const showAsCorrect = selectedAnswer && option === correctKey;
+              const showAsWrong = isSelected && option !== correctKey;
 
               return (
                 <Button
@@ -645,126 +578,45 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
                         ? "border-red-500 bg-red-500/10 text-red-700"
                         : ""
                   }`}
-                  onClick={() => void submitSpotAnswer(option)}
-                  disabled={!!spotAnswer || (!isAuthenticated && isGuestQuizLocked)}
+                  onClick={() => void submitAnswer(option)}
+                  disabled={!!selectedAnswer || (!isAuthenticated && isGuestQuizLocked)}
                 >
                   {option}
                 </Button>
               );
             })}
-          </div>
+        </div>
 
-          <div className="mt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {hasAnswered && !(!isAuthenticated && isGuestQuizLocked) && (
             <Button
               type="button"
-              variant="outline"
-              className="rounded-xl"
-              onClick={() => void flushSpotSession()}
-              disabled={!isAuthenticated || spotSessionAnswers.length === 0 || submitAttempt.isPending}
+              onClick={goNextQuestion}
+              className="rounded-xl bg-chart-2 text-white hover:bg-chart-2/90"
             >
-              {submitAttempt.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Simpan Hasil Spot
+              Lanjut Soal Berikutnya
             </Button>
-          </div>
-        </div>
-      )}
-
-      {mode === "audio" && audioQuestion && (
-        <div className="rounded-[1.75rem] border border-border/60 bg-card/80 p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <Badge className="rounded-full bg-chart-2/10 text-chart-2 hover:bg-chart-2/10">
-              Skor: {audioStats.correct}/{audioStats.total} ({audioScore}%)
-            </Badge>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="rounded-full">
-                Pending simpan: {audioSessionAnswers.length}
-              </Badge>
-              <Button variant="ghost" size="sm" onClick={nextAudioQuestion}>
-                <RefreshCcw className="mr-2 h-4 w-4" />
-                Soal Baru
-              </Button>
-            </div>
-          </div>
-
-          <p className="text-sm font-bold text-foreground">
-            Dengarkan audio ayat, lalu pilih hukum tajwid yang paling tepat.
-          </p>
-          <div className="mt-3 rounded-xl bg-muted/40 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs font-semibold text-muted-foreground">
-                {audioQuestion.example.surah_name} : {audioQuestion.example.ayah_number}
-              </p>
-              <Button
-                type="button"
-                onClick={() => void playAudioPrompt()}
-                disabled={isAudioLoading || (!isAuthenticated && isGuestQuizLocked)}
-                className="rounded-xl"
-              >
-                {isAudioLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Volume2 className="mr-2 h-4 w-4" />
-                )}
-                Putar Audio
-              </Button>
-            </div>
-            {audioPromptError && (
-              <p className="mt-2 text-xs font-semibold text-red-600">{audioPromptError}</p>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-xl"
+            onClick={() => void flushSession()}
+            disabled={!isAuthenticated || sessionAnswers.length === 0 || submitAttempt.isPending}
+          >
+            {submitAttempt.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
             )}
-          </div>
-
-          <div className="mt-4 grid grid-cols-1 gap-2">
-            {audioQuestion.options.map((option) => {
-              const isSelected = audioAnswer === option.id;
-              const isCorrectOption = audioQuestion.correctRule.id === option.id;
-              const showAsCorrect = audioAnswer && isCorrectOption;
-              const showAsWrong = isSelected && !isCorrectOption;
-
-              return (
-                <Button
-                  key={option.id}
-                  type="button"
-                  variant="outline"
-                  className={`justify-start rounded-xl ${
-                    showAsCorrect
-                      ? "border-emerald-500 bg-emerald-500/10 text-emerald-700"
-                      : showAsWrong
-                        ? "border-red-500 bg-red-500/10 text-red-700"
-                        : ""
-                  }`}
-                  onClick={() => void submitAudioAnswer(option.id)}
-                  disabled={!!audioAnswer || (!isAuthenticated && isGuestQuizLocked)}
-                >
-                  {showAsCorrect && <CheckCircle2 className="mr-2 h-4 w-4" />}
-                  {showAsWrong && <XCircle className="mr-2 h-4 w-4" />}
-                  {option.name}
-                </Button>
-              );
-            })}
-          </div>
-
-          <div className="mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-xl"
-              onClick={() => void flushAudioSession()}
-              disabled={!isAuthenticated || audioSessionAnswers.length === 0 || submitAttempt.isPending}
-            >
-              {submitAttempt.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Simpan Hasil Audio
-            </Button>
-          </div>
+            Simpan Hasil
+          </Button>
+          <Badge variant="outline" className="rounded-full">
+            <Shuffle className="mr-1 h-3 w-3" />
+            Acak Antar Tipe
+          </Badge>
         </div>
-      )}
+      </div>
     </section>
   );
 }

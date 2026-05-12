@@ -1,4 +1,9 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { TajwidRuleCard } from "@/app/tajwid/_components/atoms/tajwid-rule-card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import type { TajwidRuleAPI } from "@/lib/api-core";
 
 interface TajwidOverviewSectionProps {
@@ -53,6 +58,23 @@ export function TajwidOverviewSection({
   getRuleProgress,
   onSelectRule,
 }: TajwidOverviewSectionProps) {
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<"all" | TajwidRuleAPI["category"]>("all");
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredRules = useMemo(() => {
+    return rules.filter((rule) => {
+      const matchCategory = activeCategory === "all" || rule.category === activeCategory;
+      const matchQuery =
+        normalizedQuery.length === 0 ||
+        rule.name.toLowerCase().includes(normalizedQuery) ||
+        rule.arabicName.toLowerCase().includes(normalizedQuery) ||
+        rule.description.toLowerCase().includes(normalizedQuery) ||
+        rule.triggerLetters.toLowerCase().includes(normalizedQuery);
+      return matchCategory && matchQuery;
+    });
+  }, [activeCategory, normalizedQuery, rules]);
+
   return (
     <section className="px-6 pb-36 pt-6">
       <div className="mb-6 rounded-[2rem] border border-chart-2/15 bg-gradient-to-br from-chart-2/12 via-background to-background p-5">
@@ -66,11 +88,48 @@ export function TajwidOverviewSection({
           Pilih satu aturan untuk masuk ke mode belajar detail, lihat contoh ayat,
           dan dengarkan demonstrasi bacaan.
         </p>
+
+        <div className="mt-4 space-y-3">
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Cari nama aturan, huruf, atau deskripsi..."
+            className="h-10 rounded-xl bg-background/80"
+            data-testid="search-tajwid-rule"
+          />
+          <div className="flex flex-wrap gap-2">
+            <Badge
+              role="button"
+              tabIndex={0}
+              onClick={() => setActiveCategory("all")}
+              onKeyDown={(event) => event.key === "Enter" && setActiveCategory("all")}
+              className={`cursor-pointer rounded-full px-3 py-1.5 ${
+                activeCategory === "all" ? "bg-chart-2 text-white" : "bg-chart-2/10 text-chart-2"
+              }`}
+            >
+              Semua
+            </Badge>
+            {orderedCategories.map((category) => (
+              <Badge
+                key={category}
+                role="button"
+                tabIndex={0}
+                onClick={() => setActiveCategory(category)}
+                onKeyDown={(event) => event.key === "Enter" && setActiveCategory(category)}
+                className={`cursor-pointer rounded-full px-3 py-1.5 ${
+                  activeCategory === category ? "bg-chart-2 text-white" : "bg-chart-2/10 text-chart-2"
+                }`}
+              >
+                {categoryMeta[category].title}
+              </Badge>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="space-y-6">
         {orderedCategories.map((category) => {
-          const categoryRules = rules.filter((rule) => rule.category === category);
+          const categoryRules = filteredRules.filter((rule) => rule.category === category);
           if (categoryRules.length === 0) {
             return null;
           }

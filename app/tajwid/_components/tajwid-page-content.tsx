@@ -56,6 +56,7 @@ export function TajwidPageContent() {
           onPrevRule={() => navigateToRule("prev")}
           onNextRule={() => navigateToRule("next")}
           onPlayAudio={() => openAudioPlayer(selectedRule)}
+          onOpenQuiz={() => setCurrentTab("quiz")}
           onPlayExampleAudio={openExampleAudio}
           loadingExampleAudioKey={loadingExampleAudioKey}
         />

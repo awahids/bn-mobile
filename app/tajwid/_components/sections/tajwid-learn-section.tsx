@@ -11,6 +11,7 @@ interface TajwidLearnSectionProps {
   onPrevRule: () => void;
   onNextRule: () => void;
   onPlayAudio: () => void;
+  onOpenQuiz: () => void;
   onPlayExampleAudio: (example: TajwidExampleAPI) => void;
   loadingExampleAudioKey: string | null;
 }
@@ -90,6 +91,7 @@ export function TajwidLearnSection({
   onPrevRule,
   onNextRule,
   onPlayAudio,
+  onOpenQuiz,
   onPlayExampleAudio,
   loadingExampleAudioKey,
 }: TajwidLearnSectionProps) {
@@ -191,6 +193,15 @@ export function TajwidLearnSection({
             >
               <Volume2 className="mr-2 h-4 w-4" />
               {selectedRule.audioUrl ? "Dengar Demonstrasi" : "Audio Segera Hadir"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onOpenQuiz}
+              className="h-12 rounded-2xl border-chart-2/30 text-chart-2 hover:bg-chart-2/10"
+              data-testid="open-tajwid-quiz"
+            >
+              Quiz
             </Button>
           </div>
         </div>
