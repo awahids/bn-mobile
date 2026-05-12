@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { api, type AuthUser } from "@/lib/api-core"
 import {
   clearAccessToken,
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [status, setStatus] = useState<AuthStatus>("loading")
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     let token = getAccessToken()
     if (!token) {
       try {
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setStatus("unauthenticated")
       }
     }
-  }
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mounted = false
       unsubscribe()
     }
-  }, [])
+  }, [refreshUser])
 
   const value = useMemo<AuthContextValue>(() => {
     return {

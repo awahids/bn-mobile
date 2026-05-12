@@ -23,13 +23,8 @@ export function useDhikrPageController() {
 
   const { data: allDhikrs = [], isLoading: isLoadingDhikrs } = useQuery({
     queryKey: ["dhikrs", "v2"],
-    queryFn: async () => {
-      console.log("Fetching dhikrs from API...");
-      const data = await api.dhikr.getDhikrs();
-      console.log("Fetched dhikrs:", data);
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // Kurangi jadi 5 menit aja untuk testing
+    queryFn: () => api.dhikr.getDhikrs(),
+    staleTime: 1000 * 60 * 60 * 24,
   });
 
   const { data: counters = [], error: countersError } = useQuery({

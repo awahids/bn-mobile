@@ -8,9 +8,6 @@ const nextConfig = {
   // Configure for serverless deployment
   output: 'standalone',
 
-  // Disable Turbopack when using Bun to avoid worker thread issues
-  turbopack: process.env.BUN_RUNTIME !== 'bun' ? {} : false,
-
   // Suppress source map warnings in development
   onDemandEntries: {
     // Period (in ms) where the server will keep pages in the buffer

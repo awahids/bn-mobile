@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPinned, Loader2, School, UserRound, X, Wallet, Phone } from "lucide-react";
+import { MapPinned, Loader2, School, UserRound, X, Wallet, Phone, Search } from "lucide-react";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
 import { SekolahIslamHeader } from "./sections/sekolah-islam-header";
@@ -43,6 +43,8 @@ export function SekolahIslamPageContent() {
   const [loaded, setLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterJenjang, setFilterJenjang] = useState<SchoolJenjang | "Semua">("Semua");
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -133,10 +135,22 @@ export function SekolahIslamPageContent() {
     }
   };
 
+  const filteredSchools = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return schools.filter((school) => {
+      const matchesQuery =
+        !q || school.name.toLowerCase().includes(q) || school.location.toLowerCase().includes(q);
+      const matchesJenjang = filterJenjang === "Semua" || school.jenjang === filterJenjang;
+      return matchesQuery && matchesJenjang;
+    });
+  }, [schools, searchQuery, filterJenjang]);
+
   const schoolCountLabel = useMemo(() => {
-    const total = schools.length;
-    return `${total} ${total === 1 ? "sekolah" : "sekolah"}`;
-  }, [schools.length]);
+    const total = filteredSchools.length;
+    const grand = schools.length;
+    if (total === grand) return `${total} sekolah`;
+    return `${total} dari ${grand} sekolah`;
+  }, [filteredSchools.length, schools.length]);
 
   if (!loaded) {
     return (
@@ -170,6 +184,34 @@ export function SekolahIslamPageContent() {
           </div>
         </div>
 
+        <div className="flex gap-3">
+          <div className="relative flex-1">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari nama atau lokasi..."
+              className="rounded-xl h-11 pl-9"
+            />
+          </div>
+          <Select
+            value={filterJenjang}
+            onValueChange={(value) => setFilterJenjang(value as SchoolJenjang | "Semua")}
+          >
+            <SelectTrigger className="rounded-xl h-11 w-[120px] shrink-0">
+              <SelectValue placeholder="Jenjang" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Semua">Semua</SelectItem>
+              {JENJANG_OPTIONS.map((jenjang) => (
+                <SelectItem key={jenjang} value={jenjang}>
+                  {jenjang}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {!canAddSchool && (
           <Card className="glass p-5 rounded-[2rem] border-primary/10">
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
@@ -185,18 +227,22 @@ export function SekolahIslamPageContent() {
         )}
 
         <div className="space-y-4">
-          {schools.length === 0 ? (
+          {filteredSchools.length === 0 ? (
             <Card className="glass p-10 rounded-[2rem] border-none text-center">
               <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
                 <School className="text-primary" size={28} />
               </div>
-              <p className="text-sm font-black uppercase tracking-widest text-foreground">Belum ada data sekolah</p>
+              <p className="text-sm font-black uppercase tracking-widest text-foreground">
+                {schools.length === 0 ? "Belum ada data sekolah" : "Tidak ada hasil yang cocok"}
+              </p>
               <p className="text-xs font-medium text-muted-foreground mt-2">
-                Jadilah yang pertama menambahkan informasi sekolah.
+                {schools.length === 0
+                  ? "Jadilah yang pertama menambahkan informasi sekolah."
+                  : "Coba ubah kata kunci atau filter jenjang."}
               </p>
             </Card>
           ) : (
-            schools.map((school) => (
+            filteredSchools.map((school) => (
               <Card
                 key={school.id}
                 className="glass p-5 rounded-[2rem] border-transparent hover:border-primary/20 transition-all duration-300 border-none"

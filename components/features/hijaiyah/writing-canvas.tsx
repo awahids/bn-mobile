@@ -100,7 +100,7 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
     if (dCtx) {
       dCtx.setTransform(1, 0, 0, 1, 0, 0);
       dCtx.scale(dpr, dpr);
-      dCtx.strokeStyle = '#2563eb';
+      dCtx.strokeStyle = 'hsl(var(--primary))';
       dCtx.lineWidth = 16;
       dCtx.lineCap = 'round';
       dCtx.lineJoin = 'round';

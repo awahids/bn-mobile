@@ -12,18 +12,6 @@ function createQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        queryFn: async ({ queryKey }) => {
-          const res = await fetch(queryKey.join("/") as string, {
-            credentials: "include",
-          });
-
-          if (!res.ok) {
-            const text = (await res.text()) || res.statusText;
-            throw new Error(`${res.status}: ${text}`);
-          }
-
-          return await res.json();
-        },
         refetchInterval: false,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
