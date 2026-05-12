@@ -1,4 +1,4 @@
-import { BookAudio, CheckCircle2, ChevronLeft, ChevronRight, Volume2 } from "lucide-react";
+import { BookAudio, CheckCircle2, ChevronLeft, ChevronRight, Loader2, Volume2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { TajwidExampleAPI, TajwidRuleAPI } from "@/lib/api-core";
@@ -11,6 +11,8 @@ interface TajwidLearnSectionProps {
   onPrevRule: () => void;
   onNextRule: () => void;
   onPlayAudio: () => void;
+  onPlayExampleAudio: (example: TajwidExampleAPI) => void;
+  loadingExampleAudioKey: string | null;
 }
 
 const categoryLabels: Record<TajwidRuleAPI["category"], string> = {
@@ -88,6 +90,8 @@ export function TajwidLearnSection({
   onPrevRule,
   onNextRule,
   onPlayAudio,
+  onPlayExampleAudio,
+  loadingExampleAudioKey,
 }: TajwidLearnSectionProps) {
   const triggerLetters = selectedRule.triggerLetters.split(" ").filter(Boolean);
 
@@ -208,11 +212,15 @@ export function TajwidLearnSection({
         </div>
 
         <div className="space-y-4">
-          {selectedRule.examples.map((example) => (
-            <div
-              key={`${selectedRule.id}-${example.surah_name}-${example.ayah_number}`}
-              className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4"
-            >
+          {selectedRule.examples.map((example) => {
+            const exampleKey = `${example.surah_name}:${example.ayah_number}`;
+            const isLoadingExampleAudio = loadingExampleAudioKey === exampleKey;
+
+            return (
+              <div
+                key={`${selectedRule.id}-${example.surah_name}-${example.ayah_number}`}
+                className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4"
+              >
               <p className="mb-2 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                 Potongan Terkait
               </p>
@@ -232,6 +240,22 @@ export function TajwidLearnSection({
                 </span>
               </div>
 
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-4 h-10 rounded-xl border-chart-2/30 text-chart-2 hover:bg-chart-2/10"
+                onClick={() => onPlayExampleAudio(example)}
+                disabled={isLoadingExampleAudio}
+                data-testid={`play-example-audio-${example.surah_name}-${example.ayah_number}`}
+              >
+                {isLoadingExampleAudio ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Volume2 className="mr-2 h-4 w-4" />
+                )}
+                Dengar Ayat Ini
+              </Button>
+
               <div className="mt-4 flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-bold text-foreground">
@@ -245,8 +269,9 @@ export function TajwidLearnSection({
                   Fokus
                 </Badge>
               </div>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

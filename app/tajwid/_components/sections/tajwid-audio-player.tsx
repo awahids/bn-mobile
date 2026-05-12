@@ -1,9 +1,7 @@
 import { LazyAudioPlayer } from "@/components/lazy";
-import type { TajwidRuleAPI } from "@/lib/api-core";
 
 interface TajwidAudioPlayerProps {
   isVisible: boolean;
-  selectedRule: TajwidRuleAPI;
   audio: {
     isPlaying: boolean;
     currentTime: number;
@@ -11,6 +9,9 @@ interface TajwidAudioPlayerProps {
     volume: number;
     isLoading: boolean;
     error: string | null;
+    currentSrc: string;
+    title: string;
+    subtitle: string;
     play: (src?: string) => void;
     pause: () => void;
     seek: (time: number) => void;
@@ -21,7 +22,6 @@ interface TajwidAudioPlayerProps {
 
 export function TajwidAudioPlayer({
   isVisible,
-  selectedRule,
   audio,
   onClose,
 }: TajwidAudioPlayerProps) {
@@ -31,9 +31,9 @@ export function TajwidAudioPlayer({
 
   return (
     <LazyAudioPlayer
-      title={selectedRule.name}
-      subtitle={selectedRule.arabicName}
-      audioUrl={selectedRule.audioUrl ?? ""}
+      title={audio.title || "Audio Tajwid"}
+      subtitle={audio.subtitle || "Belajar Tajwid"}
+      audioUrl={audio.currentSrc}
       isVisible={isVisible}
       onClose={onClose}
       isPlaying={audio.isPlaying}
@@ -42,7 +42,7 @@ export function TajwidAudioPlayer({
       volume={audio.volume}
       isLoading={audio.isLoading}
       error={audio.error}
-      onPlay={() => audio.play(selectedRule.audioUrl ?? "")}
+      onPlay={() => audio.play(audio.currentSrc)}
       onPause={audio.pause}
       onSeek={audio.seek}
       onVolumeChange={audio.setVolume}

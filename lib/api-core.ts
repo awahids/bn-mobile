@@ -728,6 +728,7 @@ export interface TajwidExampleAPI {
   full_text: string
   highlighted_text: string
   translation: string
+  verse_key?: string
 }
 
 export interface TajwidRuleAPI {

@@ -29,6 +29,8 @@ export function TajwidPageContent() {
     getRuleProgress,
     navigateToRule,
     openAudioPlayer,
+    openExampleAudio,
+    loadingExampleAudioKey,
   } = useTajwidPageController();
 
   if (!selectedRule) {
@@ -53,6 +55,8 @@ export function TajwidPageContent() {
           onPrevRule={() => navigateToRule("prev")}
           onNextRule={() => navigateToRule("next")}
           onPlayAudio={() => openAudioPlayer(selectedRule)}
+          onPlayExampleAudio={openExampleAudio}
+          loadingExampleAudioKey={loadingExampleAudioKey}
         />
       )}
 
@@ -72,7 +76,6 @@ export function TajwidPageContent() {
 
       <TajwidAudioPlayer
         isVisible={audioPlayerVisible}
-        selectedRule={selectedRule}
         audio={audio}
         onClose={() => setAudioPlayerVisible(false)}
       />

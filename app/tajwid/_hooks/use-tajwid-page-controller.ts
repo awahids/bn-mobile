@@ -5,7 +5,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
 import { useProgress, useUpdateProgress } from "@/hooks/use-progress";
 import { useTajwidRules } from "@/hooks/use-tajwid";
-import type { TajwidRuleAPI } from "@/lib/api-core";
+import { fetchTajwidExampleAudioUrl } from "@/lib/tajwid-example-audio";
+import type { TajwidExampleAPI, TajwidRuleAPI } from "@/lib/api-core";
 
 export function useTajwidPageController() {
   const { status, isAuthenticated } = useAuth();
@@ -13,6 +14,7 @@ export function useTajwidPageController() {
   const [selectedRule, setSelectedRule] = useState<TajwidRuleAPI | null>(null);
   const [currentTab, setCurrentTab] = useState<"learn" | "overview">("learn");
   const [audioPlayerVisible, setAudioPlayerVisible] = useState(false);
+  const [loadingExampleAudioKey, setLoadingExampleAudioKey] = useState<string | null>(null);
   const [guestCompletedRules, setGuestCompletedRules] = useState<string[]>([]);
   const trackedRuleIdsRef = useRef<Set<string>>(new Set());
 
@@ -98,6 +100,32 @@ export function useTajwidPageController() {
     setAudioPlayerVisible(true);
   };
 
+  const openExampleAudio = async (example: TajwidExampleAPI) => {
+    const exampleKey = `${example.surah_name}:${example.ayah_number}`;
+    setLoadingExampleAudioKey(exampleKey);
+
+    try {
+      const audioUrl = await fetchTajwidExampleAudioUrl(example);
+      audio.setMeta({
+        title: `${example.surah_name} : ${example.ayah_number}`,
+        subtitle: selectedRule?.name ?? "Contoh Ayat Tajwid",
+      });
+      await audio.play(audioUrl);
+      setAudioPlayerVisible(true);
+    } catch {
+      if (selectedRule?.audioUrl) {
+        audio.setMeta({
+          title: selectedRule.name,
+          subtitle: selectedRule.arabicName,
+        });
+        await audio.play(selectedRule.audioUrl);
+        setAudioPlayerVisible(true);
+      }
+    } finally {
+      setLoadingExampleAudioKey(null);
+    }
+  };
+
   const completedCount = isAuthenticated
     ? progressData.filter((item) => item.completed).length
     : guestCompletedRules.length;
@@ -131,5 +159,7 @@ export function useTajwidPageController() {
     getRuleProgress,
     navigateToRule,
     openAudioPlayer,
+    openExampleAudio,
+    loadingExampleAudioKey,
   };
 }
