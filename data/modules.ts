@@ -1,4 +1,4 @@
-import { Languages, BookOpen, BicepsFlexed, Brain, Sparkles, GraduationCap, LucideIcon } from "lucide-react";
+import { Languages, BookOpen, BookMarked, BicepsFlexed, Brain, Sparkles, GraduationCap, LucideIcon } from "lucide-react";
 
 export interface ModuleConfig {
   id: string;
@@ -52,6 +52,20 @@ export const MODULES: ModuleConfig[] = [
     hoverGlowClass: "hover:shadow-accent/10",
   },
   {
+    id: "tajwid",
+    title: "Tajwid",
+    subtitle: "15 Aturan Baca",
+    href: "/tajwid",
+    icon: BookMarked,
+    colorClass: "text-chart-2",
+    gradientClass: "from-chart-2 to-chart-2/40",
+    shadowClass: "shadow-chart-2/20",
+    bgAccentClass: "bg-chart-2/10",
+    borderAccentClass: "border-chart-2/20",
+    glowClass: "shadow-chart-2/5",
+    hoverGlowClass: "hover:shadow-chart-2/10",
+  },
+  {
     id: "dhikr",
     title: "Dhikr",
     subtitle: "Pagi & Petang",
@@ -68,7 +82,7 @@ export const MODULES: ModuleConfig[] = [
   {
     id: "quiz",
     title: "Kuis",
-    subtitle: "4 Kategori",
+    subtitle: "6 Kategori",
     href: "/quiz",
     icon: Brain,
     colorClass: "text-chart-4",

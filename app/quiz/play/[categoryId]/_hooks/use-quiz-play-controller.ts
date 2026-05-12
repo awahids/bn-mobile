@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type CreateQuizAttemptData, type QuizQuestionAPI } from "@/lib/api-client";
 import { useQuizQuestions } from "@/hooks/use-quiz-content";
@@ -24,7 +25,9 @@ interface UseQuizPlayControllerParams {
 }
 
 export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPlayControllerParams) {
-  const { data: allQuestions = [] } = useQuizQuestions(categoryId ?? undefined);
+  const searchParams = useSearchParams();
+  const difficulty = searchParams?.get("difficulty") ?? undefined;
+  const { data: allQuestions = [] } = useQuizQuestions(categoryId ?? undefined, difficulty);
   const [quizState, setQuizState] = useState<QuizState>("material");
   const [isInitialized, setIsInitialized] = useState(false);
   const [questions, setQuestions] = useState<QuizQuestionAPI[]>([]);
@@ -197,6 +200,7 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
   return {
     quizState,
     isInitialized,
+    difficulty,
     questions,
     currentQuestion,
     currentQuestionIndex,

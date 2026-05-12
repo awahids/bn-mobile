@@ -18,6 +18,7 @@ const categoryColorMap: Record<string, { bg: string; text: string }> = {
   "chart-3": { bg: "bg-chart-3/20", text: "text-chart-3" },
   "chart-4": { bg: "bg-chart-4/20", text: "text-chart-4" },
   "chart-5": { bg: "bg-chart-5/20", text: "text-chart-5" },
+  "chart-6": { bg: "bg-chart-6/20", text: "text-chart-6" },
 };
 
 export function QuizCategoryPageContent() {
@@ -82,8 +83,8 @@ export function QuizCategoryPageContent() {
                     <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
                     <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
                     <div className="flex items-center justify-between">
-                      <Badge variant="secondary">10 Soal</Badge>
-                      <Badge variant="outline">Lanjut ke Mulai Kuis</Badge>
+                      <Badge variant="secondary">30 Soal</Badge>
+                      <Badge variant="outline">3 Level</Badge>
                     </div>
                   </div>
                 </div>

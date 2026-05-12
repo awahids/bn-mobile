@@ -389,6 +389,10 @@ export function HomePageContent() {
     () => progressData.filter((item) => item.module === "hijaiyah"),
     [progressData]
   );
+  const tajwidProgress = useMemo(
+    () => progressData.filter((item) => item.module === "tajwid"),
+    [progressData]
+  );
   const quranProgress = useMemo(
     () => progressData.filter((item) => item.module === "quran"),
     [progressData]
@@ -397,6 +401,8 @@ export function HomePageContent() {
   const learningStats = useMemo(() => {
     const hijaiyahCompleted = hijaiyahProgress.filter((item) => item.completed).length;
     const hijaiyahProgressPercent = clampPercentage((hijaiyahCompleted / 28) * 100);
+    const tajwidCompleted = tajwidProgress.filter((item) => item.completed).length;
+    const tajwidProgressPercent = clampPercentage((tajwidCompleted / 15) * 100);
 
     const latestQuranProgress = [...quranProgress]
       .sort((a, b) => toTimestamp(b.lastAccessed) - toTimestamp(a.lastAccessed))[0];
@@ -422,6 +428,11 @@ export function HomePageContent() {
         total: 28,
         progress: hijaiyahProgressPercent,
       },
+      tajwid: {
+        completed: tajwidCompleted,
+        total: 15,
+        progress: tajwidProgressPercent,
+      },
       quran: {
         bookmarked: quranBookmarks.length,
         total: 114,
@@ -441,7 +452,7 @@ export function HomePageContent() {
         totalItems: habitStats.totalHabits,
       } : undefined,
     };
-  }, [dhikrCounters, hijaiyahProgress, quranBookmarks, quranProgress, quizAttempts, quizStats, habitStats, habitsLoaded]);
+  }, [dhikrCounters, habitStats, habitsLoaded, hijaiyahProgress, quranBookmarks, quranProgress, quizAttempts, quizStats, tajwidProgress]);
 
 
   const continueLearningItems = useMemo(() => {

@@ -102,6 +102,19 @@ function buildUrl(endpoint: string): string {
   return `${API_BASE_URL}${endpoint}`
 }
 
+function buildQuery(params: Record<string, string | undefined | null>): string {
+  const searchParams = new URLSearchParams()
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      searchParams.set(key, value)
+    }
+  })
+
+  const query = searchParams.toString()
+  return query ? `?${query}` : ""
+}
+
 function normalizeApiErrorMessage(
   response: Response,
   payload?: ApiResponse<any>
@@ -371,7 +384,7 @@ export const userApi = {
 export interface UserProgress {
   id: string
   userId: string
-  module: "hijaiyah" | "quran" | "dhikr" | "quiz"
+  module: "hijaiyah" | "tajwid" | "quran" | "dhikr" | "quiz"
   itemId: string
   progress: number
   completed: boolean
@@ -381,7 +394,7 @@ export interface UserProgress {
 }
 
 export interface CreateProgressData {
-  module: "hijaiyah" | "quran" | "dhikr" | "quiz"
+  module: "hijaiyah" | "tajwid" | "quran" | "dhikr" | "quiz"
   itemId: string
   progress: number
   completed?: boolean
@@ -707,6 +720,35 @@ export const hijaiyahApi = {
     get<HijaiyahLetterAPI>(`/hijaiyah/letters/${id}`, false),
 }
 
+// ==================== TAJWID CONTENT API ====================
+
+export interface TajwidExampleAPI {
+  surah_name: string
+  ayah_number: number
+  full_text: string
+  highlighted_text: string
+  translation: string
+}
+
+export interface TajwidRuleAPI {
+  id: string
+  name: string
+  arabicName: string
+  category: "nun_sukun" | "mad" | "qalqalah" | "ghunnah" | "al" | "waqf"
+  description: string
+  triggerLetters: string
+  examples: TajwidExampleAPI[]
+  audioUrl?: string
+  sortOrder: number
+}
+
+export const tajwidApi = {
+  getRules: (): Promise<TajwidRuleAPI[]> =>
+    get<TajwidRuleAPI[]>("/tajwid/rules", false),
+  getRuleById: (id: string): Promise<TajwidRuleAPI> =>
+    get<TajwidRuleAPI>(`/tajwid/rules/${id}`, false),
+}
+
 // ==================== QUIZ CONTENT API ====================
 
 export interface QuizCategoryAPI {
@@ -731,12 +773,11 @@ export interface QuizQuestionAPI {
 export const quizContentApi = {
   getCategories: (): Promise<QuizCategoryAPI[]> =>
     get<QuizCategoryAPI[]>("/quiz/categories", false),
-  getQuestions: (categoryId?: string): Promise<QuizQuestionAPI[]> => {
-    const endpoint = categoryId
-      ? `/quiz/questions?category=${categoryId}`
-      : "/quiz/questions"
-    return get<QuizQuestionAPI[]>(endpoint, false)
-  },
+  getQuestions: (categoryId?: string, difficulty?: string): Promise<QuizQuestionAPI[]> =>
+    get<QuizQuestionAPI[]>(
+      `/quiz/questions${buildQuery({ category: categoryId, difficulty })}`,
+      false
+    ),
 }
 
 // ==================== QURAN CONTENT API ====================
@@ -809,6 +850,7 @@ export const api = {
   dhikr: dhikrApi,
   quiz: quizApi,
   hijaiyah: hijaiyahApi,
+  tajwid: tajwidApi,
   quizContent: quizContentApi,
   quranContent: quranContentApi,
   utility: utilityApi,

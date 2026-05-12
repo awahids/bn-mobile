@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { LazyBottomNavigation } from "@/components/lazy";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { useAuth } from "@/hooks/use-auth";
@@ -16,15 +16,22 @@ import { QuizFinishedSection } from "@/app/quiz/play/[categoryId]/_components/se
 export function QuizPlayPageContent() {
   const params = useParams<{ categoryId: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, isLoading } = useAuth();
 
   const routeCategoryId = params?.categoryId;
   const categoryId = routeCategoryId && isQuizCategoryId(routeCategoryId) ? routeCategoryId : null;
   const category = categoryId ? getQuizCategoryById(categoryId) : undefined;
+  const difficultyQuery = searchParams?.get("difficulty");
+  const difficultySuffix =
+    difficultyQuery === "easy" || difficultyQuery === "medium" || difficultyQuery === "hard"
+      ? `?difficulty=${encodeURIComponent(difficultyQuery)}`
+      : "";
 
   const {
     quizState,
     isInitialized,
+    difficulty,
     questions,
     currentQuestion,
     currentQuestionIndex,
@@ -56,8 +63,8 @@ export function QuizPlayPageContent() {
       return;
     }
 
-    router.replace(`/login?callbackUrl=${encodeURIComponent(`/quiz/play/${categoryId}`)}`);
-  }, [category, categoryId, isAuthenticated, isLoading, router]);
+    router.replace(`/login?callbackUrl=${encodeURIComponent(`/quiz/play/${categoryId}${difficultySuffix}`)}`);
+  }, [category, categoryId, difficultySuffix, isAuthenticated, isLoading, router]);
 
   const goToStartPage = useCallback(() => {
     if (!categoryId) {
@@ -65,8 +72,8 @@ export function QuizPlayPageContent() {
       return;
     }
 
-    router.push(`/quiz/start/${categoryId}`);
-  }, [categoryId, router]);
+    router.push(`/quiz/start/${categoryId}${difficultySuffix}`);
+  }, [categoryId, difficultySuffix, router]);
 
   const goToCategorySelection = useCallback(() => {
     router.push("/quiz");
@@ -125,7 +132,7 @@ export function QuizPlayPageContent() {
           score={score}
           totalQuestions={questions.length}
           scorePercentage={scorePercentage}
-          onGoLogin={goToLogin}
+          onGoLogin={(callbackUrl) => goToLogin(difficulty ? `${callbackUrl}?difficulty=${difficulty}` : callbackUrl)}
           onPlayAgain={playAgain}
           onPickCategory={goToCategorySelection}
           onGoHome={goToHome}

@@ -11,10 +11,10 @@ export function useQuizCategories() {
   });
 }
 
-export function useQuizQuestions(categoryId?: string) {
+export function useQuizQuestions(categoryId?: string, difficulty?: string) {
   return useQuery<QuizQuestionAPI[]>({
-    queryKey: ["quiz", "questions", categoryId ?? "all"],
-    queryFn: () => api.quizContent.getQuestions(categoryId),
+    queryKey: ["quiz", "questions", categoryId ?? "all", difficulty ?? "all"],
+    queryFn: () => api.quizContent.getQuestions(categoryId, difficulty),
     staleTime: 1000 * 60 * 60 * 24,
     enabled: !!categoryId,
   });

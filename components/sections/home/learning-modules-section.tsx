@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 interface LearningModulesSectionProps {
   stats: {
     hijaiyah: { completed: number; total: number; progress: number };
+    tajwid: { completed: number; total: number; progress: number };
     quran: { bookmarked: number; total: number; lastReadLabel: string };
     dhikr: { todayCount: number; progress: number };
     quiz: { bestScore: number; attempts: number };
@@ -24,8 +25,9 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
     setHasHydrated(true);
   }, []);
 
-  // Show only top 4 modules on home page
-  const topModules = MODULES.slice(0, 4);
+  const topModules = MODULES.filter((module) =>
+    ["hijaiyah", "quran", "tajwid", "quiz"].includes(module.id)
+  ).slice(0, 4);
 
   return (
     <section className="px-6 py-8">
@@ -97,6 +99,19 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
                         <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>{hasHydrated ? stats.dhikr.todayCount : 0}x</span>
                         <ProgressRing
                         progress={hasHydrated ? stats.dhikr.progress : 0}
+                        size={24}
+                        className={module.colorClass}
+                        />
+                    </div>
+                    )}
+
+                    {module.id === "tajwid" && (
+                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
+                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
+                        {hasHydrated ? `${stats.tajwid.completed}/${stats.tajwid.total}` : "—"}
+                        </span>
+                        <ProgressRing
+                        progress={hasHydrated ? stats.tajwid.progress : 0}
                         size={24}
                         className={module.colorClass}
                         />

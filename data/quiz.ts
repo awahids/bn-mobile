@@ -5,7 +5,7 @@ export interface QuizQuestion {
   correctAnswer: number;
   explanation: string;
   material: string;
-  category: 'hijaiyah' | 'tajwid' | 'worship' | 'general';
+  category: 'hijaiyah' | 'tajwid' | 'worship' | 'general' | 'fiqih' | 'sirah';
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
@@ -49,6 +49,26 @@ export const quizQuestions: QuizQuestion[] = [
     explanation: "Nabi Muhammad SAW adalah nabi dan rasul terakhir yang diutus Allah SWT.",
     material: "Dalam Islam, Nabi Muhammad SAW merupakan nabi dan rasul terakhir (khatamun nabiyyin).",
     category: "general",
+    difficulty: "easy"
+  },
+  {
+    id: "f1",
+    question: "Apa hukum shalat lima waktu?",
+    options: ["Sunnah", "Wajib", "Makruh", "Mubah"],
+    correctAnswer: 1,
+    explanation: "Shalat lima waktu hukumnya wajib bagi setiap muslim yang baligh dan berakal.",
+    material: "Dalam fikih, shalat lima waktu termasuk kewajiban utama yang harus dijaga oleh setiap muslim.",
+    category: "fiqih",
+    difficulty: "easy"
+  },
+  {
+    id: "s1",
+    question: "Di kota manakah Nabi Muhammad SAW dilahirkan?",
+    options: ["Madinah", "Makkah", "Thaif", "Yaman"],
+    correctAnswer: 1,
+    explanation: "Nabi Muhammad SAW dilahirkan di Makkah.",
+    material: "Sirah Nabawiyah memulai banyak peristiwa penting dari kota Makkah, tempat kelahiran Rasulullah SAW.",
+    category: "sirah",
     difficulty: "easy"
   },
 ];
@@ -95,6 +115,20 @@ export const quizCategories = [
     description: 'Sejarah and pengetahuan Islam',
     icon: 'Globe',
     color: 'chart-4'
+  },
+  {
+    id: 'fiqih',
+    name: 'Fiqih',
+    description: 'Hukum dan tata cara ibadah',
+    icon: 'Scale',
+    color: 'chart-5'
+  },
+  {
+    id: 'sirah',
+    name: 'Sirah Nabawiyah',
+    description: 'Kisah Nabi dan sejarah Islam',
+    icon: 'Star',
+    color: 'chart-6'
   }
 ] as const;
 

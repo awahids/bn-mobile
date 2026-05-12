@@ -1,4 +1,4 @@
-import { BookOpen, Globe, Languages, MapPin } from "lucide-react";
+import { BookOpen, Globe, Languages, MapPin, Scale, Star } from "lucide-react";
 
 interface CategoryIconProps {
   icon: string;
@@ -15,6 +15,10 @@ export const CategoryIcon = ({ icon, className }: CategoryIconProps) => {
       return <MapPin className={className} />;
     case "Globe":
       return <Globe className={className} />;
+    case "Scale":
+      return <Scale className={className} />;
+    case "Star":
+      return <Star className={className} />;
     default:
       return null;
   }
