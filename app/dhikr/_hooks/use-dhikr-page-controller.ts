@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
+import { useUpdateProgress } from "@/hooks/use-progress";
 import { CreateDhikrCounterData, DhikrCounter, DhikrItem } from "@/lib/api-core";
 
 export function useDhikrPageController() {
@@ -16,6 +17,7 @@ export function useDhikrPageController() {
 
   const queryClient = useQueryClient();
   const audio = useAudio();
+  const updateProgress = useUpdateProgress();
 
   useEffect(() => {
     setToday(new Date().toISOString().split("T")[0]);
@@ -152,14 +154,25 @@ export function useDhikrPageController() {
       return;
     }
 
+    const completed = newCount >= dhikr.count;
     await updateCounter.mutateAsync({
       dhikrId,
       count: newCount,
       target: dhikr.count,
       date: today,
       session: currentSession,
-      completed: newCount >= dhikr.count,
+      completed,
     });
+
+    if (completed) {
+      updateProgress.mutate({
+        module: "dhikr",
+        itemId: `${today}:${currentSession}:${dhikrId}`,
+        progress: 100,
+        completed: true,
+        timeSpent: 0,
+      });
+    }
   };
 
   const resetAllCounters = async () => {

@@ -1,15 +1,10 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Cell
-} from "recharts";
+
+const HabitsProgressChart = dynamic(() => import("./habits-progress-chart").then((m) => m.HabitsProgressChart), { ssr: false });
 import {
   Plus,
   Bell,
@@ -37,11 +32,6 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent
-} from "@/components/ui/chart";
 import api, { getErrorMessage, isApiError } from "@/lib/api";
 import { ensureWebPushSubscription } from "@/lib/web-push";
 
@@ -394,38 +384,7 @@ export function HabitsPageContent() {
             <section>
               <h3 className="text-sm font-black tracking-widest mb-6 text-foreground/60 uppercase px-1">Aktivitas Mingguan</h3>
               <div className="glass p-8 rounded-[2.5rem] border-primary/5 h-72">
-                <ChartContainer config={{
-                  completed: { label: "Habit Selesai", color: "hsl(var(--primary))" }
-                }}>
-                  <BarChart data={weeklyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="hsl(var(--border))" />
-                    <XAxis
-                      dataKey="day"
-                      axisLine={false}
-                      tickLine={false}
-                      fontSize={11}
-                      fontFamily="inherit"
-                      fontWeight="black"
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      fontSize={11}
-                      fontWeight="black"
-                      allowDecimals={false}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar
-                      dataKey="completed"
-                      radius={[8, 8, 0, 0]}
-                      maxBarSize={32}
-                    >
-                      {weeklyData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.completed > 0 ? "hsl(var(--primary))" : "hsl(var(--muted))"} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ChartContainer>
+                <HabitsProgressChart data={weeklyData} />
               </div>
             </section>
 
@@ -655,7 +614,7 @@ export function HabitsPageContent() {
                 {editH && (
                   <Button
                     variant="ghost"
-                    onClick={() => deleteHabit(editH.id)}
+                    onClick={() => { deleteHabit(editH.id); setModal(false); }}
                     className="h-12 rounded-[1.5rem] font-black text-destructive/60 hover:bg-destructive/5 uppercase text-[10px] tracking-widest"
                   >
                     <Trash2 size={16} className="mr-2" /> HAPUS HABIT

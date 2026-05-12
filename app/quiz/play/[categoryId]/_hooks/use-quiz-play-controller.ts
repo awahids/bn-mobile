@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type CreateQuizAttemptData, type QuizQuestionAPI } from "@/lib/api-client";
 import { useQuizQuestions } from "@/hooks/use-quiz-content";
+import { useUpdateProgress } from "@/hooks/use-progress";
 import { type QuizCategoryId } from "@/data/quiz";
 
 export type QuizState = "material" | "playing" | "finished";
@@ -38,6 +39,7 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
   const [saveFailed, setSaveFailed] = useState(false);
 
   const queryClient = useQueryClient();
+  const updateProgress = useUpdateProgress();
 
   const submitQuiz = useMutation({
     mutationFn: (data: CreateQuizAttemptData) => api.quiz.createAttempt(data),
@@ -92,6 +94,14 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
           totalQuestions: questions.length,
           timeSpent,
           answers,
+        });
+        updateProgress.mutate({
+          module: "quiz",
+          itemId: categoryId,
+          progress: 100,
+          completed: true,
+          score: scorePercentage,
+          timeSpent,
         });
       } catch {
         setSaveFailed(true);

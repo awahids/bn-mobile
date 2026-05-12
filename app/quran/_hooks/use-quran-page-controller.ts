@@ -4,6 +4,7 @@ import { useStore } from "@tanstack/react-store";
 import { useRouter } from "next/navigation";
 import { useAudio } from "@/hooks/use-audio";
 import { useAuth } from "@/hooks/use-auth";
+import { useUpdateProgress } from "@/hooks/use-progress";
 import { useFilteredSurahs, useSurahAyahs, useSurahs } from "@/hooks/use-quran";
 import { api, type Bookmark as ApiBookmark } from "@/lib/api-client";
 import { appStore, setAppSearchQuery, setAudioPlayerVisible, setSelectedSurah } from "@/store/app-store";
@@ -16,6 +17,7 @@ export function useQuranPageController() {
 
   const audio = useAudio();
   const [currentAyah, setCurrentAyah] = useState<number | null>(null);
+  const updateProgress = useUpdateProgress();
 
   useEffect(() => {
     if (audio.currentSrc && !audioPlayerVisible) {
@@ -86,6 +88,14 @@ export function useQuranPageController() {
   const handleSurahSelect = (surahId: number) => {
     setSelectedSurah(surahId);
     setCurrentAyah(null);
+    if (isAuthenticated) {
+      updateProgress.mutate({
+        module: "quran",
+        itemId: surahId.toString(),
+        progress: 0,
+        completed: false,
+      });
+    }
   };
 
   const { data: allSurahs = [] } = useSurahs();
