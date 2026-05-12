@@ -4,8 +4,7 @@ import { useStore } from "@tanstack/react-store";
 import { useRouter } from "next/navigation";
 import { useAudio } from "@/hooks/use-audio";
 import { useAuth } from "@/hooks/use-auth";
-import { useFilteredSurahs, useSurahAyahs } from "@/hooks/use-quran";
-import { getSurahById } from "@/data/quran";
+import { useFilteredSurahs, useSurahAyahs, useSurahs } from "@/hooks/use-quran";
 import { api, type Bookmark as ApiBookmark } from "@/lib/api-client";
 import { appStore, setAppSearchQuery, setAudioPlayerVisible, setSelectedSurah } from "@/store/app-store";
 
@@ -89,7 +88,8 @@ export function useQuranPageController() {
     setCurrentAyah(null);
   };
 
-  const selectedSurahData = selectedSurah ? getSurahById(selectedSurah) : null;
+  const { data: allSurahs = [] } = useSurahs();
+  const selectedSurahData = selectedSurah ? allSurahs.find((s) => s.id === selectedSurah) ?? null : null;
   const filteredSurahs = useFilteredSurahs(searchQuery);
   const { data: surahAyahs = [], isLoading: ayahsLoading } = useSurahAyahs(selectedSurah);
 

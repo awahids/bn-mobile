@@ -685,6 +685,79 @@ export const quizApi = {
   },
 }
 
+// ==================== HIJAIYAH CONTENT API ====================
+
+export interface HijaiyahLetterAPI {
+  id: string
+  arabic: string
+  name: string
+  transliteration: string
+  pronunciation: string
+  audioUrl?: string
+  order: number
+  description: string
+  writingSteps: string[]
+  strokePoints?: { x: number; y: number }[]
+}
+
+export const hijaiyahApi = {
+  getLetters: (): Promise<HijaiyahLetterAPI[]> =>
+    get<HijaiyahLetterAPI[]>("/hijaiyah/letters", false),
+  getLetterById: (id: string): Promise<HijaiyahLetterAPI> =>
+    get<HijaiyahLetterAPI>(`/hijaiyah/letters/${id}`, false),
+}
+
+// ==================== QUIZ CONTENT API ====================
+
+export interface QuizCategoryAPI {
+  id: string
+  name: string
+  description: string
+  icon: string
+  color: string
+}
+
+export interface QuizQuestionAPI {
+  id: string
+  question: string
+  options: string[]
+  correctAnswer: number
+  explanation: string
+  material: string
+  category: string
+  difficulty: string
+}
+
+export const quizContentApi = {
+  getCategories: (): Promise<QuizCategoryAPI[]> =>
+    get<QuizCategoryAPI[]>("/quiz/categories", false),
+  getQuestions: (categoryId?: string): Promise<QuizQuestionAPI[]> => {
+    const endpoint = categoryId
+      ? `/quiz/questions?category=${categoryId}`
+      : "/quiz/questions"
+    return get<QuizQuestionAPI[]>(endpoint, false)
+  },
+}
+
+// ==================== QURAN CONTENT API ====================
+
+export interface QuranSurahAPI {
+  id: number
+  name: string
+  arabicName: string
+  englishName: string
+  numberOfAyahs: number
+  revelationType: string
+  audioUrl?: string
+}
+
+export const quranContentApi = {
+  getSurahs: (): Promise<QuranSurahAPI[]> =>
+    get<QuranSurahAPI[]>("/quran/surahs", false),
+  getSurahById: (id: number): Promise<QuranSurahAPI> =>
+    get<QuranSurahAPI>(`/quran/surahs/${id}`, false),
+}
+
 // ==================== UTILITY API ====================
 
 export interface PrayerTimes {
@@ -735,6 +808,9 @@ export const api = {
   schools: schoolsApi,
   dhikr: dhikrApi,
   quiz: quizApi,
+  hijaiyah: hijaiyahApi,
+  quizContent: quizContentApi,
+  quranContent: quranContentApi,
   utility: utilityApi,
   request: apiRequest,
   get,

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import type { QuizQuestion } from "@/data/quiz";
+import type { QuizQuestionAPI as QuizQuestion } from "@/lib/api-core";
 import { QuizAnswerOption } from "@/app/quiz/play/[categoryId]/_components/atoms/quiz-answer-option";
 
 interface QuizQuestionSectionProps {

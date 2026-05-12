@@ -4,11 +4,11 @@ import { LazyWritingCanvas } from "@/components/lazy";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { HijaiyahLetter } from "@/data/hijaiyah";
+import type { HijaiyahLetterAPI } from "@/lib/api-core";
 import type { WritingCanvasRef } from "@/components/features/hijaiyah/writing-canvas";
 
 interface HijaiyahLearnSectionProps {
-  selectedLetter: HijaiyahLetter;
+  selectedLetter: HijaiyahLetterAPI;
   writingCompleted: boolean;
   letterCompleted: boolean;
   writingCanvasRef: React.RefObject<WritingCanvasRef | null>;

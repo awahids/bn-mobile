@@ -1,9 +1,9 @@
 import { LazyAudioPlayer } from "@/components/lazy";
-import type { HijaiyahLetter } from "@/data/hijaiyah";
+import type { HijaiyahLetterAPI } from "@/lib/api-core";
 
 interface HijaiyahAudioPlayerProps {
   isVisible: boolean;
-  selectedLetter: HijaiyahLetter;
+  selectedLetter: HijaiyahLetterAPI;
   audio: {
     isPlaying: boolean;
     currentTime: number;
@@ -33,7 +33,7 @@ export function HijaiyahAudioPlayer({
     <LazyAudioPlayer
       title={`Huruf ${selectedLetter.name}`}
       subtitle={selectedLetter.pronunciation}
-      audioUrl={selectedLetter.audioUrl}
+      audioUrl={selectedLetter.audioUrl ?? ""}
       isVisible={isVisible}
       onClose={onClose}
       isPlaying={audio.isPlaying}
@@ -42,7 +42,7 @@ export function HijaiyahAudioPlayer({
       volume={audio.volume}
       isLoading={audio.isLoading}
       error={audio.error}
-      onPlay={() => audio.play(selectedLetter.audioUrl)}
+      onPlay={() => audio.play(selectedLetter.audioUrl ?? "")}
       onPause={audio.pause}
       onSeek={audio.seek}
       onVolumeChange={audio.setVolume}

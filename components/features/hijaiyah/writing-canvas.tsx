@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from "react";
-import { HijaiyahLetter } from "@/data/hijaiyah";
+import type { HijaiyahLetterAPI as HijaiyahLetter } from "@/lib/api-core";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 

@@ -1,13 +1,21 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
 import { useProgress, useUpdateProgress } from "@/hooks/use-progress";
-import { hijaiyahLetters } from "@/data/hijaiyah";
+import { useHijaiyahLetters } from "@/hooks/use-hijaiyah";
+import type { HijaiyahLetterAPI } from "@/lib/api-core";
 import type { WritingCanvasRef } from "@/components/features/hijaiyah/writing-canvas";
 
 export function useHijaiyahPageController() {
   const { status, isAuthenticated } = useAuth();
-  const [selectedLetter, setSelectedLetter] = useState(hijaiyahLetters[0]);
+  const { data: letters = [] } = useHijaiyahLetters();
+  const [selectedLetter, setSelectedLetter] = useState<HijaiyahLetterAPI | null>(null);
+
+  useEffect(() => {
+    if (letters.length > 0 && !selectedLetter) {
+      setSelectedLetter(letters[0]);
+    }
+  }, [letters, selectedLetter]);
   const [currentTab, setCurrentTab] = useState<"learn" | "overview">("learn");
   const [audioPlayerVisible, setAudioPlayerVisible] = useState(false);
   const [writingCompleted, setWritingCompleted] = useState(false);
@@ -62,26 +70,29 @@ export function useHijaiyahPageController() {
   };
 
   const navigateToLetter = (direction: "prev" | "next") => {
-    const currentIndex = hijaiyahLetters.findIndex((l) => l.id === selectedLetter.id);
+    if (!selectedLetter) return;
+    const currentIndex = letters.findIndex((l) => l.id === selectedLetter.id);
     if (direction === "prev" && currentIndex > 0) {
-      setSelectedLetter(hijaiyahLetters[currentIndex - 1]);
-    } else if (direction === "next" && currentIndex < hijaiyahLetters.length - 1) {
-      setSelectedLetter(hijaiyahLetters[currentIndex + 1]);
+      setSelectedLetter(letters[currentIndex - 1]);
+    } else if (direction === "next" && currentIndex < letters.length - 1) {
+      setSelectedLetter(letters[currentIndex + 1]);
     }
     setWritingCompleted(false);
   };
 
-  const letterProgress = getLetterProgress(selectedLetter.id);
+  const letterProgress = selectedLetter ? getLetterProgress(selectedLetter.id) : { progress: 0, completed: false, score: 0 };
 
   const completedCount = isAuthenticated
     ? progressData.filter((p) => p.completed).length
     : guestCompletedLetters.length;
-  const overallProgress = Math.round((completedCount / hijaiyahLetters.length) * 100);
+  const totalLetters = letters.length || 28;
+  const overallProgress = Math.round((completedCount / totalLetters) * 100);
 
   return {
     status,
     isAuthenticated,
     isGuestMode,
+    letters,
     selectedLetter,
     setSelectedLetter,
     currentTab,

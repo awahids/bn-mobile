@@ -16,6 +16,7 @@ export function HijaiyahPageContent() {
   const router = useRouter();
   const {
     isGuestMode,
+    letters,
     selectedLetter,
     setSelectedLetter,
     currentTab,
@@ -35,6 +36,8 @@ export function HijaiyahPageContent() {
     overallProgress,
   } = useHijaiyahPageController();
 
+  if (!selectedLetter) return null;
+
   const audioPlayerPreloadProps = usePreloadOnHover(preloadComponents.audioPlayer);
   const writingCanvasPreloadProps = usePreloadOnHover(preloadComponents.writingCanvas);
 
@@ -53,6 +56,7 @@ export function HijaiyahPageContent() {
 
       {currentTab === "overview" && (
         <HijaiyahOverviewSection
+          letters={letters}
           selectedLetter={selectedLetter}
           getLetterProgress={getLetterProgress}
           onSelectLetter={(letter) => {
@@ -72,7 +76,7 @@ export function HijaiyahPageContent() {
           writingCanvasPreloadProps={writingCanvasPreloadProps}
           onPrevLetter={() => navigateToLetter("prev")}
           onNextLetter={() => navigateToLetter("next")}
-          onPlayAudio={() => playAudio(selectedLetter.audioUrl)}
+          onPlayAudio={() => playAudio(selectedLetter.audioUrl ?? "")}
           onWritingComplete={() => {
             setWritingCompleted(true);
             if (!letterProgress.completed) {

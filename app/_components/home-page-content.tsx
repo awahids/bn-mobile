@@ -17,7 +17,7 @@ import { BottomNavigation } from "@/components/shared/bottom-navigation";
 import { usePrefetchByContext } from "@/lib/prefetch";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { useAuth } from "@/hooks/use-auth";
-import { hijaiyahLetters } from "@/data/hijaiyah";
+import { useHijaiyahLetters } from "@/hooks/use-hijaiyah";
 import { getQuranDisplayReference } from "@/data/quran";
 import { getQuizCategoryById } from "@/data/quiz";
 import { useHabits } from "@/hooks/use-habits";
@@ -201,6 +201,7 @@ function saveStoredPrayerTimes(todayKey: string, coords: Coordinates, prayerTime
 export function HomePageContent() {
   const { status } = useAuth();
   const { stats: habitStats, loaded: habitsLoaded } = useHabits();
+  const { data: hijaiyahLettersData = [] } = useHijaiyahLetters();
   const isAuthenticated = status === "authenticated";
 
   const todayKey = useMemo(() => toLocalDateKey(), []);
@@ -450,7 +451,7 @@ export function HomePageContent() {
       .sort((a, b) => toTimestamp(b.lastAccessed) - toTimestamp(a.lastAccessed))[0];
     const latestQuranBookmark = quranBookmarks[0];
 
-    const hijaiyahLetter = hijaiyahLetters.find((item) => item.id === latestHijaiyah?.itemId) || hijaiyahLetters[0];
+    const hijaiyahLetter = hijaiyahLettersData.find((item) => item.id === latestHijaiyah?.itemId) || hijaiyahLettersData[0];
     const hijaiyahPercent = clampPercentage(latestHijaiyah?.progress ?? 0);
 
     const latestQuranContentId =
@@ -488,7 +489,7 @@ export function HomePageContent() {
         iconType: "quran" as const,
       },
     ];
-  }, [hijaiyahProgress, quranBookmarks, quranProgress]);
+  }, [hijaiyahLettersData, hijaiyahProgress, quranBookmarks, quranProgress]);
 
   const recentActivities = useMemo(() => {
     if (!isAuthenticated) return [] as { id: string; title: string; timeLabel: string; type: ActivityType }[];
@@ -497,7 +498,7 @@ export function HomePageContent() {
       let title = "Aktivitas belajar";
 
       if (item.module === "hijaiyah") {
-        const letter = hijaiyahLetters.find((letterItem) => letterItem.id === item.itemId);
+        const letter = hijaiyahLettersData.find((letterItem) => letterItem.id === item.itemId);
         title = item.completed
           ? `Menyelesaikan huruf ${letter?.name || item.itemId}`
           : `Belajar huruf ${letter?.name || item.itemId}`;
@@ -547,7 +548,7 @@ export function HomePageContent() {
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, 3)
       .map(({ id, title, type, timeLabel }) => ({ id, title, type, timeLabel }));
-  }, [isAuthenticated, progressData, quranBookmarks, quizAttempts]);
+  }, [hijaiyahLettersData, isAuthenticated, progressData, quranBookmarks, quizAttempts]);
 
   // Handle critical errors
   if (userError && isApiError(userError) && userError.status === 0) {

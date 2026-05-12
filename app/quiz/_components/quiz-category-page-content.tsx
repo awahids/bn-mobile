@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { LazyBottomNavigation } from "@/components/lazy";
 import { useAuth } from "@/hooks/use-auth";
-import { quizCategories } from "@/data/quiz";
+import { useQuizCategories } from "@/hooks/use-quiz-content";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,7 @@ const categoryColorMap: Record<string, { bg: string; text: string }> = {
 export function QuizCategoryPageContent() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { data: categories = [] } = useQuizCategories();
 
   return (
     <MobilePageShell>
@@ -63,7 +64,7 @@ export function QuizCategoryPageContent() {
         )}
 
         <div className="grid grid-cols-1 gap-4">
-          {quizCategories.map((category) => (
+          {categories.map((category) => (
             <Card
               key={category.id}
               className="cursor-pointer hover:shadow-md transition-all card-hover"

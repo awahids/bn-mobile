@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { hijaiyahLetters, type HijaiyahLetter } from "@/data/hijaiyah";
+import type { HijaiyahLetterAPI } from "@/lib/api-core";
 import { HijaiyahLetterOverviewCard } from "@/app/hijaiyah/_components/atoms/hijaiyah-letter-overview-card";
 
 interface HijaiyahOverviewSectionProps {
-  selectedLetter: HijaiyahLetter;
+  letters: HijaiyahLetterAPI[];
+  selectedLetter: HijaiyahLetterAPI;
   getLetterProgress: (letterId: string) => { completed: boolean };
-  onSelectLetter: (letter: HijaiyahLetter) => void;
+  onSelectLetter: (letter: HijaiyahLetterAPI) => void;
 }
 
 const containerVariants = {
@@ -24,6 +25,7 @@ const itemVariants = {
 };
 
 export function HijaiyahOverviewSection({
+  letters,
   selectedLetter,
   getLetterProgress,
   onSelectLetter,
@@ -32,7 +34,7 @@ export function HijaiyahOverviewSection({
     <section className="px-6 pb-32">
       <motion.div variants={containerVariants} initial="hidden" animate="show">
         <div className="grid grid-cols-4 gap-4">
-          {hijaiyahLetters.map((letter) => {
+          {letters.map((letter) => {
             const progress = getLetterProgress(letter.id);
 
             return (

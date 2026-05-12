@@ -1,13 +1,13 @@
 import { Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { HijaiyahLetter } from "@/data/hijaiyah";
+import type { HijaiyahLetterAPI } from "@/lib/api-core";
 
 interface HijaiyahLetterOverviewCardProps {
-  letter: HijaiyahLetter;
+  letter: HijaiyahLetterAPI;
   isSelected: boolean;
   completed: boolean;
-  onSelect: (letter: HijaiyahLetter) => void;
+  onSelect: (letter: HijaiyahLetterAPI) => void;
 }
 
 export function HijaiyahLetterOverviewCard({

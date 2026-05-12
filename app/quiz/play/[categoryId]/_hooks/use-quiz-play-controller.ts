@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type CreateQuizAttemptData } from "@/lib/api-client";
-import { getRandomQuestions, type QuizCategoryId, type QuizQuestion } from "@/data/quiz";
+import { api, type CreateQuizAttemptData, type QuizQuestionAPI } from "@/lib/api-client";
+import { useQuizQuestions } from "@/hooks/use-quiz-content";
+import { type QuizCategoryId } from "@/data/quiz";
 
 export type QuizState = "material" | "playing" | "finished";
 
@@ -22,9 +23,10 @@ interface UseQuizPlayControllerParams {
 }
 
 export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPlayControllerParams) {
+  const { data: allQuestions = [] } = useQuizQuestions(categoryId ?? undefined);
   const [quizState, setQuizState] = useState<QuizState>("material");
   const [isInitialized, setIsInitialized] = useState(false);
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [questions, setQuestions] = useState<QuizQuestionAPI[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -49,7 +51,8 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
   });
 
   const initializeQuiz = useCallback((nextCategoryId: QuizCategoryId) => {
-    const quizQuestions = getRandomQuestions(nextCategoryId, QUIZ_QUESTION_COUNT);
+    const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+    const quizQuestions = shuffled.slice(0, QUIZ_QUESTION_COUNT);
     setQuestions(quizQuestions);
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
@@ -62,16 +65,16 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
     setSaveFailed(false);
     setQuizState("material");
     setIsInitialized(true);
-  }, []);
+  }, [allQuestions]);
 
   useEffect(() => {
-    if (!categoryId) {
+    if (!categoryId || allQuestions.length === 0) {
       setIsInitialized(false);
       return;
     }
 
     initializeQuiz(categoryId);
-  }, [categoryId, initializeQuiz]);
+  }, [categoryId, allQuestions, initializeQuiz]);
 
   const finishQuiz = useCallback(async () => {
     if (!categoryId || !startTime || questions.length === 0) return;

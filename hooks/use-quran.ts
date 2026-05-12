@@ -1,15 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { quranSurahs, fetchSurahAyahs, QuranAyah, QuranSurah } from "@/data/quran";
+import { fetchSurahAyahs, QuranAyah, QuranSurah, quranSurahs } from "@/data/quran";
+import { api } from "@/lib/api-core";
 
 export function useSurahs() {
   return useQuery<QuranSurah[]>({
     queryKey: ["quran", "surahs"],
-    queryFn: async () => {
-      // In a real app, this might be an API call
-      // For now, we return the static data wrapped in a promise
-      return quranSurahs;
-    },
-    staleTime: Infinity, // Surah list doesn't change
+    queryFn: () => api.quranContent.getSurahs() as Promise<QuranSurah[]>,
+    staleTime: 1000 * 60 * 60 * 24,
+    placeholderData: quranSurahs,
   });
 }
 
