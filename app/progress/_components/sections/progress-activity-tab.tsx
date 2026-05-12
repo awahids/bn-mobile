@@ -1,4 +1,4 @@
-import { BicepsFlexed, BookOpen, Brain, Clock, Languages } from "lucide-react";
+import { BicepsFlexed, BookMarked, BookOpen, Brain, Clock, Languages } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -26,6 +26,7 @@ export function ProgressActivityTab({ recentProgress }: ProgressActivityTabProps
                       {item.module === "quran" && <BookOpen className="w-4 h-4 text-chart-2" />}
                       {item.module === "dhikr" && <BicepsFlexed className="w-4 h-4 text-chart-3" />}
                       {item.module === "quiz" && <Brain className="w-4 h-4 text-chart-4" />}
+                      {item.module === "hafalan" && <BookMarked className="w-4 h-4 text-chart-5" />}
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium capitalize">

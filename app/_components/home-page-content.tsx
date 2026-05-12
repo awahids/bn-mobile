@@ -35,7 +35,7 @@ const DEFAULT_COORDS = { lat: -6.2, lng: 106.8167 }; // Jakarta fallback
 const PRAYER_COORDS_STORAGE_KEY = "bn_prayer_coords_v1";
 const PRAYER_TIMES_STORAGE_KEY = "bn_prayer_times_v1";
 
-type ActivityType = "hijaiyah" | "quran" | "dhikr" | "quiz";
+type ActivityType = "hijaiyah" | "quran" | "dhikr" | "quiz" | "hafalan";
 type LocationStatus = "idle" | "loading" | "denied" | "unsupported";
 type Coordinates = { lat: number; lng: number };
 
@@ -524,6 +524,9 @@ export function HomePageContent() {
       } else if (item.module === "quiz") {
         const category = getQuizCategoryById(item.itemId);
         title = `Kuis ${category?.name || item.itemId}`;
+      } else if (item.module === "hafalan") {
+        const reference = getQuranDisplayReference(item.itemId);
+        title = `Hafalan ${reference.title}${reference.ayahNumber ? ` ayat ${reference.ayahNumber}` : ""}`;
       }
 
       return {
@@ -561,7 +564,7 @@ export function HomePageContent() {
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, 3)
       .map(({ id, title, type, timeLabel }) => ({ id, title, type, timeLabel }));
-  }, [hijaiyahLettersData, isAuthenticated, progressData, quranBookmarks, quizAttempts]);
+  }, [allDhikrs, hijaiyahLettersData, isAuthenticated, progressData, quranBookmarks, quizAttempts]);
 
   // Handle critical errors
   if (userError && isApiError(userError) && userError.status === 0) {

@@ -1,13 +1,13 @@
 "use client";
 
-import { Check, BicepsFlexed, Brain, BookOpen, Languages } from "lucide-react";
+import { Check, BicepsFlexed, Brain, BookMarked, BookOpen, Languages } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface RecentActivityItem {
   id: string;
   title: string;
   timeLabel: string;
-  type: "hijaiyah" | "quran" | "dhikr" | "quiz";
+  type: "hijaiyah" | "quran" | "dhikr" | "quiz" | "hafalan";
 }
 
 interface RecentActivitySectionProps {
@@ -28,6 +28,9 @@ export function RecentActivitySection({ activities }: RecentActivitySectionProps
     if (type === "quiz") {
       return <Brain className="text-chart-4 w-4 h-4" />
     }
+    if (type === "hafalan") {
+      return <BookMarked className="text-chart-5 w-4 h-4" />
+    }
     return <Check className="text-chart-1 w-4 h-4" />
   }
 
@@ -36,6 +39,7 @@ export function RecentActivitySection({ activities }: RecentActivitySectionProps
     if (type === "quran") return "bg-chart-2/20"
     if (type === "dhikr") return "bg-chart-3/20"
     if (type === "quiz") return "bg-chart-4/20"
+    if (type === "hafalan") return "bg-chart-5/20"
     return "bg-chart-1/20"
   }
 

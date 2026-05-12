@@ -2,12 +2,13 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
-import { BookOpen, Brain, BicepsFlexed, Flame, Trophy, Languages } from "lucide-react";
+import { BookMarked, BookOpen, Brain, BicepsFlexed, Flame, Trophy, Languages } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export const IconMap: Record<string, LucideIcon> = {
   Languages,
   BookOpen,
+  BookMarked,
   Brain,
   BicepsFlexed,
   Flame,
@@ -33,6 +34,11 @@ interface LearningStats {
     bestScore: number;
     attempts: number;
   };
+  hafalan: {
+    completed: number;
+    total: number;
+    progress: number;
+  };
 }
 
 export interface ModuleProgressSummary {
@@ -41,7 +47,7 @@ export interface ModuleProgressSummary {
   progress: number;
   completed: number;
   total: number;
-  color: "chart-1" | "chart-2" | "chart-3" | "chart-4";
+  color: "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5";
 }
 
 export interface AchievementItem {
@@ -62,6 +68,7 @@ function calculateStats(progressData: any[], quizStats?: any): LearningStats {
   const hijaiyahProgress = progressData.filter((p) => p.module === "hijaiyah");
   const quranProgress = progressData.filter((p) => p.module === "quran");
   const dhikrProgress = progressData.filter((p) => p.module === "dhikr");
+  const hafalanProgress = progressData.filter((p) => p.module === "hafalan");
 
   return {
     hijaiyah: {
@@ -84,6 +91,18 @@ function calculateStats(progressData: any[], quizStats?: any): LearningStats {
     quiz: {
       bestScore: quizStats?.bestScore || 0,
       attempts: quizStats?.totalAttempts || 0,
+    },
+    hafalan: {
+      completed: hafalanProgress.filter((p) => p.completed).length,
+      total: hafalanProgress.length,
+      progress:
+        hafalanProgress.length > 0
+          ? Math.round(
+            (hafalanProgress.filter((p) => p.completed).length /
+              hafalanProgress.length) *
+            100
+          )
+          : 0,
     },
   };
 }
@@ -169,6 +188,14 @@ export function useProgressPageData() {
         completed: stats.quiz.attempts,
         total: 100,
         color: "chart-4",
+      },
+      {
+        module: "Hafalan",
+        icon: BookMarked,
+        progress: stats.hafalan.progress,
+        completed: stats.hafalan.completed,
+        total: stats.hafalan.total,
+        color: "chart-5",
       },
     ],
     [stats]

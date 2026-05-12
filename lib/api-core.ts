@@ -384,7 +384,7 @@ export const userApi = {
 export interface UserProgress {
   id: string
   userId: string
-  module: "hijaiyah" | "tajwid" | "quran" | "dhikr" | "quiz"
+  module: "hijaiyah" | "tajwid" | "quran" | "dhikr" | "quiz" | "hafalan"
   itemId: string
   progress: number
   completed: boolean
@@ -394,7 +394,7 @@ export interface UserProgress {
 }
 
 export interface CreateProgressData {
-  module: "hijaiyah" | "tajwid" | "quran" | "dhikr" | "quiz"
+  module: "hijaiyah" | "tajwid" | "quran" | "dhikr" | "quiz" | "hafalan"
   itemId: string
   progress: number
   completed?: boolean
