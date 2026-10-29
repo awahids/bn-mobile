@@ -37,7 +37,7 @@ export function ProfileLearningPreferencesCard({
             <h3 className="font-medium">Pengingat Harian</h3>
             <p className="text-sm text-muted-foreground">
               {isAuthenticated
-                ? "Notifikasi untuk belajar rutin"
+                ? "Pukul 19.00 jika hari ini belum belajar"
                 : "Masuk untuk menerima notifikasi pengingat"}
             </p>
           </div>

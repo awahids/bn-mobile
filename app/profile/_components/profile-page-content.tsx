@@ -34,6 +34,7 @@ export function ProfilePageContent() {
     deleteBookmarkMutation,
     notifications,
     setNotifications,
+    enableNotifications,
     signOut,
   } = useProfilePageData();
 
@@ -88,15 +89,26 @@ export function ProfilePageContent() {
           isDarkTheme={theme === "dark"}
           onToggleTheme={toggleTheme}
           notifications={notifications}
-          onChangeNotifications={setNotifications}
+          onChangeNotifications={(checked) => {
+            setNotifications(checked);
+            // Without a push subscription the daily reminder cannot arrive.
+            if (!checked) setPreference("dailyReminder", false);
+          }}
           audioEnabled={preferences.audioEnabled}
           onChangeAudioEnabled={(checked) => setPreference("audioEnabled", checked)}
         />
 
         <ProfileLearningPreferencesCard
           isAuthenticated={isAuthenticated}
-          dailyReminder={notifications}
-          onChangeDailyReminder={setNotifications}
+          dailyReminder={preferences.dailyReminder}
+          onChangeDailyReminder={(checked) => {
+            if (!checked) {
+              setPreference("dailyReminder", false);
+              return;
+            }
+            // The reminder arrives as a web push, so it needs a subscription first.
+            void enableNotifications().then((granted) => setPreference("dailyReminder", granted));
+          }}
           autoPlayAudio={preferences.autoPlayAudio}
           onChangeAutoPlayAudio={(checked) => setPreference("autoPlayAudio", checked)}
           audioEnabled={preferences.audioEnabled}

@@ -109,28 +109,32 @@ export function useProfilePageData() {
     await logout();
   };
 
+  /** Subscribes this device to web push; resolves true when permission is granted. */
+  const enableNotifications = async () => {
+    if (!isAuthenticated) return false;
+    try {
+      const permission = await ensureWebPushSubscription();
+      setNotifications(permission === "granted");
+      return permission === "granted";
+    } catch (error) {
+      console.error("Failed to enable notifications:", error);
+      return false;
+    }
+  };
+
   const onChangeNotifications = (checked: boolean) => {
     if (!isAuthenticated) {
       setNotifications(false);
       return;
     }
 
-    void (async () => {
-      try {
-        if (checked) {
-          const permission = await ensureWebPushSubscription();
-          setNotifications(permission === "granted");
-          return;
-        }
-        await disableWebPushSubscription();
-        setNotifications(false);
-      } catch (error) {
-        console.error("Failed to toggle notifications:", error);
-        if (!checked) {
-          setNotifications(false);
-        }
-      }
-    })();
+    if (checked) {
+      void enableNotifications();
+      return;
+    }
+    void disableWebPushSubscription()
+      .catch((error) => console.error("Failed to disable notifications:", error))
+      .finally(() => setNotifications(false));
   };
 
   return {
@@ -147,6 +151,7 @@ export function useProfilePageData() {
     deleteBookmarkMutation,
     notifications,
     setNotifications: onChangeNotifications,
+    enableNotifications,
     signOut,
   };
 }

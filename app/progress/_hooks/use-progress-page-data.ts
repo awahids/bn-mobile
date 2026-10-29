@@ -4,6 +4,7 @@ import { api } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
 import { BookMarked, BookOpen, Brain, HandHeart, Flame, Trophy, Languages } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { summarizeModuleProgress } from "@/app/progress/_lib/module-progress";
 
 export const IconMap: Record<string, LucideIcon> = {
   Languages,
@@ -15,38 +16,12 @@ export const IconMap: Record<string, LucideIcon> = {
   Trophy,
 };
 
-interface LearningStats {
-  hijaiyah: {
-    completed: number;
-    total: number;
-    progress: number;
-  };
-  quran: {
-    bookmarked: number;
-    total: number;
-    progress: number;
-  };
-  dhikr: {
-    todayCount: number;
-    progress: number;
-  };
-  quiz: {
-    bestScore: number;
-    attempts: number;
-  };
-  hafalan: {
-    completed: number;
-    total: number;
-    progress: number;
-  };
-}
-
 export interface ModuleProgressSummary {
   module: string;
   icon: typeof Languages;
   progress: number;
-  completed: number;
-  total: number;
+  /** e.g. "2/28 huruf" or "Skor terbaik 80% · 3 kuis" */
+  detail: string;
   color: "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5";
 }
 
@@ -64,47 +39,10 @@ export interface WeeklyActivityItem {
   completed: boolean;
 }
 
-function calculateStats(progressData: any[], quizStats?: any): LearningStats {
-  const hijaiyahProgress = progressData.filter((p) => p.module === "hijaiyah");
-  const quranProgress = progressData.filter((p) => p.module === "quran");
-  const dhikrProgress = progressData.filter((p) => p.module === "dhikr");
-  const hafalanProgress = progressData.filter((p) => p.module === "hafalan");
-
-  return {
-    hijaiyah: {
-      completed: hijaiyahProgress.filter((p) => p.completed).length,
-      total: 28,
-      progress:
-        hijaiyahProgress.length > 0
-          ? Math.round(hijaiyahProgress.reduce((sum, p) => sum + p.progress, 0) / hijaiyahProgress.length)
-          : 0,
-    },
-    quran: {
-      bookmarked: quranProgress.length,
-      total: 114,
-      progress: Math.round((quranProgress.length / 114) * 100),
-    },
-    dhikr: {
-      todayCount: dhikrProgress.filter((p) => p.completed).length,
-      progress: dhikrProgress.length > 0 ? 100 : 0,
-    },
-    quiz: {
-      bestScore: quizStats?.bestScore || 0,
-      attempts: quizStats?.totalAttempts || 0,
-    },
-    hafalan: {
-      completed: hafalanProgress.filter((p) => p.completed).length,
-      total: hafalanProgress.length,
-      progress:
-        hafalanProgress.length > 0
-          ? Math.round(
-            (hafalanProgress.filter((p) => p.completed).length /
-              hafalanProgress.length) *
-            100
-          )
-          : 0,
-    },
-  };
+function toLocalDateKey(date = new Date()): string {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
 }
 
 export function useProgressPageData() {
@@ -153,52 +91,40 @@ export function useProgressPageData() {
 
   const recentProgress = useMemo(() => progressData.slice(0, 10), [progressData]);
 
-  const stats = useMemo(() => calculateStats(progressData, quizStats), [progressData, quizStats]);
+  const todayKey = useMemo(() => toLocalDateKey(), []);
+  const { data: dhikrs = [] } = useQuery({
+    queryKey: ["dhikrs"],
+    queryFn: () => api.dhikr.getDhikrs(),
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+  const { data: dhikrCounters = [] } = useQuery({
+    queryKey: ["home-dhikr-counters", todayKey],
+    queryFn: () => api.dhikr.getCounters(todayKey),
+    enabled: status === "authenticated",
+    retry: false,
+  });
+
+  const summary = useMemo(
+    () =>
+      summarizeModuleProgress({
+        progress: progressData,
+        quizStats,
+        dhikrCounters,
+        // A dhikr marked "both" is read in the morning and evening session.
+        dhikrTotal: dhikrs.reduce((sum, dhikr) => sum + (dhikr.session === "both" ? 2 : 1), 0),
+      }),
+    [dhikrCounters, dhikrs, progressData, quizStats]
+  );
 
   const overallProgress: ModuleProgressSummary[] = useMemo(
     () => [
-      {
-        module: "Hijaiyah",
-        icon: Languages,
-        progress: stats.hijaiyah.progress,
-        completed: stats.hijaiyah.completed,
-        total: stats.hijaiyah.total,
-        color: "chart-1",
-      },
-      {
-        module: "Al-Qur'an",
-        icon: BookOpen,
-        progress: Math.round((stats.quran.bookmarked / stats.quran.total) * 100),
-        completed: stats.quran.bookmarked,
-        total: stats.quran.total,
-        color: "chart-2",
-      },
-      {
-        module: "Dzikir",
-        icon: HandHeart,
-        progress: stats.dhikr.todayCount > 0 ? 100 : 0,
-        completed: stats.dhikr.todayCount,
-        total: 7,
-        color: "chart-3",
-      },
-      {
-        module: "Kuis",
-        icon: Brain,
-        progress: stats.quiz.bestScore,
-        completed: stats.quiz.attempts,
-        total: 100,
-        color: "chart-4",
-      },
-      {
-        module: "Hafalan",
-        icon: BookMarked,
-        progress: stats.hafalan.progress,
-        completed: stats.hafalan.completed,
-        total: stats.hafalan.total,
-        color: "chart-5",
-      },
+      { module: "Hijaiyah", icon: Languages, color: "chart-1", ...summary.hijaiyah },
+      { module: "Al-Qur'an", icon: BookOpen, color: "chart-2", ...summary.quran },
+      { module: "Dzikir", icon: HandHeart, color: "chart-3", ...summary.dhikr },
+      { module: "Kuis", icon: Brain, color: "chart-4", ...summary.quiz },
+      { module: "Hafalan", icon: BookMarked, color: "chart-5", ...summary.hafalan },
     ],
-    [stats]
+    [summary]
   );
 
   const achievements: AchievementItem[] = useMemo(
