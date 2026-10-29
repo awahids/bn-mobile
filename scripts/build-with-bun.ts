@@ -45,11 +45,7 @@ class BunBuilder {
       console.log('🧹 Cleaning previous builds...');
       await exec('rm -rf .next out dist');
 
-      // 4. Generate Prisma client
-      console.log('🔧 Generating Prisma client...');
-      await exec('bun prisma generate');
-
-      // 5. Run Next.js build with Bun
+      // 4. Run Next.js build with Bun
       console.log('📦 Building Next.js application...');
       await this.buildWithBun();
 
@@ -86,9 +82,6 @@ class BunBuilder {
       if (!process.env.NODE_ENV) {
         process.env.NODE_ENV = 'development';
       }
-
-      // Generate Prisma client
-      await exec('bun prisma generate');
 
       // Start development server
       await exec('bun --bun next dev');

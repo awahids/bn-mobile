@@ -94,7 +94,6 @@ class BunOptimizer {
     // Test module resolution speed
     await import('react');
     await import('next');
-    await import('@prisma/client');
 
     const moduleResolutionTime = performance.now() - startTime;
 
