@@ -37,7 +37,7 @@ export function TajwidPageContent() {
 
   if (!selectedRule) {
     // Rules come from the API; show the page skeleton instead of a blank screen.
-    return <PageLoadingState bottomNav={<LazyBottomNavigation />} />;
+    return <PageLoadingState title="Tajwid Interaktif" bottomNav={<LazyBottomNavigation />} />;
   }
 
   return (

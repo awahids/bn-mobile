@@ -39,7 +39,7 @@ export function ProfilePageContent() {
   } = useProfilePageData();
 
   if (status === "loading") {
-    return <PageLoadingState bottomNav={<BottomNavigation />} />;
+    return <PageLoadingState title="Profil" subtitle="Akun dan preferensi" bottomNav={<BottomNavigation />} />;
   }
 
   if (isAuthenticated && userError && isApiError(userError) && userError.status === 401) {
