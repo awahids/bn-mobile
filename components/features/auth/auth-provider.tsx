@@ -5,6 +5,7 @@ import { api, type AuthUser } from "@/lib/api-core"
 import {
   clearAccessToken,
   getAccessToken,
+  hasAuthHint,
   onAuthStateChanged,
 } from "@/lib/auth-storage"
 import { disableWebPushSubscription } from "@/lib/web-push"
@@ -48,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isStale = () => version !== sessionVersionRef.current
 
     let token = getAccessToken()
-    if (!token) {
+    if (!token && hasAuthHint()) {
       try {
         const refreshed = await api.auth.refresh({ emitEvent: false })
         token = refreshed?.accessToken

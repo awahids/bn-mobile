@@ -73,7 +73,6 @@ function LoginContent() {
                 height={64}
                 className="h-full w-full object-cover rounded-full"
                 priority
-                unoptimized
               />
             ) : (
               <span className="text-2xl font-bold text-primary">ن</span>

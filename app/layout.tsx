@@ -89,10 +89,14 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  // Sized icons: the 1024px source logo is 179 KB, too heavy for a favicon.
   icons: {
-    icon: '/images/logo/image.png',
-    shortcut: '/images/logo/image.png',
-    apple: '/images/logo/image.png',
+    icon: [
+      { url: '/images/logo/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/images/logo/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    shortcut: '/images/logo/favicon-32.png',
+    apple: { url: '/images/logo/apple-touch-icon.png', sizes: '180x180' },
   },
   manifest: '/manifest.json',
   appleWebApp: {

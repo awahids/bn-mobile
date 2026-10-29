@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { LazyBottomNavigation } from "@/components/lazy";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
+import { PageLoadingState } from "@/components/shared/page-loading-state";
 import { useTajwidPageController } from "@/app/tajwid/_hooks/use-tajwid-page-controller";
 import { TajwidHeader } from "@/app/tajwid/_components/sections/tajwid-header";
 import { TajwidLearnSection } from "@/app/tajwid/_components/sections/tajwid-learn-section";
@@ -35,7 +36,8 @@ export function TajwidPageContent() {
   } = useTajwidPageController();
 
   if (!selectedRule) {
-    return null;
+    // Rules come from the API; show the page skeleton instead of a blank screen.
+    return <PageLoadingState bottomNav={<LazyBottomNavigation />} />;
   }
 
   return (

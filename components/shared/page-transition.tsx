@@ -1,39 +1,34 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import { usePrefetchCommonRoutes } from "@/lib/prefetch";
 
 interface PageTransitionProps {
   children: ReactNode;
 }
 
+// Fade the new page in only. An exit animation (AnimatePresence mode="wait")
+// held every navigation back by its full duration before the next page could
+// even start rendering.
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
   const [isHydrated, setIsHydrated] = useState(false);
-  usePrefetchCommonRoutes();
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        initial={isHydrated ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
-        exit={isHydrated ? { opacity: 0 } : undefined}
-        transition={{
-          duration: 0.3,
-          ease: [0.22, 1, 0.36, 1]
-        }}
-      >
-        <div className="w-full min-h-screen">
-          {children}
-        </div>
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={pathname}
+      initial={isHydrated ? { opacity: 0 } : false}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+    >
+      <div className="w-full min-h-screen">
+        {children}
+      </div>
+    </motion.div>
   );
 }

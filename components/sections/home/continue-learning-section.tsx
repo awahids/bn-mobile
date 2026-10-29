@@ -35,7 +35,7 @@ export function ContinueLearningSection({ items }: ContinueLearningSectionProps)
           const isHijaiyah = item.iconType === "hijaiyah";
 
           return (
-            <Link key={item.id} href={item.href} prefetch>
+            <Link key={item.id} href={item.href}>
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-4">

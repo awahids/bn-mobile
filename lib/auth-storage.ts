@@ -25,6 +25,16 @@ export function setAccessToken(token: string) {
   document.cookie = `${AUTH_HINT_COOKIE}=1; Path=/; Max-Age=${AUTH_HINT_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`
 }
 
+/**
+ * True when this browser has logged in recently (the hint cookie is renewed on
+ * every login/refresh and lives as long as the refresh token). Without it there
+ * is no refresh cookie worth trying, so guests skip the /auth/refresh call.
+ */
+export function hasAuthHint(): boolean {
+  if (!isBrowser()) return false
+  return document.cookie.split("; ").some((part) => part === `${AUTH_HINT_COOKIE}=1`)
+}
+
 export function clearAccessToken() {
   if (!isBrowser()) return
   window.localStorage.removeItem(ACCESS_TOKEN_KEY)

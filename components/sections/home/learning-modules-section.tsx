@@ -47,7 +47,7 @@ export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
           const Icon = module.icon;
 
           return (
-            <Link key={module.id} href={module.href} prefetch={true} className="group" data-testid={`module-${module.id}`}>
+            <Link key={module.id} href={module.href} className="group" data-testid={`module-${module.id}`}>
               <div className={cn(
                 "relative glass p-5 rounded-[2rem] transition-all duration-300 active:scale-95 flex flex-col h-full bg-card/40 dark:bg-card/20",
                 "border hover:shadow-xl",

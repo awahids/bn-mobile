@@ -81,7 +81,7 @@ export function BottomNavigation() {
               <Link
                 key={path}
                 href={path}
-                prefetch={true}
+               
                 className={cn(
                   "relative flex flex-col items-center justify-center min-w-[64px] h-12 px-3 transition-all duration-500 rounded-[1.75rem] group outline-none touch-manipulation",
                   active ? "text-primary flex-[1.6]" : "text-muted-foreground flex-1"
