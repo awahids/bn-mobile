@@ -1,6 +1,5 @@
-import { ArrowLeft, Flame } from "lucide-react";
+import { Flame } from "lucide-react";
 import { StickyPageHeader } from "@/components/shared/sticky-page-header";
-import { Button } from "@/components/ui/button";
 
 interface ProgressHeaderProps {
   streak: number;
@@ -12,15 +11,14 @@ export function ProgressHeader({ streak, onBackHome }: ProgressHeaderProps) {
     <StickyPageHeader
       title="Progress Belajar"
       subtitle="Statistik pembelajaran Anda"
-      leftSlot={
-        <Button variant="ghost" size="icon" onClick={onBackHome} data-testid="back-home">
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-      }
+      onBack={onBackHome}
       rightSlot={
-        <div className="flex items-center space-x-2">
-          <Flame className="w-5 h-5 text-orange-500" />
-          <span className="text-lg font-bold text-orange-500">{streak}</span>
+        <div
+          className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5"
+          aria-label={`Streak ${streak} hari`}
+        >
+          <Flame className="h-4 w-4 text-orange-500" />
+          <span className="text-sm font-semibold tabular-nums">{streak}</span>
         </div>
       }
     />

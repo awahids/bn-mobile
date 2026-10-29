@@ -20,7 +20,7 @@ export default function HabitsLoading() {
 
       <div className="px-6 py-8 space-y-6">
         {/* Stats card */}
-        <Skeleton className="w-full h-36 rounded-[2.5rem]" />
+        <Skeleton className="w-full h-36 rounded-3xl" />
 
         {/* Habit list header */}
         <div className="flex items-center justify-between px-1">
@@ -30,7 +30,7 @@ export default function HabitsLoading() {
 
         {/* Habit items */}
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="glass p-5 rounded-[2rem] flex items-center gap-5 border border-border/30">
+          <div key={i} className="glass p-5 rounded-3xl flex items-center gap-5 border border-border/30">
             <Skeleton className="w-10 h-10 rounded-full shrink-0" />
             <div className="flex-1">
               <Skeleton className="h-5 w-40 mb-2" />

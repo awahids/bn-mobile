@@ -142,41 +142,67 @@ async function parseJsonResponse<T>(response: Response): Promise<ApiResponse<T>>
   }
 }
 
-async function refreshAccessToken(): Promise<string | null> {
-  if (refreshPromise) {
-    return refreshPromise
-  }
+const REFRESH_LOCK_NAME = "bn-auth-refresh"
 
-  refreshPromise = (async () => {
+/**
+ * Exchanges the refresh cookie for a new access token. The server rotates the
+ * refresh token on every call, so two concurrent refreshes (two tabs, or two
+ * code paths in one tab) would make the second one fail and log the user out.
+ * Calls are therefore shared within a tab and serialized across tabs with the
+ * Web Locks API; a tab that waited for the lock reuses the token another tab
+ * already stored in localStorage instead of refreshing again.
+ */
+async function performRefresh(): Promise<string | null> {
+  const tokenBefore = getAccessToken()
+
+  const run = async (): Promise<string | null> => {
+    const current = getAccessToken()
+    if (current && current !== tokenBefore) {
+      return current
+    }
+
     try {
       const response = await fetch(buildUrl("/auth/refresh"), {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
       })
-
       const payload = await parseJsonResponse<AuthTokenResponse>(response)
       const token = payload?.data?.accessToken
-
-      if (!response.ok || !token) {
-        clearAccessToken()
-        emitAuthStateChanged("token-cleared")
-        return null
+      if (response.ok && token) {
+        setAccessToken(token)
+        return token
       }
-
-      setAccessToken(token)
-      emitAuthStateChanged("refresh")
-      return token
     } catch {
-      clearAccessToken()
-      emitAuthStateChanged("token-cleared")
-      return null
+      // Network or parse failure: treated as a failed refresh below.
     }
-  })().finally(() => {
-    refreshPromise = null
-  })
 
-  return refreshPromise
+    // Only drop the token we tried to refresh; a login that completed in the
+    // meantime must keep its fresh token.
+    if (getAccessToken() === tokenBefore) {
+      clearAccessToken()
+    }
+    return null
+  }
+
+  if (typeof navigator !== "undefined" && navigator.locks?.request) {
+    return navigator.locks.request(REFRESH_LOCK_NAME, run)
+  }
+  return run()
+}
+
+async function refreshAccessToken(options: { emitEvent?: boolean } = {}): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = performRefresh().finally(() => {
+      refreshPromise = null
+    })
+  }
+
+  const token = await refreshPromise
+  if (options.emitEvent !== false) {
+    emitAuthStateChanged(token ? "refresh" : "token-cleared")
+  }
+  return token
 }
 
 async function apiRequest<T = any>(
@@ -330,15 +356,13 @@ export const authApi = {
     }
     return data
   },
-  refresh: async (options: RefreshOptions = {}): Promise<AuthTokenResponse> => {
-    const data = await post<AuthTokenResponse>("/auth/refresh", undefined, false)
-    if (data?.accessToken) {
-      setAccessToken(data.accessToken)
-      if (options.emitEvent !== false) {
-        emitAuthStateChanged("refresh")
-      }
+  refresh: async (options: RefreshOptions = {}): Promise<{ accessToken: string }> => {
+    // Shares the deduplicated, cross-tab-locked refresh used by apiRequest.
+    const accessToken = await refreshAccessToken(options)
+    if (!accessToken) {
+      throw new ApiError(401, "Sesi berakhir, silakan masuk kembali.")
     }
-    return data
+    return { accessToken }
   },
   me: (): Promise<AuthUser> => get<AuthUser>("/auth/me"),
   logout: async (): Promise<void> => {

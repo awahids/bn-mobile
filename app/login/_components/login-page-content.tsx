@@ -3,22 +3,23 @@
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, Suspense, useState } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { MobilePageShell } from '@/components/shared/mobile-page-shell'
 import { ArrowLeft } from 'lucide-react'
 
+function LoginFormSkeleton() {
+  return (
+    <div className="rounded-lg border border-border/60 p-6">
+      <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
+    </div>
+  )
+}
+
 const LoginForm = dynamic(
   () => import('@/components/features/auth/login-form').then((mod) => mod.LoginForm),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="rounded-lg border border-border/60 p-6">
-        <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
-      </div>
-    ),
-  }
+  { ssr: false, loading: () => <LoginFormSkeleton /> }
 )
 
 function sanitizeCallbackUrl(callbackUrl: string): string {
@@ -28,22 +29,25 @@ function sanitizeCallbackUrl(callbackUrl: string): string {
   return callbackUrl
 }
 
-function LoginContent() {
+// Reading search params opts out of static rendering, so only this part waits
+// behind Suspense; the rest of the page is in the server HTML.
+function LoginFormWithCallback() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = sanitizeCallbackUrl(searchParams?.get('callbackUrl') || '/')
   const { status } = useAuth()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   useEffect(() => {
     if (status === 'authenticated') {
       router.push(callbackUrl)
     }
   }, [status, router, callbackUrl])
+
+  return <LoginForm callbackUrl={callbackUrl} title="" />
+}
+
+export function LoginPageContent() {
+  const router = useRouter()
 
   return (
     <MobilePageShell className="flex flex-col">
@@ -53,6 +57,7 @@ function LoginContent() {
           size="icon"
           onClick={() => router.back()}
           className="rounded-full"
+          aria-label="Kembali"
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
@@ -65,19 +70,14 @@ function LoginContent() {
       <div className="flex-1 px-4 pb-10">
         <div className="text-center mt-2 mb-6">
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            {mounted ? (
-              <Image
-                src="/images/logo/image.png"
-                alt="Belajar Ngaji"
-                width={64}
-                height={64}
-                className="h-full w-full object-cover rounded-full"
-                priority
-                unoptimized
-              />
-            ) : (
-              <span className="text-2xl font-bold text-primary">ن</span>
-            )}
+            <Image
+              src="/images/logo/image.png"
+              alt="Belajar Ngaji"
+              width={64}
+              height={64}
+              className="h-full w-full object-cover rounded-full"
+              priority
+            />
           </div>
           <h2 className="text-2xl font-semibold text-foreground mb-2">
             Mulai Perjalanan Ngaji
@@ -87,7 +87,9 @@ function LoginContent() {
           </p>
         </div>
 
-        <LoginForm callbackUrl={callbackUrl} title="" />
+        <Suspense fallback={<LoginFormSkeleton />}>
+          <LoginFormWithCallback />
+        </Suspense>
 
         <div className="mt-6 text-center">
           <p className="text-xs text-muted-foreground">
@@ -97,17 +99,5 @@ function LoginContent() {
         </div>
       </div>
     </MobilePageShell>
-  )
-}
-
-export function LoginPageContent() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    }>
-      <LoginContent />
-    </Suspense>
   )
 }

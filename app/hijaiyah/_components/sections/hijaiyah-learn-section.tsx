@@ -49,11 +49,11 @@ export function HijaiyahLearnSection({
         </Button>
 
         <div className="text-center">
-          <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1.5">
+          <div className="text-xs font-bold text-muted-foreground tracking-wide mb-1.5">
             Huruf {selectedLetter.order}/28
           </div>
           <div className="px-4 py-1.5 bg-primary/10 rounded-full border border-primary/20">
-            <span className="text-xs font-black text-primary uppercase tracking-tight">{selectedLetter.name}</span>
+            <span className="text-xs font-bold text-primary tracking-tight">{selectedLetter.name}</span>
           </div>
         </div>
 
@@ -70,22 +70,22 @@ export function HijaiyahLearnSection({
       </div>
 
       <div className="group relative mb-8">
-        <div className="glass p-10 rounded-[3rem] text-center relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
+        <div className="glass p-10 rounded-3xl text-center relative overflow-hidden transition-all duration-500 hover:shadow-lg hover:shadow-primary/10">
           <div className="relative z-10">
             <motion.div key={selectedLetter.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
               <div className="text-9xl font-arabic mb-6 text-primary drop-shadow-sm animate-float">{selectedLetter.arabic}</div>
             </motion.div>
-            <h2 className="text-3xl font-black text-foreground tracking-tight mb-2">{selectedLetter.name}</h2>
+            <h2 className="text-3xl font-bold text-foreground tracking-tight mb-2">{selectedLetter.name}</h2>
             <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
               <Badge
                 variant="secondary"
-                className="rounded-xl px-3 py-1 bg-primary/5 text-primary border-primary/10 font-bold uppercase tracking-widest text-[10px]"
+                className="rounded-xl px-3 py-1 bg-primary/5 text-primary border-primary/10 font-bold tracking-wide text-xs"
               >
                 {selectedLetter.transliteration}
               </Badge>
               <Badge
                 variant="secondary"
-                className="rounded-xl px-3 py-1 bg-accent/5 text-accent border-accent/10 font-bold uppercase tracking-widest text-[10px]"
+                className="rounded-xl px-3 py-1 bg-accent/5 text-accent border-accent/10 font-bold tracking-wide text-xs"
               >
                 {selectedLetter.pronunciation}
               </Badge>
@@ -98,7 +98,7 @@ export function HijaiyahLearnSection({
             <div className="flex flex-col space-y-3">
               <Button
                 onClick={onPlayAudio}
-                className="w-full rounded-[1.5rem] bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 h-14 font-black uppercase tracking-widest text-xs"
+                className="w-full rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 h-14 font-bold tracking-wide text-xs"
                 data-testid="play-pronunciation"
                 {...audioPlayerPreloadProps}
               >
@@ -111,7 +111,7 @@ export function HijaiyahLearnSection({
                   <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center p-1">
                     <Check className="w-full h-full" />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest">Selesai Dipelajari</span>
+                  <span className="text-xs font-bold tracking-wide">Selesai Dipelajari</span>
                 </div>
               )}
             </div>
@@ -126,14 +126,14 @@ export function HijaiyahLearnSection({
         <TabsList className="grid w-full grid-cols-2 rounded-3xl bg-primary/5 p-1.5 h-auto mb-6">
           <TabsTrigger
             value="writing"
-            className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+            className="rounded-2xl py-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
           >
             <PenTool className="w-4 h-4 mr-2" />
             <span className="font-bold tracking-tight">Menulis</span>
           </TabsTrigger>
           <TabsTrigger
             value="steps"
-            className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+            className="rounded-2xl py-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
           >
             <BookOpen className="w-4 h-4 mr-2" />
             <span className="font-bold tracking-tight">Panduan</span>
@@ -141,10 +141,10 @@ export function HijaiyahLearnSection({
         </TabsList>
 
         <TabsContent value="writing" className="mt-0 outline-none">
-          <div className="glass rounded-[2.5rem] p-6 border-primary/10">
-            <div className="mb-6">
-              <h3 className="text-lg font-black text-foreground tracking-tight">Latihan Menulis</h3>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest">Ikuti pola huruf di bawah ini</p>
+          <div>
+            <div className="mb-4 px-1">
+              <h3 className="text-lg font-bold text-foreground tracking-tight">Latihan Menulis</h3>
+              <p className="text-[11px] font-medium text-muted-foreground tracking-wide">Ikuti pola huruf di bawah ini</p>
             </div>
 
             <div className="relative group/canvas" {...writingCanvasPreloadProps}>
@@ -154,16 +154,14 @@ export function HijaiyahLearnSection({
                 onComplete={onWritingComplete}
                 completed={writingCompleted}
               />
-
-              <div className="absolute -inset-2 bg-primary/5 rounded-[2rem] -z-10 group-hover/canvas:bg-primary/10 transition-colors duration-500" />
             </div>
 
-            <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center justify-between mt-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onResetWriting}
-                className="rounded-2xl bg-accent/5 hover:bg-accent/10 text-accent font-bold uppercase tracking-widest text-[10px]"
+                className="rounded-2xl bg-accent/5 hover:bg-accent/10 text-accent font-bold tracking-wide text-xs"
                 data-testid="reset-writing"
               >
                 <RotateCcw className="w-3.5 h-3.5 mr-2" />
@@ -175,7 +173,7 @@ export function HijaiyahLearnSection({
                   <div className="bg-primary text-white p-1 rounded-full">
                     <Check className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-black text-primary uppercase tracking-tighter">Bagus Sekali!</span>
+                  <span className="text-sm font-bold text-primary tracking-tight">Bagus Sekali!</span>
                 </div>
               )}
             </div>
@@ -183,10 +181,10 @@ export function HijaiyahLearnSection({
         </TabsContent>
 
         <TabsContent value="steps" className="mt-0 outline-none">
-          <div className="glass rounded-[2.5rem] p-8 border-primary/10">
+          <div className="glass rounded-3xl p-5 border-primary/10">
             <div className="mb-8">
-              <h3 className="text-lg font-black text-foreground tracking-tight">Cara Menulis</h3>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest">
+              <h3 className="text-lg font-bold text-foreground tracking-tight">Cara Menulis</h3>
+              <p className="text-[11px] font-medium text-muted-foreground tracking-wide">
                 Langkah-langkah goresan yang benar
               </p>
             </div>
@@ -194,7 +192,7 @@ export function HijaiyahLearnSection({
             <div className="space-y-6">
               {selectedLetter.writingSteps.map((step, index) => (
                 <div key={`${selectedLetter.id}-step-${index}`} className="flex items-start space-x-4 group/step">
-                  <div className="w-8 h-8 bg-primary/10 rounded-2xl flex items-center justify-center text-primary text-sm font-black border border-primary/20 group-hover/step:bg-primary group-hover/step:text-white transition-colors duration-300">
+                  <div className="w-8 h-8 bg-primary/10 rounded-2xl flex items-center justify-center text-primary text-sm font-bold border border-primary/20 group-hover/step:bg-primary group-hover/step:text-white transition-colors duration-300">
                     {index + 1}
                   </div>
                   <p className="text-sm font-medium text-foreground leading-relaxed flex-1 pt-1.5">{step}</p>

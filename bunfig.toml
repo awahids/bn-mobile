@@ -26,8 +26,7 @@ bun = true
 sourcemap = false
 
 [test]
-# Optimize test performance
-preload = ["./test/setup.ts"]
+# No preload: tests are plain unit tests of pure functions.
 coverage = true
 # Use faster test runner
 timeout = 30000

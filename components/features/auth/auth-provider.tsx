@@ -5,6 +5,7 @@ import { api, type AuthUser } from "@/lib/api-core"
 import {
   clearAccessToken,
   getAccessToken,
+  hasAuthHint,
   onAuthStateChanged,
 } from "@/lib/auth-storage"
 import { disableWebPushSubscription } from "@/lib/web-push"
@@ -38,10 +39,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [status, setStatus] = useState<AuthStatus>("loading")
   const wasAuthenticatedRef = useRef(false)
+  // Bumped by every session check and login. A check that finishes after a
+  // newer one started (e.g. the page-load check resolving after the OAuth
+  // callback already logged in) must not overwrite the newer result.
+  const sessionVersionRef = useRef(0)
 
   const refreshUser = useCallback(async () => {
+    const version = ++sessionVersionRef.current
+    const isStale = () => version !== sessionVersionRef.current
+
     let token = getAccessToken()
-    if (!token) {
+    if (!token && hasAuthHint()) {
       try {
         const refreshed = await api.auth.refresh({ emitEvent: false })
         token = refreshed?.accessToken
@@ -49,9 +57,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Ignore: missing/expired refresh cookie should settle to unauthenticated.
       }
     }
+    if (isStale()) return
 
     if (!token) {
-      clearAccessToken()
       setUser(null)
       setStatus("unauthenticated")
       return
@@ -59,16 +67,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const me = await api.auth.me()
+      if (isStale()) return
       setUser(toAuthUser(me))
       setStatus("authenticated")
     } catch {
       try {
         await api.auth.refresh({ emitEvent: false })
         const me = await api.auth.me()
+        if (isStale()) return
         setUser(toAuthUser(me))
         setStatus("authenticated")
       } catch {
-        clearAccessToken()
+        if (isStale()) return
+        if (getAccessToken() === token) {
+          clearAccessToken()
+        }
         setUser(null)
         setStatus("unauthenticated")
       }
@@ -112,11 +125,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       status,
       isAuthenticated: status === "authenticated" && !!user,
       loginWithGoogleIdToken: async (idToken: string) => {
+        sessionVersionRef.current++
         const result = await api.auth.loginWithGoogle(idToken)
         setUser(toAuthUser(result.user))
         setStatus("authenticated")
       },
       loginWithGoogleOAuthCode: async (code: string, redirectUri: string) => {
+        sessionVersionRef.current++
         const result = await api.auth.loginWithGoogleOAuthCode(code, redirectUri)
         setUser(toAuthUser(result.user))
         setStatus("authenticated")

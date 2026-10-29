@@ -44,7 +44,7 @@ export function DhikrPageContent() {
   const dhikrCounterPreloadProps = usePreloadOnHover(preloadComponents.dhikrCounter);
 
   if (status === "loading" || isLoadingDhikrs) {
-    return <PageLoadingState bottomNav={<LazyBottomNavigation />} />;
+    return <PageLoadingState title="Dzikir Pagi & Petang" bottomNav={<LazyBottomNavigation />} />;
   }
 
   if (isAuthenticated && countersError && isApiError(countersError) && countersError.status === 401) {

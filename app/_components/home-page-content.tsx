@@ -14,7 +14,6 @@ import {
 } from "@/lib/api-client";
 import { NetworkError } from "@/components/shared/error-boundary";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
-import { usePrefetchByContext } from "@/lib/prefetch";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { useAuth } from "@/hooks/use-auth";
 import { useHijaiyahLetters } from "@/hooks/use-hijaiyah";
@@ -206,9 +205,6 @@ export function HomePageContent() {
   const isAuthenticated = status === "authenticated";
 
   const todayKey = useMemo(() => toLocalDateKey(), []);
-
-  // Prefetch learning routes since users are likely to navigate to them from home
-  usePrefetchByContext('home');
 
   const [coords, setCoords] = useState<Coordinates>(DEFAULT_COORDS);
   const [locationLabel, setLocationLabel] = useState("Jakarta (default)");
@@ -530,7 +526,7 @@ export function HomePageContent() {
         title = `Membaca ${reference.title}`;
       } else if (item.module === "dhikr") {
         const dhikr = allDhikrs.find((d) => d.id === item.itemId);
-        title = `Dhikr ${dhikr?.translation || item.itemId}`;
+        title = `Dzikir ${dhikr?.translation || item.itemId}`;
       } else if (item.module === "quiz") {
         const category = getQuizCategoryById(item.itemId);
         title = `Kuis ${category?.name || item.itemId}`;

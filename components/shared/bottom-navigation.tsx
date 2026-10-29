@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { Home, BookOpen, TrendingUp, User } from "lucide-react";
 
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
 
 type NavItem = {
   path: string;
@@ -54,87 +53,61 @@ const navItems = [
   },
 ] satisfies NavItem[];
 
+const LABEL_WIDTH = 68;
+
+// Pill tab bar modelled on 21st.dev "Bottom Nav Bar" (arunachalam): solid card
+// surface, inactive tabs show only the icon, the active tab grows to reveal
+// its label.
 export function BottomNavigation() {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-  const bottomOffset = "max(0.75rem, env(safe-area-inset-bottom))";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <div
-      className="fixed left-1/2 -translate-x-1/2 z-50"
-      style={{ bottom: bottomOffset, width: "min(92vw, 28rem)" }}
+      className="fixed left-1/2 z-50 -translate-x-1/2"
+      style={{ bottom: "max(0.75rem, env(safe-area-inset-bottom))", width: "min(92vw, 26rem)" }}
     >
-      <nav className="glass rounded-[2.5rem] border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-1.5 overflow-hidden">
-        <div className="flex items-center justify-between relative px-1">
-          {navItems.map(({ path, label, icon: Icon, isActive }) => {
-            const active = pathname ? isActive(pathname) : false;
+      <nav
+        aria-label="Navigasi utama"
+        className="flex items-center justify-between gap-1 rounded-full border border-border bg-card/95 p-1.5 shadow-lg shadow-black/5 backdrop-blur"
+      >
+        {navItems.map(({ path, label, icon: Icon, isActive }) => {
+          const active = pathname ? isActive(pathname) : false;
 
-            return (
-              <Link
-                key={path}
-                href={path}
-                prefetch={true}
-                className={cn(
-                  "relative flex flex-col items-center justify-center min-w-[64px] h-12 px-3 transition-all duration-500 rounded-[1.75rem] group outline-none touch-manipulation",
-                  active ? "text-primary flex-[1.6]" : "text-muted-foreground flex-1"
-                )}
-                data-testid={`nav-${label.toLowerCase()}`}
-                aria-current={active ? "page" : undefined}
-                aria-label={label}
+          return (
+            <Link
+              key={path}
+              href={path}
+              className={cn(
+                "flex h-12 min-w-12 items-center justify-center rounded-full px-3 outline-none transition-colors duration-200 touch-manipulation focus-visible:ring-2 focus-visible:ring-ring",
+                // The active tab sizes to its label; the others share the rest.
+                active
+                  ? "flex-none bg-primary/10 text-primary"
+                  : "flex-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+              data-testid={`nav-${label.toLowerCase()}`}
+              aria-current={active ? "page" : undefined}
+              aria-label={label}
+            >
+              <Icon className="h-5 w-5 shrink-0" strokeWidth={active ? 2.4 : 2} aria-hidden />
+              <motion.div
+                initial={false}
+                animate={{
+                  width: active ? LABEL_WIDTH : 0,
+                  opacity: active ? 1 : 0,
+                  marginLeft: active ? 8 : 0,
+                }}
+                transition={{
+                  width: { type: "spring", stiffness: 350, damping: 32 },
+                  opacity: { duration: 0.18 },
+                  marginLeft: { duration: 0.18 },
+                }}
+                style={{ overflow: "hidden", display: "flex" }}
               >
-                {active && (
-                  <motion.div
-                    layoutId="activeTab"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    style={{ position: "absolute", inset: 0, zIndex: 0 }}
-                  >
-                    <div className="h-full w-full bg-primary/10 rounded-[1.75rem] border border-primary/20" />
-                  </motion.div>
-                )}
-                {active && (
-                  <motion.div
-                    layoutId="activeDot"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    style={{ position: "absolute", bottom: "-0.25rem", left: "50%", marginLeft: -3, zIndex: 20 }}
-                  >
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  </motion.div>
-                )}
-                <motion.div whileTap={{ scale: 0.9 }}>
-                  <div className="flex flex-col items-center justify-center w-full h-full">
-
-                    <div className="relative z-10 flex flex-col items-center">
-                      <Icon className={cn(
-                        "w-5 h-5 transition-all duration-500",
-                        active ? "scale-110 stroke-[2.5px]" : "group-hover:scale-110 stroke-[2px]"
-                      )} />
-
-                      {active && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                        >
-                          <span className="text-[10px] font-bold uppercase tracking-widest mt-1">
-                            {label}
-                          </span>
-                        </motion.div>
-                      )}
-                    </div>
-
-                  </div>
-                </motion.div>
-              </Link>
-            );
-          })}
-        </div>
+                <span className="whitespace-nowrap text-sm font-semibold">{label}</span>
+              </motion.div>
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );

@@ -1,6 +1,5 @@
-import { ArrowLeft, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { StickyPageHeader } from "@/components/shared/sticky-page-header";
-import { Button } from "@/components/ui/button";
 import type { QuizState } from "@/app/quiz/play/[categoryId]/_hooks/use-quiz-play-controller";
 
 interface QuizPlayHeaderProps {
@@ -40,11 +39,7 @@ export function QuizPlayHeader({
           ? `Soal ${currentQuestionIndex + 1}/${totalQuestions}`
           : undefined
       }
-      leftSlot={
-        <Button variant="ghost" size="icon" onClick={onBack} data-testid="back-button">
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-      }
+      onBack={onBack}
       rightSlot={
         quizState === "playing" && isTimed ? (
           <div

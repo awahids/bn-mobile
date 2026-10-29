@@ -233,29 +233,29 @@ export function HabitsPageContent() {
         {/* --- DASHBOARD --- */}
         {tab === "dashboard" && (
           <div className="space-y-6">
-            <div className="relative overflow-hidden bg-gradient-to-br from-primary to-primary/80 rounded-[2.5rem] p-8 text-white shadow-xl shadow-primary/20">
+            <div className="relative overflow-hidden bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-white shadow-md shadow-primary/20">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -mr-10 -mt-10 rounded-full" />
               <div className="relative flex justify-between items-center mb-8">
                 <div>
-                  <div className="text-6xl font-black tracking-tighter leading-none">{stats.rate}%</div>
-                  <div className="text-[10px] font-black opacity-80 uppercase tracking-widest mt-2">Penyelesaian Hari Ini</div>
+                  <div className="text-6xl font-bold tracking-tight leading-none">{stats.rate}%</div>
+                  <div className="text-xs font-bold opacity-80 tracking-wide mt-2">Penyelesaian Hari Ini</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-black">{stats.doneToday}/{stats.totalHabits}</div>
-                  <div className="text-[10px] font-black opacity-80 uppercase tracking-widest mt-1">Selesai</div>
+                  <div className="text-3xl font-bold">{stats.doneToday}/{stats.totalHabits}</div>
+                  <div className="text-xs font-bold opacity-80 tracking-wide mt-1">Selesai</div>
                 </div>
               </div>
               <Progress value={stats.rate} className="h-2.5 bg-white/20" />
             </div>
 
             {notif !== "granted" && (
-              <div className="glass p-5 rounded-[2rem] flex items-center justify-between gap-3 border-primary/10">
+              <div className="glass p-5 rounded-3xl flex items-center justify-between gap-3 border-primary/10">
                 <div className="flex items-center gap-4 min-w-0">
                   <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
                     <BellOff size={20} className="text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="text-sm font-black">Aktifkan Notifikasi</h4>
+                    <h4 className="text-sm font-bold">Aktifkan Notifikasi</h4>
                     <p className="text-xs text-muted-foreground font-medium">Bantu Anda tetap konsisten</p>
                   </div>
                 </div>
@@ -264,9 +264,9 @@ export function HabitsPageContent() {
                   size="sm"
                   onClick={requestNotif}
                   disabled={notifSyncing}
-                  className="shrink-0 rounded-full border-primary/20 hover:bg-primary/5 text-primary text-xs font-black h-9"
+                  className="shrink-0 rounded-full border-primary/20 hover:bg-primary/5 text-primary text-xs font-bold h-9"
                 >
-                  {notifSyncing ? "MENYAMBUNG..." : "AKTIFKAN"}
+                  {notifSyncing ? "Menyambung..." : "Aktifkan"}
                 </Button>
               </div>
             )}
@@ -279,28 +279,31 @@ export function HabitsPageContent() {
 
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-black text-foreground tracking-tight">Habit Saya</h3>
+                <h3 className="text-xl font-bold text-foreground tracking-tight">Habit Saya</h3>
                 {isSyncing && (
-                  <div className="flex items-center gap-2 text-primary animate-pulse-soft">
+                  <div className="flex items-center gap-2 text-primary">
                     <Loader2 size={16} className="animate-spin" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Sinkronisasi...</span>
+                    <span className="text-xs font-bold tracking-wide">Sinkronisasi...</span>
                   </div>
                 )}
               </div>
-              <Button onClick={openAdd} size="sm" className="rounded-full px-4 gap-2 font-black text-xs uppercase tracking-widest h-10">
+              <Button onClick={openAdd} size="sm" className="rounded-full px-4 gap-2 font-bold text-xs tracking-wide h-10">
                 <Plus size={16} /> Tambah
               </Button>
             </div>
 
             <div className="space-y-4">
               {habits.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-                  <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-4">
-                    <Leaf size={40} className="text-muted-foreground" />
+                <Card className="flex flex-col items-center px-6 py-10 text-center">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <Leaf size={28} />
                   </div>
-                  <p className="text-sm font-black uppercase tracking-widest">Belum ada habit</p>
-                  <p className="text-xs text-muted-foreground font-medium mt-1 uppercase">Mulai perjalanan anda sekarang!</p>
-                </div>
+                  <p className="font-semibold text-foreground">Belum ada habit</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Mulai dari satu kebiasaan kecil, misalnya tilawah 1 halaman.</p>
+                  <Button onClick={openAdd} size="sm" className="mt-5 rounded-full px-5 gap-2">
+                    <Plus size={16} /> Tambah Habit
+                  </Button>
+                </Card>
               ) : (
                 habits.map((h) => {
                   const done = !!completions[today()]?.[h.id];
@@ -311,7 +314,7 @@ export function HabitsPageContent() {
                     <div
                       key={h.id}
                       className={cn(
-                        "group relative glass p-5 rounded-[2rem] border-transparent transition-all duration-300 flex items-center gap-5",
+                        "group relative glass p-5 rounded-3xl border-transparent transition-all duration-300 flex items-center gap-5",
                         done ? "bg-primary/5 border-primary/10" : "hover:border-primary/20"
                       )}
                     >
@@ -326,23 +329,23 @@ export function HabitsPageContent() {
                       </button>
 
                       <div className="flex-1 min-w-0">
-                        <h4 className={cn("font-black text-lg tracking-tight truncate", done && "text-primary/40 line-through")}>{h.name}</h4>
+                        <h4 className={cn("font-bold text-lg tracking-tight truncate", done && "text-primary/40 line-through")}>{h.name}</h4>
                         <div className="flex flex-wrap gap-3 mt-2">
                           <Badge
                             variant="secondary"
-                            className="rounded-lg text-[9px] font-black uppercase px-2 py-0.5"
+                            className="rounded-lg text-[11px] font-bold px-2 py-0.5"
                             style={{ backgroundColor: `${color}15`, color: color }}
                           >
                             {h.category}
                           </Badge>
                           {h.reminderEnabled && h.reminderTime && (
-                            <div className="flex items-center gap-1.5 text-[10px] font-black text-muted-foreground/60 uppercase">
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground/60">
                               <Clock size={12} /> {h.reminderTime}
                             </div>
                           )}
                           {streak > 0 && (
-                            <div className="flex items-center gap-1.5 text-[10px] font-black text-orange-500 uppercase">
-                              <Flame size={12} fill="currentColor" /> {streak} HARI
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-orange-500">
+                              <Flame size={12} fill="currentColor" /> {streak} hari
                             </div>
                           )}
                         </div>
@@ -366,17 +369,17 @@ export function HabitsPageContent() {
         {tab === "progress" && (
           <div className="space-y-10">
             <section>
-              <h3 className="text-sm font-black tracking-widest mb-6 text-foreground/60 uppercase px-1">Aktivitas Mingguan</h3>
-              <div className="glass p-8 rounded-[2.5rem] border-primary/5 h-72">
+              <h3 className="text-sm font-bold tracking-wide mb-6 text-foreground/60 px-1">Aktivitas Mingguan</h3>
+              <div className="glass p-8 rounded-3xl border-primary/5 h-72">
                 <HabitsProgressChart data={weeklyData} />
               </div>
             </section>
 
             <section>
-              <h3 className="text-sm font-black tracking-widest mb-6 text-foreground/60 uppercase px-1">Detail Konsistensi</h3>
+              <h3 className="text-sm font-bold tracking-wide mb-6 text-foreground/60 px-1">Detail Konsistensi</h3>
               <div className="space-y-6">
                 {habits.length === 0 ? (
-                  <p className="text-center py-20 text-muted-foreground font-black uppercase tracking-widest opacity-40">Belum ada data</p>
+                  <p className="text-center py-20 text-muted-foreground font-bold tracking-wide opacity-40">Belum ada data</p>
                 ) : habits.map(h => {
                   const color = CAT_COLOR[h.category] || "#6b7280";
                   const streak = getStreak(h.id, completions);
@@ -385,19 +388,19 @@ export function HabitsPageContent() {
                   const percent = Math.round((weekDone / 7) * 100);
 
                   return (
-                    <Card key={h.id} className="glass p-6 rounded-[2.5rem] border-primary/5 space-y-6 overflow-hidden relative border-none">
+                    <Card key={h.id} className="glass p-6 rounded-3xl border-primary/5 space-y-6 overflow-hidden relative border-none">
                       <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl -mr-12 -mt-12 rounded-full" />
                       <div className="flex justify-between items-start relative z-10">
                         <div>
-                          <h4 className="font-black text-lg tracking-tight mb-2 uppercase">{h.name}</h4>
+                          <h4 className="font-bold text-lg tracking-tight mb-2">{h.name}</h4>
                           <div className="flex items-center gap-4">
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{weekDone}/7 HARI MINGGU INI</span>
-                            <span className="flex items-center gap-1.5 text-[10px] font-black text-orange-500 uppercase tracking-widest">
-                              <Flame size={14} fill="currentColor" /> {streak} STREAK
+                            <span className="text-xs font-bold text-muted-foreground tracking-wide">{weekDone}/7 HARI MINGGU INI</span>
+                            <span className="flex items-center gap-1.5 text-xs font-bold text-orange-500 tracking-wide">
+                              <Flame size={14} fill="currentColor" /> {streak} hari streak
                             </span>
                           </div>
                         </div>
-                        <div className="text-3xl font-black text-primary leading-none">{percent}%</div>
+                        <div className="text-3xl font-bold text-primary leading-none">{percent}%</div>
                       </div>
 
                       <div className="flex gap-2.5 relative z-10">
@@ -413,7 +416,7 @@ export function HabitsPageContent() {
                                     : "bg-muted/30 border-white/5"
                                 )}
                               />
-                              <span className="text-[9px] font-black uppercase text-muted-foreground/40">
+                              <span className="text-[11px] font-bold text-muted-foreground/40">
                                 {new Date(d + "T12:00:00").toLocaleDateString("id-ID", { weekday: "narrow" })}
                               </span>
                             </div>
@@ -431,14 +434,14 @@ export function HabitsPageContent() {
         {/* --- AI COACH --- */}
         {tab === "coach" && (
           <div className="flex flex-col h-[calc(100vh-280px)] space-y-6">
-            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-500/20 flex items-center gap-5">
+            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-8 text-white shadow-md shadow-indigo-500/20 flex items-center gap-5">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -mr-10 -mt-10 rounded-full" />
               <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 relative z-10 shadow-inner">
                 <Bot size={40} />
               </div>
               <div className="relative z-10">
-                <h3 className="text-xl font-black tracking-tight leading-tight uppercase">AI Coach</h3>
-                <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mt-1">Konsultan Habit Pribadi</p>
+                <h3 className="text-xl font-bold tracking-tight leading-tight">AI Coach</h3>
+                <p className="text-xs font-bold opacity-80 tracking-wide mt-1">Konsultan Habit Pribadi</p>
               </div>
             </div>
 
@@ -450,17 +453,17 @@ export function HabitsPageContent() {
                   size="sm"
                   disabled={aiLoading}
                   onClick={() => askAI(q)}
-                  className="rounded-full whitespace-nowrap bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-100 dark:border-indigo-900 text-indigo-700 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest px-5 h-9"
+                  className="rounded-full whitespace-nowrap bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-100 dark:border-indigo-900 text-indigo-700 dark:text-indigo-400 font-bold text-xs tracking-wide px-5 h-9"
                 >
                   <ChevronRight size={14} className="mr-1" /> {q}
                 </Button>
               ))}
             </div>
 
-            <div className="flex-1 flex flex-col gap-6 overflow-hidden bg-muted/20 rounded-[2.5rem] p-6 border border-border/50">
+            <div className="flex-1 flex flex-col gap-6 overflow-hidden bg-muted/20 rounded-3xl p-6 border border-border/50">
               <div className="flex-1 overflow-y-auto space-y-6 pr-2 scrollbar-none">
                 {aiMsg && (
-                  <div className="glass p-6 rounded-[2rem] border-indigo-100/50 bg-indigo-50/20 text-sm leading-relaxed font-semibold text-foreground/80 animate-in fade-in slide-in-from-bottom-4 shadow-sm italic px-8">
+                  <div className="glass p-6 rounded-3xl border-indigo-100/50 bg-indigo-50/20 text-sm leading-relaxed font-semibold text-foreground/80 animate-in fade-in slide-in-from-bottom-4 shadow-sm italic px-8">
                     &ldquo;{aiMsg}&rdquo;
                   </div>
                 )}
@@ -468,14 +471,14 @@ export function HabitsPageContent() {
                 {aiLoading && (
                   <div className="flex flex-col items-center justify-center py-20 gap-4 text-indigo-500/50">
                     <Loader2 size={40} className="animate-spin" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">Berpikir...</p>
+                    <p className="text-xs font-bold tracking-wide animate-pulse">Berpikir...</p>
                   </div>
                 )}
 
                 {!aiMsg && !aiLoading && (
                   <div className="flex flex-col items-center justify-center py-24 opacity-20 text-center px-10">
                     <Bot size={64} className="mb-6" />
-                    <p className="text-xs font-black leading-relaxed uppercase tracking-widest italic">Tanyakan apa saja untuk memulai konsistensi harian anda</p>
+                    <p className="text-xs font-bold leading-relaxed tracking-wide italic">Tanyakan apa saja untuk memulai konsistensi harian anda</p>
                   </div>
                 )}
               </div>
@@ -517,11 +520,11 @@ export function HabitsPageContent() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="habit-modal-title"
-            className="bg-card w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] border border-white/10 animate-in zoom-in-95 duration-300"
+            className="bg-card w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] border border-white/10 animate-in zoom-in-95 duration-300"
           >
             <div className="p-6 sm:p-10 space-y-8">
               <div className="flex justify-between items-center px-1">
-                <h3 id="habit-modal-title" className="text-2xl font-black tracking-tighter uppercase">{editH ? "Edit Habit" : "Habit Baru"}</h3>
+                <h3 id="habit-modal-title" className="text-2xl font-bold tracking-tight">{editH ? "Edit Habit" : "Habit Baru"}</h3>
                 <button type="button" aria-label="Tutup" onClick={() => setModal(false)} className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-muted/80 transition-all">
                   <X size={20} />
                 </button>
@@ -529,7 +532,7 @@ export function HabitsPageContent() {
 
               <div className="space-y-6">
                 <div className="space-y-2 px-1">
-                  <label htmlFor="habit-name" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">Nama Habit</label>
+                  <label htmlFor="habit-name" className="text-xs font-bold tracking-wide text-muted-foreground/60 ml-1">Nama Habit</label>
                   <Input
                     id="habit-name"
                     autoFocus
@@ -542,7 +545,7 @@ export function HabitsPageContent() {
                 </div>
 
                 <div className="space-y-3 px-1 text-center">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Pilih Kategori</label>
+                  <label className="text-xs font-bold tracking-wide text-muted-foreground/60">Pilih Kategori</label>
                   <div className="flex flex-wrap justify-center gap-2.5">
                     {CATEGORIES.map(c => (
                       <button
@@ -551,7 +554,7 @@ export function HabitsPageContent() {
                         aria-pressed={form.category === c}
                         onClick={() => setForm(p => ({ ...p, category: c }))}
                         className={cn(
-                          "px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border-2",
+                          "px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all border-2",
                           form.category === c
                             ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
                             : "bg-muted/50 border-transparent text-muted-foreground/60 hover:bg-muted"
@@ -563,15 +566,15 @@ export function HabitsPageContent() {
                   </div>
                 </div>
 
-                <div className="bg-muted/40 p-5 sm:p-8 rounded-[2rem] space-y-6 border border-white/5">
+                <div className="bg-muted/40 p-5 sm:p-8 rounded-3xl space-y-6 border border-white/5">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shadow-inner">
                         <Bell size={20} className="text-primary" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-black uppercase tracking-tight leading-tight">Pengingat</h4>
-                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">Notifikasi harian</p>
+                        <h4 className="text-sm font-bold tracking-tight leading-tight">Pengingat</h4>
+                        <p className="text-xs text-muted-foreground font-bold tracking-wide opacity-60">Notifikasi harian</p>
                       </div>
                     </div>
                     <button
@@ -599,7 +602,7 @@ export function HabitsPageContent() {
                         aria-label="Jam pengingat"
                         value={form.reminderTime}
                         onChange={e => setForm(p => ({ ...p, reminderTime: e.target.value }))}
-                        className="rounded-2xl h-14 bg-background px-6 font-black tracking-widest text-lg text-center"
+                        className="rounded-2xl h-14 bg-background px-6 font-bold tracking-wide text-lg text-center"
                       />
                     </div>
                   )}
@@ -607,8 +610,8 @@ export function HabitsPageContent() {
               </div>
 
               <div className="flex flex-col gap-4 pt-4">
-                <Button onClick={onSave} disabled={!form.name.trim()} className="h-16 rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-primary/30">
-                  {editH ? "SIMPAN PERUBAHAN" : "MULAI HABIT INI"}
+                <Button onClick={onSave} disabled={!form.name.trim()} className="h-16 rounded-3xl font-bold text-xs tracking-wide shadow-lg shadow-primary/30">
+                  {editH ? "Simpan perubahan" : "Mulai habit ini"}
                 </Button>
 
                 {editH && (
@@ -619,9 +622,9 @@ export function HabitsPageContent() {
                       deleteHabit(editH.id);
                       setModal(false);
                     }}
-                    className="h-12 rounded-[1.5rem] font-black text-destructive/60 hover:bg-destructive/5 uppercase text-[10px] tracking-widest"
+                    className="h-12 rounded-2xl font-bold text-destructive/60 hover:bg-destructive/5 text-xs tracking-wide"
                   >
-                    <Trash2 size={16} className="mr-2" /> HAPUS HABIT
+                    <Trash2 size={16} className="mr-2" /> Hapus habit
                   </Button>
                 )}
               </div>

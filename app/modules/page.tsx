@@ -1,62 +1,73 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
+import { StickyPageHeader } from "@/components/shared/sticky-page-header";
 import { MODULES } from "@/data/modules";
+import { cn } from "@/lib/utils";
 
+// Bento layout: the first module gets a wide hero card, the rest are tiles.
 export default function ModulesPage() {
+  const router = useRouter();
+  const [featured, ...rest] = MODULES;
+  const FeaturedIcon = featured.icon;
+
   return (
-    <MobilePageShell className="pb-24">
-      {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/5 to-background px-6 py-8">
-        <div className="relative flex items-center gap-4">
-          <Link href="/">
-            <div className="w-10 h-10 rounded-full bg-background/50 backdrop-blur-sm border border-border/50 flex flex-col items-center justify-center hover:bg-background/80 transition-colors">
-              <ChevronLeft size={24} className="text-foreground/80" />
+    <MobilePageShell className="pb-32">
+      <StickyPageHeader
+        title="Semua Modul"
+        subtitle={`${MODULES.length} materi belajar`}
+        onBack={() => router.push("/")}
+      />
+
+      <div className="grid grid-cols-2 gap-3 px-4 py-5">
+        <Link
+          href={featured.href}
+          className="group col-span-2 rounded-3xl border border-border bg-card p-5 shadow-sm transition-all hover:border-primary/30 hover:shadow-md active:scale-[0.99]"
+          data-testid={`module-${featured.id}`}
+        >
+          <div className="flex items-start justify-between">
+            <div className={cn("flex h-12 w-12 items-center justify-center rounded-2xl", featured.tileClass)}>
+              <FeaturedIcon className="h-6 w-6" />
             </div>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-black tracking-tighter text-foreground text-balance">Semua Modul</h1>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Pilih materi belajar anda</p>
+            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+              Mulai dari sini
+            </span>
           </div>
-        </div>
-      </div>
+          <h2 className="mt-4 text-lg font-semibold tracking-tight">{featured.title}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{featured.description}</p>
+          <div className="mt-4 flex items-center gap-1 text-sm font-medium text-primary">
+            Buka modul
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </div>
+        </Link>
 
-      <div className="px-6 py-8">
-        <div className="grid grid-cols-2 gap-4">
-          {MODULES.map((module) => {
-            const Icon = module.icon;
-
-            return (
-              <Link key={module.id} href={module.href} className="group">
-                <div
-                  className={`relative glass p-5 rounded-[2.5rem] transition-all duration-300 active:scale-95 flex flex-col h-full bg-card/40 dark:bg-card/20 border hover:shadow-xl ${module.borderAccentClass} ${module.glowClass} ${module.hoverGlowClass}`}
-                >
-                  <div
-                    className={`w-14 h-14 bg-gradient-to-br rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg group-hover:animate-float ${module.gradientClass} ${module.shadowClass}`}
-                  >
-                    <Icon className="text-white w-7 h-7" />
-                  </div>
-                  <h4 className="font-black text-card-foreground text-xl mb-1 leading-none tracking-tighter">
-                    {module.title}
-                  </h4>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-70">
-                    {module.subtitle}
-                  </p>
-                  <div className="mt-8 pt-4 flex justify-end">
-                    <div
-                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ${module.bgAccentClass} ${module.borderAccentClass} ${module.colorClass}`}
-                    >
-                      <ChevronRight size={20} />
-                    </div>
-                  </div>
+        {rest.map((module) => {
+          const Icon = module.icon;
+          return (
+            <Link
+              key={module.id}
+              href={module.href}
+              className="group flex flex-col rounded-3xl border border-border bg-card p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md active:scale-[0.98]"
+              data-testid={`module-${module.id}`}
+            >
+              <div className="flex items-start justify-between">
+                <div className={cn("flex h-11 w-11 items-center justify-center rounded-2xl", module.tileClass)}>
+                  <Icon className="h-5 w-5" />
                 </div>
-              </Link>
-            );
-          })}
-        </div>
+                <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </div>
+              <h3 className="mt-3 font-semibold tracking-tight">{module.title}</h3>
+              <p className="text-xs text-muted-foreground">{module.subtitle}</p>
+              <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground/80">
+                {module.description}
+              </p>
+            </Link>
+          );
+        })}
       </div>
 
       <BottomNavigation />

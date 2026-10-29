@@ -21,7 +21,7 @@ export function TajwidRuleCard({
     <button
       type="button"
       onClick={() => onSelect(rule)}
-      className={`w-full text-left rounded-[1.75rem] border p-4 transition-all duration-300 ${
+      className={`w-full text-left rounded-2xl border p-4 transition-all duration-300 ${
         isSelected
           ? "border-primary/30 bg-primary/8 shadow-lg shadow-primary/10"
           : "border-border/60 bg-card/70 hover:border-primary/20 hover:bg-card"
@@ -29,10 +29,10 @@ export function TajwidRuleCard({
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[11px] font-bold tracking-wide text-muted-foreground">
             Aturan {rule.sortOrder}
           </p>
-          <h3 className="text-lg font-black tracking-tight text-foreground">
+          <h3 className="text-lg font-bold tracking-tight text-foreground">
             {rule.name}
           </h3>
           <p className="font-arabic text-2xl text-primary mt-1">{rule.arabicName}</p>

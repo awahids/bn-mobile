@@ -75,10 +75,10 @@ export function DhikrCounter({
       {/* Progress Bar Container */}
       <div className="space-y-2.5">
         <div className="flex justify-between items-end px-1">
-          <span className={`text-[10px] font-black uppercase tracking-widest ${completed ? 'text-white/60' : 'text-muted-foreground/60'}`}>
-            PROGRES HARIAN
+          <span className={`text-xs font-bold tracking-wide ${completed ? 'text-white/60' : 'text-muted-foreground/60'}`}>
+            Progres harian
           </span>
-          <span className={`text-sm font-black tabular-nums ${completed ? 'text-white' : 'text-primary'}`}>
+          <span className={`text-sm font-bold tabular-nums ${completed ? 'text-white' : 'text-primary'}`}>
             {currentCount}<span className="opacity-40 font-bold mx-1">/</span>{targetCount}
           </span>
         </div>
@@ -144,13 +144,13 @@ export function DhikrCounter({
               key={currentCount}
               initial={{ opacity: 0, y: 10, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              className={`text-4xl font-black tabular-nums transition-colors duration-300 ${
+              className={`text-4xl font-bold tabular-nums transition-colors duration-300 ${
                 completed ? 'text-white' : 'text-foreground'
               }`}
             >
               {currentCount}
             </motion.div>
-            <div className={`text-[10px] font-black uppercase tracking-widest leading-none ${
+            <div className={`text-xs font-bold tracking-wide leading-none ${
               completed ? 'text-white/60' : 'text-muted-foreground/60'
             }`}>
               {completed ? 'Selesai' : `${targetCount - currentCount} lagi`}
@@ -168,7 +168,7 @@ export function DhikrCounter({
               variant={completed ? "secondary" : "default"}
               onClick={handleIncrement}
               disabled={completed}
-              className={`h-20 w-20 rounded-[2.5rem] shadow-2xl transition-all duration-500 overflow-hidden ${
+              className={`h-20 w-20 rounded-3xl shadow-lg transition-all duration-500 overflow-hidden ${
                 completed 
                   ? 'bg-white/20 text-white cursor-default border border-white/30 backdrop-blur-md' 
                   : 'bg-primary text-white hover:bg-primary/90 shadow-primary/30 ring-4 ring-primary/10'

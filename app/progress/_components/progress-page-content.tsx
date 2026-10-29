@@ -31,7 +31,7 @@ export function ProgressPageContent() {
   } = useProgressPageData();
 
   if (status === "loading") {
-    return <PageLoadingState bottomNav={<BottomNavigation />} />;
+    return <PageLoadingState title="Progress Belajar" subtitle="Statistik pembelajaran Anda" bottomNav={<BottomNavigation />} />;
   }
 
   if (isAuthenticated && userError && isApiError(userError) && userError.status === 401) {

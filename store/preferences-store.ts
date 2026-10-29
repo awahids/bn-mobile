@@ -7,12 +7,15 @@ export interface LearningPreferences {
   autoPlayAudio: boolean;
   /** Quiz runs with a time limit. */
   challengeMode: boolean;
+  /** Server sends a study reminder push at 19:00 local time on days without study. */
+  dailyReminder: boolean;
 }
 
 export const DEFAULT_PREFERENCES: LearningPreferences = {
   audioEnabled: true,
   autoPlayAudio: false,
   challengeMode: true,
+  dailyReminder: false,
 }
 
 const PREFERENCES_STORAGE_KEY = "bn_learning_preferences_v1"

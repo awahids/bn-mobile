@@ -10,7 +10,6 @@ import { PageLoadingState } from "@/components/shared/page-loading-state";
 import { useProfilePageData } from "@/app/profile/_hooks/use-profile-page-data";
 import { ProfileHeader } from "@/app/profile/_components/sections/profile-header";
 import { ProfileSummaryCard } from "@/app/profile/_components/sections/profile-summary-card";
-import { ProfileGuestCtaCard } from "@/app/profile/_components/sections/profile-guest-cta-card";
 import { ProfileBookmarksCard } from "@/app/profile/_components/sections/profile-bookmarks-card";
 import { usePreferences } from "@/hooks/use-preferences";
 import { ProfileSettingsCard } from "@/app/profile/_components/sections/profile-settings-card";
@@ -35,11 +34,12 @@ export function ProfilePageContent() {
     deleteBookmarkMutation,
     notifications,
     setNotifications,
+    enableNotifications,
     signOut,
   } = useProfilePageData();
 
   if (status === "loading") {
-    return <PageLoadingState bottomNav={<BottomNavigation />} />;
+    return <PageLoadingState title="Profil" subtitle="Akun dan preferensi" bottomNav={<BottomNavigation />} />;
   }
 
   if (isAuthenticated && userError && isApiError(userError) && userError.status === 401) {
@@ -74,7 +74,6 @@ export function ProfilePageContent() {
           onLogin={() => router.push("/login?callbackUrl=/profile")}
         />
 
-        {!isAuthenticated && <ProfileGuestCtaCard onLogin={() => router.push("/login?callbackUrl=/profile")} />}
 
         {isAuthenticated && bookmarks.length > 0 && (
           <ProfileBookmarksCard
@@ -90,15 +89,26 @@ export function ProfilePageContent() {
           isDarkTheme={theme === "dark"}
           onToggleTheme={toggleTheme}
           notifications={notifications}
-          onChangeNotifications={setNotifications}
+          onChangeNotifications={(checked) => {
+            setNotifications(checked);
+            // Without a push subscription the daily reminder cannot arrive.
+            if (!checked) setPreference("dailyReminder", false);
+          }}
           audioEnabled={preferences.audioEnabled}
           onChangeAudioEnabled={(checked) => setPreference("audioEnabled", checked)}
         />
 
         <ProfileLearningPreferencesCard
           isAuthenticated={isAuthenticated}
-          dailyReminder={notifications}
-          onChangeDailyReminder={setNotifications}
+          dailyReminder={preferences.dailyReminder}
+          onChangeDailyReminder={(checked) => {
+            if (!checked) {
+              setPreference("dailyReminder", false);
+              return;
+            }
+            // The reminder arrives as a web push, so it needs a subscription first.
+            void enableNotifications().then((granted) => setPreference("dailyReminder", granted));
+          }}
           autoPlayAudio={preferences.autoPlayAudio}
           onChangeAutoPlayAudio={(checked) => setPreference("autoPlayAudio", checked)}
           audioEnabled={preferences.audioEnabled}

@@ -21,8 +21,8 @@ self.addEventListener("push", (event) => {
   const title = payload.title || "Belajar Ngaji"
   const options = {
     body: payload.body || "Ada pengingat baru untuk kamu.",
-    icon: "/images/logo/image.png",
-    badge: "/images/logo/image.png",
+    icon: "/images/logo/icon-192.png",
+    badge: "/images/logo/icon-192.png",
     data: {
       url: payload.url || "/habits",
     },

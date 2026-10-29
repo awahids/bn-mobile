@@ -9,7 +9,7 @@ vite.config.ts.*
 .next/*
 
 .env
-.env.local
+.env*.local
 
 package-lock.json
 yarn.lock

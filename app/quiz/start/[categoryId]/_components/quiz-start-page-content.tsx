@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { LazyBottomNavigation } from "@/components/lazy";
 import { useAuth } from "@/hooks/use-auth";
 import { getQuizCategoryById, isQuizCategoryId } from "@/data/quiz";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
+import { GuestBanner } from "@/components/shared/guest-banner";
 import { StickyPageHeader } from "@/components/shared/sticky-page-header";
 import { CategoryIcon } from "@/app/quiz/_components/category-icon";
 
@@ -104,28 +105,12 @@ export function QuizStartPageContent() {
       <StickyPageHeader
         title="Mulai Kuis"
         subtitle={`Kategori: ${category.name}`}
-        leftSlot={
-          <Button variant="ghost" size="icon" onClick={() => router.push("/quiz")} data-testid="back-button">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        }
+        onBack={() => router.push("/quiz")}
       />
 
       <section className="p-4 pb-24 space-y-4">
         {!isAuthenticated && (
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="p-4 text-center">
-              <p className="text-sm text-muted-foreground mb-3">
-                Login diperlukan sebelum mulai kuis.
-              </p>
-              <Button
-                size="sm"
-                onClick={() => router.push(`/login?callbackUrl=${encodeURIComponent(startUrl)}`)}
-              >
-                Masuk untuk mulai kuis
-              </Button>
-            </CardContent>
-          </Card>
+          <GuestBanner message="Masuk dulu untuk mulai kuis dan menyimpan skor." onLogin={() => router.push(`/login?callbackUrl=${encodeURIComponent(startUrl)}`)} />
         )}
 
         <Card>

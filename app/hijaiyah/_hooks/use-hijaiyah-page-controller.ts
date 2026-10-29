@@ -10,13 +10,10 @@ import type { WritingCanvasRef } from "@/components/features/hijaiyah/writing-ca
 export function useHijaiyahPageController() {
   const { status, isAuthenticated } = useAuth();
   const { data: letters = [] } = useHijaiyahLetters();
-  const [selectedLetter, setSelectedLetter] = useState<HijaiyahLetterAPI | null>(null);
-
-  useEffect(() => {
-    if (letters.length > 0 && !selectedLetter) {
-      setSelectedLetter(letters[0]);
-    }
-  }, [letters, selectedLetter]);
+  const [pickedLetter, setSelectedLetter] = useState<HijaiyahLetterAPI | null>(null);
+  // Default to the first letter during render (not in an effect) so the page is
+  // server-rendered with content instead of an empty shell until hydration.
+  const selectedLetter = pickedLetter ?? letters[0] ?? null;
   const [currentTab, setCurrentTab] = useState<"learn" | "overview">("learn");
   const [audioPlayerVisible, setAudioPlayerVisible] = useState(false);
   const [writingCompleted, setWritingCompleted] = useState(false);

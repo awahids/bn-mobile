@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "bunx eslint .",
     "type-check": "bun tsc --noEmit",
+    "test": "bun test",
     "clean": "bun run clean:all",
     "clean:all": "rm -rf .next out dist node_modules/.cache",
     "bun:dev": "next dev",

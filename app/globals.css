@@ -66,9 +66,10 @@
   }
 }
 
-/* Glassmorphism */
+/* Surface card. Formerly a translucent "glass" effect; the clean style uses a
+   solid card so text stays legible and scrolling stays cheap on low-end phones. */
 .glass {
-  @apply bg-background/70 backdrop-blur-md border border-white/10;
+  @apply bg-card border border-border shadow-sm;
 }
 
 .glass-dark {

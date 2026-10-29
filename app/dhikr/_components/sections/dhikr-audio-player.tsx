@@ -23,7 +23,7 @@ export function DhikrAudioPlayer({ title, audioUrl, isVisible, audio, onClose }:
   return (
     <LazyAudioPlayer
       title={title}
-      subtitle="Dhikr Audio"
+      subtitle="Audio dzikir"
       audioUrl={audioUrl}
       isVisible={isVisible}
       onClose={onClose}
