@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronDown, ChevronLeft, ChevronRight, Volume2 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion as framerMotion, AnimatePresence as FramerAnimatePresence } from "framer-motion";
 import { LazyDhikrCounter } from "@/components/lazy";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,7 @@ export function DhikrListSection({
   const [count, setCount] = useState(0);
   const [openFaedah, setOpenFaedah] = useState<Record<string, boolean>>({});
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
+  const rippleIdRef = useRef(0);
   const [isFocusMode, setIsFocusMode] = useState(false);
 
   const triggerHaptic = (type: 'light' | 'success') => {
@@ -67,7 +68,9 @@ export function DhikrListSection({
     const x = ("touches" in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
     const y = ("touches" in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
     
-    const rippleId = Date.now();
+    // A counter (not Date.now) keeps ripple keys unique even for rapid taps.
+    rippleIdRef.current += 1;
+    const rippleId = rippleIdRef.current;
     setRipples(prev => [...prev, { id: rippleId, x, y }]);
     setTimeout(() => {
       setRipples(prev => prev.filter(r => r.id !== rippleId));

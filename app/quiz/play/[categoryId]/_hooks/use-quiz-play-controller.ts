@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type CreateQuizAttemptData, type QuizQuestionAPI } from "@/lib/api-client";
@@ -43,6 +43,9 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
 
   const queryClient = useQueryClient();
   const updateProgress = useUpdateProgress();
+  // Guards against finishing the same run twice (timer expiry racing the last
+  // "next" tap, or a double tap), which would submit duplicate attempts.
+  const finishedRef = useRef(false);
 
   const submitQuiz = useMutation({
     mutationFn: (data: CreateQuizAttemptData) => api.quiz.createAttempt(data),
@@ -67,6 +70,7 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
     setTimeLeft(QUIZ_TIME_LIMIT_SECONDS);
     setStartTime(new Date());
     setSaveSkippedForGuest(false);
+    finishedRef.current = false;
     setSaveFailed(false);
     setQuizState("material");
     setIsInitialized(true);
@@ -83,6 +87,8 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
 
   const finishQuiz = useCallback(async () => {
     if (!categoryId || !startTime || questions.length === 0) return;
+    if (finishedRef.current) return;
+    finishedRef.current = true;
 
     const endTime = new Date();
     const timeSpent = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
@@ -115,24 +121,26 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
     }
 
     setQuizState("finished");
-  }, [answers, categoryId, isAuthenticated, questions.length, score, startTime, submitQuiz]);
+  }, [answers, categoryId, isAuthenticated, questions.length, score, startTime, submitQuiz, updateProgress]);
+
+  const isTimerRunning = quizState === "playing" && timeLeft > 0;
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    if (!isTimerRunning) return;
 
-    if (quizState === "playing" && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            finishQuiz();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => Math.max(0, prev - 1));
+    }, 1000);
 
     return () => clearInterval(interval);
+  }, [isTimerRunning]);
+
+  // Finish from an effect rather than inside the state updater: updaters must
+  // stay pure and may run twice, which would submit the attempt twice.
+  useEffect(() => {
+    if (quizState === "playing" && timeLeft === 0) {
+      void finishQuiz();
+    }
   }, [finishQuiz, quizState, timeLeft]);
 
   const proceedToQuestion = useCallback(() => {

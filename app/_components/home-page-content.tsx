@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import {
   api,
   isApiError,
@@ -19,6 +18,7 @@ import { usePrefetchByContext } from "@/lib/prefetch";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { useAuth } from "@/hooks/use-auth";
 import { useHijaiyahLetters } from "@/hooks/use-hijaiyah";
+import { hijaiyahLetters as fallbackHijaiyahLetters } from "@/data/hijaiyah";
 import { getQuranDisplayReference } from "@/data/quran";
 import { getQuizCategoryById } from "@/data/quiz";
 import { useHabits } from "@/hooks/use-habits";
@@ -200,7 +200,6 @@ function saveStoredPrayerTimes(todayKey: string, coords: Coordinates, prayerTime
 }
 
 export function HomePageContent() {
-  const router = useRouter();
   const { status } = useAuth();
   const { stats: habitStats, loaded: habitsLoaded } = useHabits();
   const { data: hijaiyahLettersData = [] } = useHijaiyahLetters();
@@ -470,7 +469,12 @@ export function HomePageContent() {
       .sort((a, b) => toTimestamp(b.lastAccessed) - toTimestamp(a.lastAccessed))[0];
     const latestQuranBookmark = quranBookmarks[0];
 
-    const hijaiyahLetter = hijaiyahLettersData.find((item) => item.id === latestHijaiyah?.itemId) || hijaiyahLettersData[0];
+    // The API can return an empty list; fall back to bundled data so the card
+    // never reads properties of undefined.
+    const hijaiyahLetter =
+      hijaiyahLettersData.find((item) => item.id === latestHijaiyah?.itemId) ||
+      hijaiyahLettersData[0] ||
+      fallbackHijaiyahLetters[0];
     const hijaiyahPercent = clampPercentage(latestHijaiyah?.progress ?? 0);
 
     const latestQuranContentId =
@@ -574,7 +578,7 @@ export function HomePageContent() {
 
   // Handle critical errors
   if (userError && isApiError(userError) && userError.status === 0) {
-    return <NetworkError onRetry={() => router.refresh()} />
+    return <NetworkError />
   }
 
   return (
