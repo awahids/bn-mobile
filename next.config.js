@@ -22,11 +22,8 @@ const nextConfig = {
     optimizePackageImports: [
       'lucide-react',
       '@tanstack/react-query',
-      '@radix-ui/react-accordion',
       '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
       'framer-motion',
-      'react-icons'
     ],
     // Enable optimized CSS
     optimizeCss: true,
@@ -34,15 +31,8 @@ const nextConfig = {
     memoryBasedWorkersCount: process.env.BUN_RUNTIME !== 'bun',
   },
 
-  // Server external packages (moved from experimental)
-  serverExternalPackages: ['@prisma/client', 'prisma'],
-
-  // Turbopack configuration for better Prisma compatibility
   turbopack: process.env.BUN_RUNTIME !== 'bun' ? {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-    resolveAlias: {
-      '@prisma/client': '@prisma/client'
-    }
   } : false,
 
   // Compiler optimizations for Bun
@@ -55,12 +45,6 @@ const nextConfig = {
 
   // Webpack optimizations for Bun runtime
   webpack: (config, { isServer, dev }) => {
-    // Prisma client configuration
-    config.externals = config.externals || []
-    if (isServer) {
-      config.externals.push('@prisma/client')
-    }
-
     // Optimize for Bun runtime
     if (!isServer) {
       config.resolve.fallback = {

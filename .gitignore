@@ -16,3 +16,5 @@ yarn.lock
 pnpm-lock.yaml
 
 # server
+# TypeScript incremental build cache
+*.tsbuildinfo
