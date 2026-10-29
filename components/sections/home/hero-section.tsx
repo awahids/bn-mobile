@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Moon, Sun, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/shared/theme-provider";
@@ -9,8 +10,21 @@ interface HeroSectionProps {
   user: any;
 }
 
+const DAILY_TARGET = 5;
+const STREAK_GOAL_DAYS = 7;
+
+function toSafeCount(value: unknown): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 0;
+}
+
 export function HeroSection({ user }: HeroSectionProps) {
   const { theme, toggleTheme } = useTheme();
+  const streak = toSafeCount(user?.streak);
+  const dailyProgress = Math.min(toSafeCount(user?.dailyProgress), DAILY_TARGET);
+  const streakPercent = Math.min(100, (streak / STREAK_GOAL_DAYS) * 100);
+  const dailyPercent = (dailyProgress / DAILY_TARGET) * 100;
+  const displayName = (user?.name || user?.username || "").trim().split(/\s+/)[0];
 
   return (
     <section className="relative overflow-hidden pt-8 pb-12 px-6 mesh-gradient rounded-b-[2.5rem] shadow-xl shadow-primary/5 safe-p-top">
@@ -41,18 +55,22 @@ export function HeroSection({ user }: HeroSectionProps) {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Ganti ke mode terang" : "Ganti ke mode gelap"}
               className="rounded-full bg-background/40 backdrop-blur-md border border-white/20 hover:bg-background/60 transition-all duration-300"
               data-testid="toggle-theme"
             >
               {theme === 'dark' ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-accent" />}
             </Button>
             <Button
+              asChild
               variant="ghost"
               size="icon"
               className="rounded-full bg-background/40 backdrop-blur-md border border-white/20 hover:bg-background/60 transition-all duration-300"
               data-testid="notifications"
             >
-              <Bell className="w-4 h-4 text-foreground/70" />
+              <Link href="/profile" aria-label="Pengaturan notifikasi">
+                <Bell className="w-4 h-4 text-foreground/70" />
+              </Link>
             </Button>
           </div>
         </header>
@@ -60,7 +78,7 @@ export function HeroSection({ user }: HeroSectionProps) {
         <div className="space-y-1">
           <h2 className="text-3xl font-extrabold text-foreground tracking-tight leading-tight">
             Assalamu&apos;alaikum,
-            <span className="block text-primary">Sobat Ngaji ✨</span>
+            <span className="block text-primary">{displayName || "Sobat Ngaji"} ✨</span>
           </h2>
           <p className="text-muted-foreground text-sm font-medium">Lanjutkan langkahmu menuju keberkahan hari ini.</p>
         </div>
@@ -69,23 +87,26 @@ export function HeroSection({ user }: HeroSectionProps) {
           <div className="glass p-4 rounded-3xl flex flex-col justify-between space-y-2 border-primary/10 shadow-sm">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Streak Saya</span>
             <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-black text-primary">{user?.streak || 7}</span>
+              <span className="text-3xl font-black text-primary">{streak}</span>
               <span className="text-xs font-bold text-primary/60">HARI</span>
             </div>
             <div className="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full w-3/4 animate-pulse-soft" />
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-1000"
+                style={{ width: `${streakPercent}%` }}
+              />
             </div>
           </div>
           <div className="glass p-4 rounded-3xl flex flex-col justify-between space-y-2 border-accent/10 shadow-sm">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Target Hari Ini</span>
             <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-black text-accent">{user?.dailyProgress || 3}</span>
-              <span className="text-xs font-bold text-accent/60">/ 5</span>
+              <span className="text-3xl font-black text-accent">{dailyProgress}</span>
+              <span className="text-xs font-bold text-accent/60">/ {DAILY_TARGET}</span>
             </div>
             <div className="h-1.5 w-full bg-accent/10 rounded-full overflow-hidden">
               <div
                 className="h-full bg-accent rounded-full transition-all duration-1000"
-                style={{ width: `${((user?.dailyProgress || 3) / 5) * 100}%` }}
+                style={{ width: `${dailyPercent}%` }}
               />
             </div>
           </div>

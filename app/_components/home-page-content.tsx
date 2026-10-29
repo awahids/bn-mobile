@@ -243,7 +243,7 @@ export function HomePageContent() {
     isLoading: prayerTimesQueryLoading,
   } = useQuery<PrayerTimes>({
     queryKey: ['prayer-times', todayKey, coords.lat, coords.lng],
-    queryFn: () => api.utility.getPrayerTimes(coords),
+    queryFn: () => api.utility.getPrayerTimes(coords, todayKey),
     enabled: isPrayerStorageHydrated,
     staleTime: 1000 * 60 * 60, // 1 hour
     retry: 1
@@ -342,24 +342,30 @@ export function HomePageContent() {
       return `${hours}j ${mins}m`;
     };
 
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
     const list = [
       { name: "Subuh", time: prayerTimes.fajr },
-      { name: "Dhuhur", time: prayerTimes.dhuhr },
+      { name: "Dzuhur", time: prayerTimes.dhuhr },
       { name: "Ashar", time: prayerTimes.asr },
       { name: "Maghrib", time: prayerTimes.maghrib },
       { name: "Isya", time: prayerTimes.isha }
     ];
 
-    const next = list.find((item) => toMinutes(item.time) > currentMinutes) || list[0];
-    const minutesUntil = ((toMinutes(next.time) - currentMinutes) + 1440) % 1440;
+    const updateNextPrayer = () => {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const next = list.find((item) => toMinutes(item.time) > currentMinutes) || list[0];
+      const minutesUntil = ((toMinutes(next.time) - currentMinutes) + 1440) % 1440;
 
-    setNextPrayer({
-      name: next.name,
-      timeLeft: formatTimeLeft(minutesUntil)
-    });
+      setNextPrayer({
+        name: next.name,
+        timeLeft: formatTimeLeft(minutesUntil)
+      });
+    };
+
+    // Keep the countdown live instead of freezing it at page load.
+    updateNextPrayer();
+    const intervalId = window.setInterval(updateNextPrayer, 30_000);
+    return () => window.clearInterval(intervalId);
   }, [prayerTimes]);
 
   useEffect(() => {

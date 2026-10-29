@@ -19,6 +19,7 @@ const LEARNING_ROUTE_PREFIXES = [
   "/modules",
   "/hijaiyah",
   "/quran",
+  "/tajwid",
   "/dhikr",
   "/quiz",
   "/habits",
@@ -89,16 +90,26 @@ export function BottomNavigation() {
                 aria-current={active ? "page" : undefined}
                 aria-label={label}
               >
+                {active && (
+                  <motion.div
+                    layoutId="activeTab"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    style={{ position: "absolute", inset: 0, zIndex: 0 }}
+                  >
+                    <div className="h-full w-full bg-primary/10 rounded-[1.75rem] border border-primary/20" />
+                  </motion.div>
+                )}
+                {active && (
+                  <motion.div
+                    layoutId="activeDot"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    style={{ position: "absolute", bottom: "-0.25rem", left: "50%", marginLeft: -3, zIndex: 20 }}
+                  >
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                  </motion.div>
+                )}
                 <motion.div whileTap={{ scale: 0.9 }}>
                   <div className="flex flex-col items-center justify-center w-full h-full">
-                    {active && (
-                      <motion.div
-                        layoutId="activeTab"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      >
-                        <div className="absolute inset-0 bg-primary/10 rounded-[1.75rem] border border-primary/20 z-0" />
-                      </motion.div>
-                    )}
 
                     <div className="relative z-10 flex flex-col items-center">
                       <Icon className={cn(
@@ -118,14 +129,6 @@ export function BottomNavigation() {
                       )}
                     </div>
 
-                    {active && (
-                      <motion.div
-                        layoutId="activeDot"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      >
-                        <div className="absolute -bottom-1 w-1.5 h-1.5 bg-primary rounded-full z-20" />
-                      </motion.div>
-                    )}
                   </div>
                 </motion.div>
               </Link>

@@ -13,34 +13,30 @@ export function PWAInstallPrompt() {
 
   useEffect(() => {
     // Check if dismissed previously
-    const isDismissed = localStorage.getItem("pwa-prompt-dismissed");
-    if (isDismissed === "true") return;
+    let isDismissed = false;
+    try {
+      isDismissed = localStorage.getItem("pwa-prompt-dismissed") === "true";
+    } catch {
+      // Storage may be unavailable (private mode); treat as not dismissed.
+    }
+    if (isDismissed) return;
 
-    const checkStandalone = () => {
-      // Check display-mode standalone
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
-      // Check Safari standalone check
-      const isIOSStandalone = (window.navigator as any).standalone === true;
+    // Check display-mode standalone and Safari's standalone flag
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+    const isIOSStandalone = (window.navigator as any).standalone === true;
+    const standalone = isStandaloneMode || isIOSStandalone;
+    setIsStandalone(standalone);
+    if (standalone) return;
 
-      const standalone = isStandaloneMode || isIOSStandalone;
-      setIsStandalone(standalone);
+    // Determine if iOS for specific instruction
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
+    setIsIOS(isIOSDevice);
 
-      // Determine if iOS for specific instruction
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
-      setIsIOS(isIOSDevice);
-
-      // If it's not standalone, we can show the prompt after a short delay
-      // but only if it's iOS (since Android uses beforeinstallprompt to show)
-      if (!standalone && isIOSDevice) {
-        setTimeout(() => setShowPrompt(true), 1500);
-      } else if (!standalone && !isIOSDevice && !deferredPrompt) {
-        // for Android, show generic prompt if beforeinstallprompt is not fired yet or missed
-        setTimeout(() => setShowPrompt(true), 2500);
-      }
-    };
-
-    checkStandalone();
+    // iOS has no install event, so show manual instructions after a short delay.
+    // Other browsers only get the prompt once beforeinstallprompt fires, so the
+    // "Install" button always has a native prompt to trigger.
+    const timeoutId = isIOSDevice ? window.setTimeout(() => setShowPrompt(true), 1500) : undefined;
 
     // Listen for the prompt event on Android/Chrome
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -48,13 +44,17 @@ export function PWAInstallPrompt() {
       setDeferredPrompt(e);
       setShowPrompt(true);
     };
+    const handleAppInstalled = () => setShowPrompt(false);
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
+      if (timeoutId) window.clearTimeout(timeoutId);
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [deferredPrompt]);
+  }, []);
 
   const [installError, setInstallError] = useState(false);
 
@@ -74,13 +74,17 @@ export function PWAInstallPrompt() {
 
   const handleClose = () => {
     setShowPrompt(false);
-    localStorage.setItem("pwa-prompt-dismissed", "true");
+    try {
+      localStorage.setItem("pwa-prompt-dismissed", "true");
+    } catch {
+      // Ignore storage write errors.
+    }
   };
 
   if (isStandalone || !showPrompt) return null;
 
   return (
-    <div className="fixed bottom-24 left-4 right-4 md:left-auto md:right-8 md:w-[400px] z-[100] flex flex-col animate-in slide-in-from-bottom-10 fade-in duration-700 bg-card/95 backdrop-blur-2xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] p-6">
+    <div role="dialog" aria-label="Instal aplikasi Belajar Ngaji" className="fixed bottom-24 left-4 right-4 mx-auto max-w-md md:left-auto md:right-8 md:w-[400px] z-[100] flex flex-col animate-in slide-in-from-bottom-10 fade-in duration-700 bg-card/95 backdrop-blur-2xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] p-6">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -100,7 +104,9 @@ export function PWAInstallPrompt() {
         </div>
 
         <button
+          type="button"
           onClick={handleClose}
+          aria-label="Tutup ajakan instal"
           className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-secondary/50 rounded-full active:scale-95"
         >
           <X className="w-4 h-4" />
@@ -134,7 +140,7 @@ export function PWAInstallPrompt() {
                   animate={{ opacity: 1, y: 0 }}
                 >
                   <p className="text-[12px] text-center text-accent font-bold">
-                    Gunakan menu browser & pilih "Install App" / "Tambahkan"
+                    Gunakan menu browser &amp; pilih &quot;Install App&quot; / &quot;Tambahkan&quot;
                   </p>
                 </motion.div>
               )}

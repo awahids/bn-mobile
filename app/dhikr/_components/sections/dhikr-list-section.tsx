@@ -311,6 +311,8 @@ export function DhikrListSection({
                               style={{ 
                                 left: ripple.x, 
                                 top: ripple.y,
+                                marginLeft: '-50px',
+                                marginTop: '-50px',
                                 position: 'absolute',
                                 width: '100px',
                                 height: '100px',
@@ -471,12 +473,10 @@ export function DhikrListSection({
                   <motion.div
                     animate={{
                       width: index + 1 === current ? 32 : 8,
-                      backgroundColor:
-                        index + 1 === current ? "hsl(var(--primary))" : "hsl(var(--primary) / 0.2)",
                     }}
                     transition={{ duration: 0.4, ease: "circOut" }}
                     className={`h-2 rounded-full transition-colors ${
-                      index + 1 === current ? "" : "bg-primary/20 hover:bg-primary/40"
+                      index + 1 === current ? "bg-primary" : "bg-primary/20 hover:bg-primary/40"
                     }`}
                   />
                   {index + 1 === current && (

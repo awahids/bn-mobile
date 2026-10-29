@@ -27,16 +27,16 @@ export function ProfileSummaryCard({
         <div className="flex items-center space-x-4 mb-4">
           <Avatar className="w-16 h-16">
             {sessionUser?.avatarUrl ? (
-              <AvatarImage src={sessionUser.avatarUrl} alt={sessionUser.name || "User"} />
-            ) : (
-              <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                {sessionUser?.name?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            )}
+              <AvatarImage src={sessionUser.avatarUrl} alt={sessionUser.name || user.username} />
+            ) : null}
+            {/* Always render the fallback so a broken avatar URL still shows an initial. */}
+            <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+              {(sessionUser?.name || user.username || "U").trim().charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
           </Avatar>
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold mb-1">{user.username}</h2>
-            <p className="text-sm text-muted-foreground mb-2">{user.email}</p>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl font-semibold mb-1 truncate">{user.username}</h2>
+            <p className="text-sm text-muted-foreground mb-2 truncate">{user.email}</p>
             {isAuthenticated ? (
               <Badge variant="secondary">Pelajar Aktif</Badge>
             ) : (

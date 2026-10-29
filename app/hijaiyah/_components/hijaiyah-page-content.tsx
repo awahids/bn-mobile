@@ -36,13 +36,13 @@ export function HijaiyahPageContent() {
     overallProgress,
   } = useHijaiyahPageController();
 
-  if (!selectedLetter) return null;
-
   const audioPlayerPreloadProps = usePreloadOnHover(preloadComponents.audioPlayer);
   const writingCanvasPreloadProps = usePreloadOnHover(preloadComponents.writingCanvas);
 
+  if (!selectedLetter) return null;
+
   return (
-    <MobilePageShell className="pb-32 overflow-x-hidden">
+    <MobilePageShell className="pb-44 overflow-x-hidden">
       <HijaiyahHeader
         completedCount={completedCount}
         overallProgress={overallProgress}

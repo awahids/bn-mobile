@@ -114,7 +114,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
@@ -124,6 +123,7 @@ export const viewport: Viewport = {
 
 import { PageTransition } from "@/components/shared/page-transition";
 import { PWAInstallPrompt } from "@/components/shared/pwa-install-prompt";
+import { themeInitScript } from "@/lib/theme-script";
 
 export default function RootLayout({
   children,
@@ -132,6 +132,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body
         className={`${inter.variable} ${amiri.variable} antialiased`}
         suppressHydrationWarning

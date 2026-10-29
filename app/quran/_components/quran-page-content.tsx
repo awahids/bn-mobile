@@ -45,7 +45,7 @@ export function QuranPageContent() {
   } = useQuranPageController();
 
   return (
-    <MobilePageShell className="pb-32">
+    <MobilePageShell className="pb-44">
       <QuranHeader
         selectedSurah={selectedSurah}
         selectedSurahName={selectedSurahData?.name}
