@@ -821,10 +821,12 @@ export interface PrayerTimes {
 }
 
 export const utilityApi = {
-  getPrayerTimes: (coords?: { lat: number; lng: number }): Promise<PrayerTimes> => {
+  getPrayerTimes: (coords?: { lat: number; lng: number }, date?: string): Promise<PrayerTimes> => {
     const lat = coords?.lat ?? -6.2
     const lng = coords?.lng ?? 106.8167
-    return get<PrayerTimes>(`/prayer-times?lat=${lat}&lng=${lng}`, false)
+    // Send the user's local date so the server does not fall back to the UTC day.
+    const dateQuery = date ? `&date=${encodeURIComponent(date)}` : ""
+    return get<PrayerTimes>(`/prayer-times?lat=${lat}&lng=${lng}${dateQuery}`, false)
   },
   getAudioProxy: (url: string): Promise<Blob> => {
     return fetch(buildUrl(`/audio-proxy?url=${encodeURIComponent(url)}`), {

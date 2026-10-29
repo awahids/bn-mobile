@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { THEME_STORAGE_KEY } from "@/lib/theme-script";
 
 type Theme = "light" | "dark";
 
@@ -12,18 +13,41 @@ type ThemeProviderContextType = {
 
 const ThemeProviderContext = createContext<ThemeProviderContextType | undefined>(undefined);
 
+
+function readSavedTheme(): Theme | null {
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return saved === "light" || saved === "dark" ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
+function getSystemTheme(): Theme {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
+  const [hasExplicitTheme, setHasExplicitTheme] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Only run on client side after hydration
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("theme") as Theme;
-    if (saved) {
-      setThemeState(saved);
-    }
+    const saved = readSavedTheme();
+    setHasExplicitTheme(!!saved);
+    setThemeState(saved ?? getSystemTheme());
   }, []);
+
+  // Follow the OS theme until the user picks one explicitly.
+  useEffect(() => {
+    if (!mounted || hasExplicitTheme) return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = () => setThemeState(media.matches ? "dark" : "light");
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
+  }, [hasExplicitTheme, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -31,28 +55,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
-    localStorage.setItem("theme", theme);
+    root.style.colorScheme = theme;
   }, [theme, mounted]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
+    setHasExplicitTheme(true);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+    } catch {
+      // Ignore storage write errors.
+    }
   };
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
-  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
-  if (!mounted) {
-    return (
-      <ThemeProviderContext.Provider value={{ theme: "light", setTheme, toggleTheme }}>
-        {children}
-      </ThemeProviderContext.Provider>
-    );
-  }
-
   return (
-    <ThemeProviderContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeProviderContext.Provider value={{ theme: mounted ? theme : "light", setTheme, toggleTheme }}>
       {children}
     </ThemeProviderContext.Provider>
   );

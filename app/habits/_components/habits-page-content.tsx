@@ -222,7 +222,7 @@ export function HabitsPageContent() {
   );
 
   return (
-    <MobilePageShell className="pb-32">
+    <MobilePageShell className="pb-44">
       <HabitsHeader
         rate={stats.rate}
         onBack={() => router.push("/")}
@@ -249,14 +249,14 @@ export function HabitsPageContent() {
             </div>
 
             {notif !== "granted" && (
-              <div className="glass p-5 rounded-[2rem] flex items-center justify-between border-primary/10 animate-pulse-soft">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <div className="glass p-5 rounded-[2rem] flex items-center justify-between gap-3 border-primary/10">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
                     <BellOff size={20} className="text-primary" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h4 className="text-sm font-black">Aktifkan Notifikasi</h4>
-                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter">Bantu anda tetap konsisten</p>
+                    <p className="text-xs text-muted-foreground font-medium">Bantu Anda tetap konsisten</p>
                   </div>
                 </div>
                 <Button
@@ -264,7 +264,7 @@ export function HabitsPageContent() {
                   size="sm"
                   onClick={requestNotif}
                   disabled={notifSyncing}
-                  className="rounded-full border-primary/20 hover:bg-primary/5 text-primary text-xs font-black h-9"
+                  className="shrink-0 rounded-full border-primary/20 hover:bg-primary/5 text-primary text-xs font-black h-9"
                 >
                   {notifSyncing ? "MENYAMBUNG..." : "AKTIFKAN"}
                 </Button>
@@ -509,22 +509,31 @@ export function HabitsPageContent() {
       {/* Add/Edit Modal */}
       {modal && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in"
           onClick={e => e.target === e.currentTarget && setModal(false)}
+          onKeyDown={e => e.key === "Escape" && setModal(false)}
         >
-          <div className="bg-card w-full max-w-sm rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="p-10 space-y-8">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="habit-modal-title"
+            className="bg-card w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] border border-white/10 animate-in zoom-in-95 duration-300"
+          >
+            <div className="p-6 sm:p-10 space-y-8">
               <div className="flex justify-between items-center px-1">
-                <h3 className="text-2xl font-black tracking-tighter uppercase">{editH ? "Edit Habit" : "Habit Baru"}</h3>
-                <button onClick={() => setModal(false)} className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-muted/80 transition-all">
+                <h3 id="habit-modal-title" className="text-2xl font-black tracking-tighter uppercase">{editH ? "Edit Habit" : "Habit Baru"}</h3>
+                <button type="button" aria-label="Tutup" onClick={() => setModal(false)} className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-muted/80 transition-all">
                   <X size={20} />
                 </button>
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-2 px-1">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">Nama Habit</label>
+                  <label htmlFor="habit-name" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">Nama Habit</label>
                   <Input
+                    id="habit-name"
+                    autoFocus
+                    onKeyDown={e => e.key === "Enter" && onSave()}
                     value={form.name}
                     onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                     placeholder="Contoh: Minum Air Putih..."
@@ -538,6 +547,8 @@ export function HabitsPageContent() {
                     {CATEGORIES.map(c => (
                       <button
                         key={c}
+                        type="button"
+                        aria-pressed={form.category === c}
                         onClick={() => setForm(p => ({ ...p, category: c }))}
                         className={cn(
                           "px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border-2",
@@ -552,7 +563,7 @@ export function HabitsPageContent() {
                   </div>
                 </div>
 
-                <div className="bg-muted/40 p-8 rounded-[2.5rem] space-y-6 border border-white/5">
+                <div className="bg-muted/40 p-5 sm:p-8 rounded-[2rem] space-y-6 border border-white/5">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shadow-inner">
@@ -564,6 +575,10 @@ export function HabitsPageContent() {
                       </div>
                     </div>
                     <button
+                      type="button"
+                      role="switch"
+                      aria-checked={form.reminderEnabled}
+                      aria-label="Pengingat harian"
                       onClick={() => setForm(p => ({ ...p, reminderEnabled: !p.reminderEnabled }))}
                       className={cn(
                         "w-14 h-8 rounded-full relative transition-all duration-300",
@@ -581,6 +596,7 @@ export function HabitsPageContent() {
                     <div className="animate-in slide-in-from-top-4 duration-300">
                       <Input
                         type="time"
+                        aria-label="Jam pengingat"
                         value={form.reminderTime}
                         onChange={e => setForm(p => ({ ...p, reminderTime: e.target.value }))}
                         className="rounded-2xl h-14 bg-background px-6 font-black tracking-widest text-lg text-center"
@@ -591,14 +607,18 @@ export function HabitsPageContent() {
               </div>
 
               <div className="flex flex-col gap-4 pt-4">
-                <Button onClick={onSave} className="h-16 rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-primary/30">
+                <Button onClick={onSave} disabled={!form.name.trim()} className="h-16 rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-primary/30">
                   {editH ? "SIMPAN PERUBAHAN" : "MULAI HABIT INI"}
                 </Button>
 
                 {editH && (
                   <Button
                     variant="ghost"
-                    onClick={() => { deleteHabit(editH.id); setModal(false); }}
+                    onClick={() => {
+                      if (!window.confirm(`Hapus habit "${editH.name}"? Riwayat centangnya juga akan hilang.`)) return;
+                      deleteHabit(editH.id);
+                      setModal(false);
+                    }}
                     className="h-12 rounded-[1.5rem] font-black text-destructive/60 hover:bg-destructive/5 uppercase text-[10px] tracking-widest"
                   >
                     <Trash2 size={16} className="mr-2" /> HAPUS HABIT

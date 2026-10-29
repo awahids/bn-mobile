@@ -12,6 +12,7 @@ import { ProfileHeader } from "@/app/profile/_components/sections/profile-header
 import { ProfileSummaryCard } from "@/app/profile/_components/sections/profile-summary-card";
 import { ProfileGuestCtaCard } from "@/app/profile/_components/sections/profile-guest-cta-card";
 import { ProfileBookmarksCard } from "@/app/profile/_components/sections/profile-bookmarks-card";
+import { usePreferences } from "@/hooks/use-preferences";
 import { ProfileSettingsCard } from "@/app/profile/_components/sections/profile-settings-card";
 import { ProfileLearningPreferencesCard } from "@/app/profile/_components/sections/profile-learning-preferences-card";
 import { ProfileAboutCard } from "@/app/profile/_components/sections/profile-about-card";
@@ -21,6 +22,7 @@ import { ProfileSignoutCard } from "@/app/profile/_components/sections/profile-s
 export function ProfilePageContent() {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
+  const { preferences, setPreference } = usePreferences();
   const {
     status,
     isAuthenticated,
@@ -33,8 +35,6 @@ export function ProfilePageContent() {
     deleteBookmarkMutation,
     notifications,
     setNotifications,
-    audioEnabled,
-    setAudioEnabled,
     signOut,
   } = useProfilePageData();
 
@@ -50,10 +50,10 @@ export function ProfilePageContent() {
   }
 
   if (isAuthenticated && userError && isApiError(userError) && userError.status === 0) {
-    return <NetworkError onRetry={() => router.refresh()} />;
+    return <NetworkError />;
   }
   if (isAuthenticated && bookmarksError && isApiError(bookmarksError) && bookmarksError.status === 0) {
-    return <NetworkError onRetry={() => router.refresh()} />;
+    return <NetworkError />;
   }
 
   const handleSignOut = async () => {
@@ -91,11 +91,20 @@ export function ProfilePageContent() {
           onToggleTheme={toggleTheme}
           notifications={notifications}
           onChangeNotifications={setNotifications}
-          audioEnabled={audioEnabled}
-          onChangeAudioEnabled={setAudioEnabled}
+          audioEnabled={preferences.audioEnabled}
+          onChangeAudioEnabled={(checked) => setPreference("audioEnabled", checked)}
         />
 
-        <ProfileLearningPreferencesCard isAuthenticated={isAuthenticated} />
+        <ProfileLearningPreferencesCard
+          isAuthenticated={isAuthenticated}
+          dailyReminder={notifications}
+          onChangeDailyReminder={setNotifications}
+          autoPlayAudio={preferences.autoPlayAudio}
+          onChangeAutoPlayAudio={(checked) => setPreference("autoPlayAudio", checked)}
+          audioEnabled={preferences.audioEnabled}
+          challengeMode={preferences.challengeMode}
+          onChangeChallengeMode={(checked) => setPreference("challengeMode", checked)}
+        />
 
         <ProfileAboutCard />
 

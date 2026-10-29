@@ -39,6 +39,7 @@ export function QuizPlayPageContent() {
     showExplanation,
     score,
     timeLeft,
+    isTimed,
     saveSkippedForGuest,
     saveFailed,
     scorePercentage,
@@ -101,6 +102,7 @@ export function QuizPlayPageContent() {
         currentQuestionIndex={currentQuestionIndex}
         totalQuestions={questions.length}
         timeLeft={timeLeft}
+        isTimed={isTimed}
         onBack={goToStartPage}
       />
 

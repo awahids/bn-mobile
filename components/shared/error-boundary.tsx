@@ -10,6 +10,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 
 interface ErrorBoundaryProps {
@@ -112,13 +113,22 @@ export function NetworkError({
   onRetry?: () => void
   message?: string
 }) {
+  const queryClient = useQueryClient()
+
+  // Failed client queries are not retried by router.refresh(), so refetch the
+  // active ones; otherwise the page stays stuck on this error screen.
+  const handleRetry = () => {
+    void queryClient.refetchQueries({ type: "active" })
+    onRetry?.()
+  }
+
   return (
     <ErrorBoundary
       title="Masalah Koneksi"
       message={message}
-      reset={onRetry}
+      reset={handleRetry}
       showBackButton={false}
-      showRetryButton={!!onRetry}
+      showRetryButton
     />
   )
 }

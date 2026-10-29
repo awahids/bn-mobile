@@ -39,7 +39,7 @@ export function TajwidPageContent() {
   }
 
   return (
-    <MobilePageShell className="pb-32 overflow-x-hidden">
+    <MobilePageShell className="pb-44 overflow-x-hidden">
       <TajwidHeader
         completedCount={completedCount}
         totalRules={totalRules}

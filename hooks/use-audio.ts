@@ -1,6 +1,8 @@
 import { useCallback } from "react";
 import { useStore } from "@tanstack/react-store";
 import { audioStore, updateAudioState } from "@/store/audio-store";
+import { hydratePreferences, preferencesStore } from "@/store/preferences-store";
+import { toast } from "@/hooks/use-toast";
 
 let audioRef: HTMLAudioElement | null = null;
 
@@ -82,6 +84,15 @@ export function useAudio(src?: string) {
 
   const play = useCallback(
     async (audioSrc?: string) => {
+      hydratePreferences();
+      if (!preferencesStore.state.audioEnabled) {
+        toast({
+          title: "Audio dimatikan",
+          description: "Aktifkan kembali di Profil > Pengaturan > Audio.",
+        });
+        return;
+      }
+
       try {
         const state = audioStore.state;
         const resolvedSrc = audioSrc || src || state.currentSrc;

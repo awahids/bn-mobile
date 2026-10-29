@@ -16,6 +16,15 @@ export interface WritingCanvasRef {
   clearCanvas: () => void;
 }
 
+
+// Canvas 2D contexts cannot resolve CSS custom properties, so read the theme
+// token's HSL triplet and build a concrete color string.
+function resolveThemeColor(variableName: string, fallback: string): string {
+  if (typeof window === 'undefined') return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+  return value ? `hsl(${value})` : fallback;
+}
+
 export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({ letter, onComplete, completed, className }, ref) => {
   const guideCanvasRef = useRef<HTMLCanvasElement>(null);
   const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -68,7 +77,7 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
     ctx.font = `${fontSize}px ${arabicFont}, serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'hsl(var(--muted-foreground))';
+    ctx.fillStyle = resolveThemeColor('--muted-foreground', '#6b7f79');
     
     // Position the letter higher to make room for tails (descenders)
     const yOffset = height * 0.02; 
@@ -100,7 +109,7 @@ export const WritingCanvas = forwardRef<WritingCanvasRef, WritingCanvasProps>(({
     if (dCtx) {
       dCtx.setTransform(1, 0, 0, 1, 0, 0);
       dCtx.scale(dpr, dpr);
-      dCtx.strokeStyle = 'hsl(var(--primary))';
+      dCtx.strokeStyle = resolveThemeColor('--primary', '#1b9c7f');
       dCtx.lineWidth = 16;
       dCtx.lineCap = 'round';
       dCtx.lineJoin = 'round';

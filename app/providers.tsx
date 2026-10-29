@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/features/auth/auth-provider";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
+import { PreferencesSync } from "@/hooks/use-preferences";
 import { useState } from "react";
 
 // Query client configuration matching the original
@@ -33,6 +34,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <TooltipProvider>
+            <PreferencesSync />
             {children}
             <Toaster />
           </TooltipProvider>

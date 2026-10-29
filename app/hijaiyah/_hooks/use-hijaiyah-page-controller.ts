@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
+import { usePreferences } from "@/hooks/use-preferences";
 import { useProgress, useUpdateProgress } from "@/hooks/use-progress";
 import { useHijaiyahLetters } from "@/hooks/use-hijaiyah";
 import type { HijaiyahLetterAPI } from "@/lib/api-core";
@@ -27,6 +28,8 @@ export function useHijaiyahPageController() {
   });
   const updateProgress = useUpdateProgress();
   const audio = useAudio();
+  const { preferences } = usePreferences();
+  const lastAutoPlayedLetterIdRef = useRef<string | null>(null);
 
   const isGuestMode = status !== "loading" && !isAuthenticated;
 
@@ -68,6 +71,21 @@ export function useHijaiyahPageController() {
     audio.play(audioUrl);
     setAudioPlayerVisible(true);
   };
+
+  // Auto-play the pronunciation when the user moves to another letter. The first
+  // letter shown on page load is skipped so audio never starts unprompted.
+  useEffect(() => {
+    if (!selectedLetter) return;
+    const previousId = lastAutoPlayedLetterIdRef.current;
+    lastAutoPlayedLetterIdRef.current = selectedLetter.id;
+    if (previousId === null || previousId === selectedLetter.id) return;
+    if (!preferences.autoPlayAudio || !preferences.audioEnabled || !selectedLetter.audioUrl) return;
+
+    void audio.play(selectedLetter.audioUrl);
+    setAudioPlayerVisible(true);
+    // Only react to letter changes; audio/preferences identity must not replay it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLetter?.id]);
 
   const navigateToLetter = (direction: "prev" | "next") => {
     if (!selectedLetter) return;
