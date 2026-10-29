@@ -880,37 +880,4 @@ export function getErrorMessage(error: any): string {
   return "An unexpected error occurred"
 }
 
-export async function withRetry<T>(
-  operation: () => Promise<T>,
-  maxRetries = 3,
-  delay = 1000
-): Promise<T> {
-  let lastError: any
-
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation()
-    } catch (error) {
-      lastError = error
-
-      if (
-        isApiError(error) &&
-        error.status >= 400 &&
-        error.status < 500 &&
-        error.status !== 429
-      ) {
-        throw error
-      }
-
-      if (attempt === maxRetries) {
-        break
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, delay * attempt))
-    }
-  }
-
-  throw lastError
-}
-
 export default api

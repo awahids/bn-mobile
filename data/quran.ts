@@ -51,52 +51,6 @@ export async function fetchSurahAyahs(surahNumber: number): Promise<QuranAyah[]>
   }
 }
 
-// Sample ayahs for Al-Fatihah with API audio URLs
-export const alFatihahAyahs: QuranAyah[] = [
-  {
-    number: 1,
-    text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-    translation: "Dengan menyebut nama Allah Yang Maha Pemurah lagi Maha Penyayang.",
-    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3"
-  },
-  {
-    number: 2,
-    text: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
-    translation: "Segala puji bagi Allah, Tuhan semesta alam.",
-    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3"
-  },
-  {
-    number: 3,
-    text: "الرَّحْمَٰنِ الرَّحِيمِ",
-    translation: "Maha Pemurah lagi Maha Penyayang.",
-    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/3.mp3"
-  },
-  {
-    number: 4,
-    text: "مَالِكِ يَوْمِ الدِّينِ",
-    translation: "Yang menguasai di Hari Pembalasan.",
-    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/4.mp3"
-  },
-  {
-    number: 5,
-    text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
-    translation: "Hanya Engkaulah yang kami sembah, dan hanya kepada Engkaulah kami meminta pertolongan.",
-    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/5.mp3"
-  },
-  {
-    number: 6,
-    text: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
-    translation: "Tunjukilah kami jalan yang lurus,",
-    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6.mp3"
-  },
-  {
-    number: 7,
-    text: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
-    translation: "(yaitu) Jalan orang-orang yang telah Engkau beri nikmat kepada mereka; bukan (jalan) mereka yang dimurkai dan bukan (pula jalan) mereka yang sesat.",
-    audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/7.mp3"
-  }
-];
-
 export const getSurahById = (id: number) => {
   return quranSurahs.find(surah => surah.id === id);
 };
@@ -168,11 +122,3 @@ export const getQuranDisplayReference = (contentId?: string | null): QuranDispla
   };
 };
 
-export const searchSurahs = (query: string) => {
-  const searchTerm = query.toLowerCase();
-  return quranSurahs.filter(surah => 
-    surah.name.toLowerCase().includes(searchTerm) ||
-    surah.englishName.toLowerCase().includes(searchTerm) ||
-    surah.id.toString() === searchTerm
-  );
-};

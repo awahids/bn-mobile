@@ -134,26 +134,6 @@ export function NetworkError({
 }
 
 /**
- * Not Found Error Component
- * Specialized error component for 404 errors
- */
-export function NotFoundError({
-  title = "Halaman Tidak Ditemukan",
-  message = "Halaman yang Anda cari tidak dapat ditemukan. Mungkin telah dipindahkan atau dihapus."
-}: {
-  title?: string
-  message?: string
-}) {
-  return (
-    <ErrorBoundary
-      title={title}
-      message={message}
-      showRetryButton={false}
-    />
-  )
-}
-
-/**
  * Authentication Error Component
  * Specialized error component for auth errors
  */

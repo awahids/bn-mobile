@@ -10,12 +10,3 @@ export function useHijaiyahLetters() {
     placeholderData: hijaiyahLetters as HijaiyahLetterAPI[],
   });
 }
-
-export function useHijaiyahLetterById(id: string | null) {
-  return useQuery<HijaiyahLetterAPI>({
-    queryKey: ["hijaiyah", "letters", id],
-    queryFn: () => api.hijaiyah.getLetterById(id!),
-    enabled: !!id,
-    staleTime: 1000 * 60 * 60 * 24,
-  });
-}

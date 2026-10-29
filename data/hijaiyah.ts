@@ -58,10 +58,3 @@ export const hijaiyahLetters: HijaiyahLetter[] = [
   },
 ];
 
-export const getLetterById = (id: string) => {
-  return hijaiyahLetters.find(letter => letter.id === id);
-};
-
-export const getLetterByOrder = (order: number) => {
-  return hijaiyahLetters.find(letter => letter.order === order);
-};

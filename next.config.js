@@ -22,7 +22,6 @@ const nextConfig = {
     optimizePackageImports: [
       'lucide-react',
       '@tanstack/react-query',
-      '@radix-ui/react-dialog',
       'framer-motion',
     ],
     // Enable optimized CSS
