@@ -26,7 +26,7 @@ export default function SekolahIslamLoading() {
 
       <div className="px-6 py-8 space-y-6">
         {/* Hero card */}
-        <Skeleton className="w-full h-40 rounded-[2.5rem]" />
+        <Skeleton className="w-full h-40 rounded-3xl" />
 
         {/* Search + filter */}
         <div className="flex gap-3">
@@ -36,7 +36,7 @@ export default function SekolahIslamLoading() {
 
         {/* School cards */}
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="glass p-5 rounded-[2rem] border border-border/30 space-y-4">
+          <div key={i} className="glass p-5 rounded-3xl border border-border/30 space-y-4">
             <Skeleton className="h-6 w-48" />
             <Skeleton className="h-4 w-36" />
             <div className="flex gap-2">

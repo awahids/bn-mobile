@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Moon, Sun, Bell } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ProgressRing } from "@/components/ui/progress-ring";
+import { HeaderIconButton } from "@/components/shared/sticky-page-header";
 import { useTheme } from "@/components/shared/theme-provider";
 
 interface HeroSectionProps {
@@ -27,95 +28,75 @@ export function HeroSection({ user }: HeroSectionProps) {
   const displayName = (user?.name || user?.username || "").trim().split(/\s+/)[0];
 
   return (
-    <section className="relative overflow-hidden pt-8 pb-12 px-6 mesh-gradient rounded-b-[2.5rem] shadow-xl shadow-primary/5 safe-p-top">
-      <div className="relative z-10 flex flex-col space-y-6">
-        <header className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center p-1.5 shadow-inner">
-              <Image
-                src="/images/logo/image.png"
-                alt="Belajar Ngaji"
-                width={48}
-                height={48}
-                className="h-full w-full object-cover rounded-xl"
-                priority
-              />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-foreground/90 tracking-tight">Belajar Ngaji</h1>
-              <div className="flex items-center space-x-1">
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Aktif Belajar</p>
-              </div>
-            </div>
+    <section className="bg-gradient-to-b from-primary/10 to-transparent px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
+      <header className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 overflow-hidden rounded-2xl border border-border bg-card p-1">
+            <Image
+              src="/images/logo/image.png"
+              alt="Belajar Ngaji"
+              width={40}
+              height={40}
+              className="h-full w-full rounded-xl object-cover"
+              priority
+            />
           </div>
-
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              aria-label={theme === "dark" ? "Ganti ke mode terang" : "Ganti ke mode gelap"}
-              className="rounded-full bg-background/40 backdrop-blur-md border border-white/20 hover:bg-background/60 transition-all duration-300"
-              data-testid="toggle-theme"
-            >
-              {theme === 'dark' ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-accent" />}
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-background/40 backdrop-blur-md border border-white/20 hover:bg-background/60 transition-all duration-300"
-              data-testid="notifications"
-            >
-              <Link href="/profile" aria-label="Pengaturan notifikasi">
-                <Bell className="w-4 h-4 text-foreground/70" />
-              </Link>
-            </Button>
-          </div>
-        </header>
-
-        <div className="space-y-1">
-          <h2 className="text-3xl font-extrabold text-foreground tracking-tight leading-tight">
-            Assalamu&apos;alaikum,
-            <span className="block text-primary">{displayName || "Sobat Ngaji"} ✨</span>
-          </h2>
-          <p className="text-muted-foreground text-sm font-medium">Lanjutkan langkahmu menuju keberkahan hari ini.</p>
+          <span className="text-base font-semibold tracking-tight">Belajar Ngaji</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-2">
-          <div className="glass p-4 rounded-3xl flex flex-col justify-between space-y-2 border-primary/10 shadow-sm">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Streak Saya</span>
-            <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-black text-primary">{streak}</span>
-              <span className="text-xs font-bold text-primary/60">HARI</span>
-            </div>
-            <div className="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-1000"
-                style={{ width: `${streakPercent}%` }}
-              />
-            </div>
+        <div className="flex items-center gap-2">
+          <HeaderIconButton
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Ganti ke mode terang" : "Ganti ke mode gelap"}
+            data-testid="toggle-theme"
+          >
+            {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+          </HeaderIconButton>
+          <Link
+            href="/profile"
+            aria-label="Pengaturan notifikasi"
+            data-testid="notifications"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted"
+          >
+            <Bell className="h-4 w-4" />
+          </Link>
+        </div>
+      </header>
+
+      <div className="mt-6">
+        <p className="text-sm text-muted-foreground">Assalamu&apos;alaikum,</p>
+        <h1 className="text-2xl font-bold tracking-tight">{displayName || "Sobat Ngaji"}</h1>
+      </div>
+
+      {/* Activity summary, after 21st.dev "Activity Card" (kokonutd): rings with value + label. */}
+      <div className="mt-4 grid grid-cols-2 divide-x divide-border rounded-3xl border border-border bg-card p-4 shadow-sm">
+        <div className="flex items-center gap-3 pr-3">
+          <ProgressRing
+            progress={streakPercent}
+            size={52}
+            strokeWidth={5}
+            className="text-primary"
+            label={<span className="text-sm font-bold">{streak}</span>}
+          />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold">Streak</p>
+            <p className="text-xs text-muted-foreground">{streak} dari {STREAK_GOAL_DAYS} hari</p>
           </div>
-          <div className="glass p-4 rounded-3xl flex flex-col justify-between space-y-2 border-accent/10 shadow-sm">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Target Hari Ini</span>
-            <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-black text-accent">{dailyProgress}</span>
-              <span className="text-xs font-bold text-accent/60">/ {DAILY_TARGET}</span>
-            </div>
-            <div className="h-1.5 w-full bg-accent/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-accent rounded-full transition-all duration-1000"
-                style={{ width: `${dailyPercent}%` }}
-              />
-            </div>
+        </div>
+        <div className="flex items-center gap-3 pl-4">
+          <ProgressRing
+            progress={dailyPercent}
+            size={52}
+            strokeWidth={5}
+            className="text-accent"
+            label={<span className="text-sm font-bold">{dailyProgress}</span>}
+          />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold">Target harian</p>
+            <p className="text-xs text-muted-foreground">{dailyProgress} dari {DAILY_TARGET} materi</p>
           </div>
         </div>
       </div>
-
-      {/* Background Decorations */}
-      <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
     </section>
   );
 }

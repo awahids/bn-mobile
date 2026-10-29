@@ -19,7 +19,7 @@ export function HijaiyahLetterOverviewCard({
   return (
     <Card
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-3xl transition-all duration-300 border-primary/5 hover:shadow-xl hover:shadow-primary/5 active:scale-95",
+        "group relative cursor-pointer overflow-hidden rounded-3xl transition-all duration-300 border-primary/5 hover:shadow-md hover:shadow-primary/5 active:scale-95",
         isSelected ? "ring-2 ring-primary shadow-lg" : "glass"
       )}
       onClick={() => onSelect(letter)}
@@ -34,10 +34,10 @@ export function HijaiyahLetterOverviewCard({
         <div className="text-3xl font-arabic mb-2 text-primary group-hover:scale-110 transition-transform duration-300">
           {letter.arabic}
         </div>
-        <div className="text-[10px] font-black text-foreground mb-0.5 truncate w-full uppercase tracking-tighter">
+        <div className="text-xs font-bold text-foreground mb-0.5 truncate w-full tracking-tight">
           {letter.name}
         </div>
-        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
+        <div className="text-[11px] font-bold text-muted-foreground tracking-wide leading-none">
           {letter.transliteration}
         </div>
       </CardContent>

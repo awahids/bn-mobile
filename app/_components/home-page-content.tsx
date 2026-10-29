@@ -526,7 +526,7 @@ export function HomePageContent() {
         title = `Membaca ${reference.title}`;
       } else if (item.module === "dhikr") {
         const dhikr = allDhikrs.find((d) => d.id === item.itemId);
-        title = `Dhikr ${dhikr?.translation || item.itemId}`;
+        title = `Dzikir ${dhikr?.translation || item.itemId}`;
       } else if (item.module === "quiz") {
         const category = getQuizCategoryById(item.itemId);
         title = `Kuis ${category?.name || item.itemId}`;

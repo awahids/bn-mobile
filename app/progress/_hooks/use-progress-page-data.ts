@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/hooks/use-auth";
-import { BookMarked, BookOpen, Brain, BicepsFlexed, Flame, Trophy, Languages } from "lucide-react";
+import { BookMarked, BookOpen, Brain, HandHeart, Flame, Trophy, Languages } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export const IconMap: Record<string, LucideIcon> = {
@@ -10,7 +10,7 @@ export const IconMap: Record<string, LucideIcon> = {
   BookOpen,
   BookMarked,
   Brain,
-  BicepsFlexed,
+  HandHeart,
   Flame,
   Trophy,
 };
@@ -174,8 +174,8 @@ export function useProgressPageData() {
         color: "chart-2",
       },
       {
-        module: "Dhikr",
-        icon: BicepsFlexed,
+        module: "Dzikir",
+        icon: HandHeart,
         progress: stats.dhikr.todayCount > 0 ? 100 : 0,
         completed: stats.dhikr.todayCount,
         total: 7,

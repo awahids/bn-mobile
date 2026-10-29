@@ -1,124 +1,104 @@
-import { Languages, BookOpen, BookMarked, BicepsFlexed, Brain, Sparkles, GraduationCap, LucideIcon } from "lucide-react";
+import { Languages, BookOpen, BookMarked, HandHeart, Brain, Sparkles, GraduationCap, LucideIcon } from "lucide-react";
 
 export interface ModuleConfig {
   id: string;
   title: string;
   subtitle: string;
+  /** One-line description shown on the "Semua Modul" bento cards. */
+  description: string;
   href: string;
   icon: LucideIcon;
-  /** Tailwind text color class for accents */
-  colorClass: string;
-  /** Tailwind gradient classes for icon background */
-  gradientClass: string;
-  /** Tailwind shadow color class for icon glow */
-  shadowClass: string;
-  /** Tailwind bg color class for stat bar */
-  bgAccentClass: string;
-  /** Tailwind border color class */
-  borderAccentClass: string;
-  /** Tailwind shadow/glow color class */
-  glowClass: string;
-  /** Tailwind hover shadow/glow class */
-  hoverGlowClass: string;
+  /** Icon tile: tinted background + icon color. */
+  tileClass: string;
+  /** Accent text color (progress ring, labels). */
+  textClass: string;
+  /** Solid accent background (progress bars, dots). */
+  barClass: string;
 }
 
+// Class names are written out in full so Tailwind can see them.
 export const MODULES: ModuleConfig[] = [
   {
     id: "hijaiyah",
     title: "Hijaiyah",
-    subtitle: "28 Huruf Arab",
+    subtitle: "28 huruf Arab",
+    description: "Kenali bunyi dan latih cara menulis tiap huruf.",
     href: "/hijaiyah",
     icon: Languages,
-    colorClass: "text-primary",
-    gradientClass: "from-primary to-primary/40",
-    shadowClass: "shadow-primary/20",
-    bgAccentClass: "bg-primary/10",
-    borderAccentClass: "border-primary/20",
-    glowClass: "shadow-primary/5",
-    hoverGlowClass: "hover:shadow-primary/10",
+    tileClass: "bg-primary/10 text-primary",
+    textClass: "text-primary",
+    barClass: "bg-primary",
   },
   {
     id: "quran",
     title: "Al-Qur'an",
-    subtitle: "114 Surah",
+    subtitle: "114 surah",
+    description: "Baca, dengarkan, dan hafalkan surah pilihan.",
     href: "/quran",
     icon: BookOpen,
-    colorClass: "text-accent",
-    gradientClass: "from-accent to-accent/40",
-    shadowClass: "shadow-accent/20",
-    bgAccentClass: "bg-accent/10",
-    borderAccentClass: "border-accent/20",
-    glowClass: "shadow-accent/5",
-    hoverGlowClass: "hover:shadow-accent/10",
+    tileClass: "bg-accent/15 text-accent",
+    textClass: "text-accent",
+    barClass: "bg-accent",
   },
   {
     id: "tajwid",
     title: "Tajwid",
-    subtitle: "15 Aturan Baca",
+    subtitle: "15 aturan baca",
+    description: "Aturan bacaan lengkap dengan contoh ayat.",
     href: "/tajwid",
     icon: BookMarked,
-    colorClass: "text-chart-2",
-    gradientClass: "from-chart-2 to-chart-2/40",
-    shadowClass: "shadow-chart-2/20",
-    bgAccentClass: "bg-chart-2/10",
-    borderAccentClass: "border-chart-2/20",
-    glowClass: "shadow-chart-2/5",
-    hoverGlowClass: "hover:shadow-chart-2/10",
+    tileClass: "bg-chart-5/10 text-chart-5",
+    textClass: "text-chart-5",
+    barClass: "bg-chart-5",
   },
   {
     id: "dhikr",
-    title: "Dhikr",
-    subtitle: "Pagi & Petang",
+    title: "Dzikir",
+    subtitle: "Pagi & petang",
+    description: "Dzikir harian dengan penghitung otomatis.",
     href: "/dhikr",
-    icon: BicepsFlexed,
-    colorClass: "text-chart-3",
-    gradientClass: "from-chart-3 to-chart-3/40",
-    shadowClass: "shadow-chart-3/20",
-    bgAccentClass: "bg-chart-3/10",
-    borderAccentClass: "border-chart-3/20",
-    glowClass: "shadow-chart-3/5",
-    hoverGlowClass: "hover:shadow-chart-3/10",
+    icon: HandHeart,
+    tileClass: "bg-chart-3/10 text-chart-3",
+    textClass: "text-chart-3",
+    barClass: "bg-chart-3",
   },
   {
     id: "quiz",
     title: "Kuis",
-    subtitle: "6 Kategori",
+    subtitle: "6 kategori",
+    description: "Uji pemahaman dengan soal bertingkat.",
     href: "/quiz",
     icon: Brain,
-    colorClass: "text-chart-4",
-    gradientClass: "from-chart-4 to-chart-4/40",
-    shadowClass: "shadow-chart-4/20",
-    bgAccentClass: "bg-chart-4/10",
-    borderAccentClass: "border-chart-4/20",
-    glowClass: "shadow-chart-4/5",
-    hoverGlowClass: "hover:shadow-chart-4/10",
+    tileClass: "bg-chart-4/10 text-chart-4",
+    textClass: "text-chart-4",
+    barClass: "bg-chart-4",
   },
   {
     id: "habits",
     title: "Habits",
-    subtitle: "Tracker Harian",
+    subtitle: "Tracker harian",
+    description: "Bangun kebiasaan baik dengan pengingat.",
     href: "/habits",
     icon: Sparkles,
-    colorClass: "text-chart-5",
-    gradientClass: "from-chart-5 to-chart-5/40",
-    shadowClass: "shadow-chart-5/20",
-    bgAccentClass: "bg-chart-5/10",
-    borderAccentClass: "border-chart-5/20",
-    glowClass: "shadow-chart-5/5",
-    hoverGlowClass: "hover:shadow-chart-5/10",
+    tileClass: "bg-chart-6/10 text-chart-6",
+    textClass: "text-chart-6",
+    barClass: "bg-chart-6",
   },
   {
     id: "sekolah-islam",
     title: "Sekolah Islam",
-    subtitle: "Sekolah Islam Anak Muslim",
+    subtitle: "Direktori sekolah",
+    description: "Temukan sekolah Islam untuk anak.",
     href: "/sekolah-islam",
     icon: GraduationCap,
-    colorClass: "text-chart-6",
-    gradientClass: "from-chart-6 to-chart-6/40",
-    shadowClass: "shadow-chart-6/20",
-    bgAccentClass: "bg-chart-6/10",
-    borderAccentClass: "border-chart-6/20",
-    glowClass: "shadow-chart-6/5",
-    hoverGlowClass: "hover:shadow-chart-6/10",
+    tileClass: "bg-primary/10 text-primary",
+    textClass: "text-primary",
+    barClass: "bg-primary",
   },
 ];
+
+export function getModule(id: string): ModuleConfig {
+  const found = MODULES.find((module) => module.id === id);
+  if (!found) throw new Error(`Unknown module: ${id}`);
+  return found;
+}

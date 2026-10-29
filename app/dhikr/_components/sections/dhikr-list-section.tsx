@@ -199,7 +199,7 @@ export function DhikrListSection({
     <section className="px-6 pb-12">
       <div className="mb-4 flex items-center justify-between">
         {count > 1 && (
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+          <div className="flex items-center gap-2 text-xs font-bold tracking-wide text-muted-foreground/60">
             <ChevronLeft className="w-3.5 h-3.5" />
             <span>Geser Kartu</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -210,7 +210,7 @@ export function DhikrListSection({
           variant="ghost"
           size="sm"
           onClick={() => setIsFocusMode(!isFocusMode)}
-          className={`h-8 px-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`h-8 px-3 rounded-full text-xs font-bold tracking-wide transition-all ${
             isFocusMode ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-muted/50 text-muted-foreground"
           }`}
         >
@@ -234,10 +234,10 @@ export function DhikrListSection({
                   data-dhikr-slide-content
                 >
                   <Card
-                    className={`group relative overflow-hidden rounded-[2.5rem] transition-all duration-700 border-none ${
+                    className={`group relative overflow-hidden rounded-3xl transition-all duration-700 border-none ${
                       counterData.completed
-                        ? "bg-primary shadow-2xl shadow-primary/30"
-                        : "bg-white/80 dark:bg-white/5 backdrop-blur-xl shadow-xl shadow-primary/5 border border-white/20"
+                        ? "bg-primary shadow-lg shadow-primary/30"
+                        : "bg-white/80 dark:bg-white/5 backdrop-blur-xl shadow-md shadow-primary/5 border border-white/20"
                     }`}
                   >
                     <div className="p-6 sm:p-8">
@@ -249,11 +249,11 @@ export function DhikrListSection({
                             className="flex items-center space-x-2 mb-2"
                           >
                             <span
-                              className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full ${
+                              className={`text-xs font-bold tracking-wide px-3 py-1 rounded-full ${
                                 counterData.completed ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
                               }`}
                             >
-                              DZIKIR {index + 1}
+                              Dzikir {index + 1}
                             </span>
                             {counterData.completed && (
                               <motion.div 
@@ -286,7 +286,7 @@ export function DhikrListSection({
                       <motion.button
                         whileTap={{ scale: 0.98 }}
                         onClick={(e: React.MouseEvent | React.TouchEvent) => handleArabicTap(e, dhikr.id, counterData.count, counterData.target)}
-                        className={`relative w-full mb-6 text-center py-10 px-6 rounded-[2.5rem] backdrop-blur-xl border border-white/10 shadow-2xl transition-all duration-500 overflow-hidden group/arabic ${
+                        className={`relative w-full mb-6 text-center py-10 px-6 rounded-3xl backdrop-blur-xl border border-white/10 shadow-lg transition-all duration-500 overflow-hidden group/arabic ${
                           counterData.completed 
                             ? "bg-white/20 border-white/30" 
                             : "bg-black/5 dark:bg-white/5 active:bg-primary/5"
@@ -341,7 +341,7 @@ export function DhikrListSection({
                           <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="absolute top-4 right-6 text-[10px] font-black text-primary/40 uppercase tracking-widest z-10"
+                            className="absolute top-4 right-6 text-xs font-bold text-primary/40 tracking-wide z-10"
                           >
                             Ketuk untuk Menghitung
                           </motion.div>
@@ -357,7 +357,7 @@ export function DhikrListSection({
                           }`}
                         >
                           <p
-                            className={`text-[10px] font-black uppercase tracking-[0.2em] mb-2 ${
+                            className={`text-xs font-bold tracking-wide mb-2 ${
                               counterData.completed ? "text-white/70" : "text-primary/80"
                             }`}
                           >
@@ -375,7 +375,7 @@ export function DhikrListSection({
                         <div className="space-y-2">
                           {dhikr.translation && (
                             <p
-                              className={`text-sm font-black tracking-tight ${
+                              className={`text-sm font-bold tracking-tight ${
                                 counterData.completed ? "text-white" : "text-foreground"
                               }`}
                             >
@@ -389,7 +389,7 @@ export function DhikrListSection({
 
                         {dhikr.reference && (
                           <div
-                            className={`flex items-start space-x-2 text-[10px] font-black italic uppercase tracking-widest ${
+                            className={`flex items-start space-x-2 text-xs font-bold italic tracking-wide ${
                               counterData.completed ? "text-white/60" : "text-muted-foreground/60"
                             }`}
                           >
@@ -414,7 +414,7 @@ export function DhikrListSection({
                                     : "bg-accent/10 border-accent/20 text-foreground hover:bg-accent/15"
                                 }`}
                               >
-                                <span className="text-[11px] font-black uppercase tracking-[0.2em]">Faedah</span>
+                                <span className="text-[11px] font-bold tracking-wide">Faedah</span>
                                 <ChevronDown
                                   className={`w-4 h-4 transition-transform ${
                                     openFaedah[dhikr.id] ? "rotate-180" : ""
@@ -494,9 +494,9 @@ export function DhikrListSection({
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-[10px] font-black tracking-[0.3em] text-muted-foreground/60 uppercase flex items-center space-x-3"
+              className="text-xs font-bold tracking-wide text-muted-foreground/60 flex items-center space-x-3"
             >
-              <span className="text-primary font-black">{current}</span>
+              <span className="text-primary font-bold">{current}</span>
               <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
               <span>{count}</span>
             </motion.div>

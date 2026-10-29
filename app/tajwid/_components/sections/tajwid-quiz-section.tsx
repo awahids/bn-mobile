@@ -436,7 +436,7 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
       {/* Score strip */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-baseline gap-1.5">
-          <span className="text-2xl font-black text-foreground">{stats.correct}</span>
+          <span className="text-2xl font-bold text-foreground">{stats.correct}</span>
           <span className="text-sm text-muted-foreground">/ {stats.total} benar</span>
           {stats.total > 0 && (
             <span className="text-xs text-muted-foreground">({scorePercent}%)</span>
@@ -468,7 +468,7 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
         <div className={`flex items-center justify-between px-4 py-2.5 ${config.headerBg}`}>
           <div className="flex items-center gap-2">
             <TypeIcon className={`h-3.5 w-3.5 ${config.iconColor}`} />
-            <span className={`text-[11px] font-bold uppercase tracking-wider ${config.iconColor}`}>
+            <span className={`text-[11px] font-bold tracking-wider ${config.iconColor}`}>
               {getQuestionTypeLabel(question.type)}
             </span>
           </div>

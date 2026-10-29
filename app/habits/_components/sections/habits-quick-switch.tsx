@@ -21,7 +21,7 @@ export function HabitsQuickSwitch({ currentTab, onChangeTab }: HabitsQuickSwitch
       className="fixed left-1/2 transform -translate-x-1/2 z-40"
       style={{ bottom: "calc(max(0.75rem, env(safe-area-inset-bottom)) + 5rem)" }}
     >
-      <div className="flex bg-card/80 backdrop-blur-xl border border-primary/10 rounded-full p-1.5 shadow-2xl shadow-primary/20">
+      <div className="flex bg-card/80 backdrop-blur-xl border border-primary/10 rounded-full p-1.5 shadow-lg shadow-primary/20">
         {tabs.map((tab) => (
           <Button
             key={tab.id}
@@ -36,7 +36,7 @@ export function HabitsQuickSwitch({ currentTab, onChangeTab }: HabitsQuickSwitch
           >
             <tab.icon size={16} className={cn(currentTab === tab.id ? "text-primary-foreground" : "text-muted-foreground")} />
             {currentTab === tab.id && (
-              <span className="text-[10px] font-black uppercase tracking-widest">{tab.label}</span>
+              <span className="text-xs font-bold tracking-wide">{tab.label}</span>
             )}
           </Button>
         ))}

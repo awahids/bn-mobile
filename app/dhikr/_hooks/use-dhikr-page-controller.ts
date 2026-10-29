@@ -13,7 +13,7 @@ export function useDhikrPageController() {
   const [selectedDhikr, setSelectedDhikr] = useState<string | null>(null);
   const [guestCounters, setGuestCounters] = useState<Record<string, number>>({});
   const [today, setToday] = useState("");
-  const [timeBasedGreeting, setTimeBasedGreeting] = useState("Dhikr Pagi");
+  const [timeBasedGreeting, setTimeBasedGreeting] = useState("Dzikir Pagi");
 
   const queryClient = useQueryClient();
   const audio = useAudio();
@@ -205,13 +205,13 @@ export function useDhikrPageController() {
   const completionPercentage = currentDhikrList.length > 0 ? Math.round((totalCompleted / currentDhikrList.length) * 100) : 0;
 
   const getTimeBasedGreeting = () => {
-    if (typeof window === "undefined") return "Dhikr Pagi";
+    if (typeof window === "undefined") return "Dzikir Pagi";
 
     const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return "Dhikr Pagi";
-    if (hour >= 12 && hour < 18) return "Dhikr Siang";
-    if (hour >= 18 && hour < 24) return "Dhikr Petang";
-    return "Dhikr Malam";
+    if (hour >= 5 && hour < 12) return "Dzikir Pagi";
+    if (hour >= 12 && hour < 18) return "Dzikir Siang";
+    if (hour >= 18 && hour < 24) return "Dzikir Petang";
+    return "Dzikir Malam";
   };
 
   useEffect(() => {

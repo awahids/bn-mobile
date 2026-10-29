@@ -77,11 +77,11 @@ export function TajwidOverviewSection({
 
   return (
     <section className="px-6 pb-36 pt-6">
-      <div className="mb-6 rounded-[2rem] border border-chart-2/15 bg-gradient-to-br from-chart-2/12 via-background to-background p-5">
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-chart-2">
+      <div className="mb-6 rounded-3xl border border-chart-2/15 bg-gradient-to-br from-chart-2/12 via-background to-background p-5">
+        <p className="text-[11px] font-bold tracking-wide text-chart-2">
           Semua Aturan
         </p>
-        <h2 className="mt-2 text-2xl font-black tracking-tight text-foreground">
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground">
           Pelajari tajwid per kategori
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -140,7 +140,7 @@ export function TajwidOverviewSection({
               className="space-y-3"
             >
               <div>
-                <h3 className="text-lg font-black tracking-tight text-foreground">
+                <h3 className="text-lg font-bold tracking-tight text-foreground">
                   {categoryMeta[category].title}
                 </h3>
                 <p className="text-sm text-muted-foreground">

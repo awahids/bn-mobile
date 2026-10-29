@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MapPinned, Loader2, School, UserRound, X, Wallet, Phone, Search } from "lucide-react";
 import { MobilePageShell } from "@/components/shared/mobile-page-shell";
 import { BottomNavigation } from "@/components/shared/bottom-navigation";
+import { GuestBanner } from "@/components/shared/guest-banner";
 import { SekolahIslamHeader } from "./sections/sekolah-islam-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -171,15 +172,15 @@ export function SekolahIslamPageContent() {
       />
 
       <div className="px-6 py-8 space-y-6">
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary to-primary/80 rounded-[2.5rem] p-8 text-white shadow-xl shadow-primary/20">
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-white shadow-md shadow-primary/20">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -mr-10 -mt-10 rounded-full" />
-          <h2 className="text-2xl font-black tracking-tight leading-tight mb-2">
+          <h2 className="text-2xl font-bold tracking-tight leading-tight mb-2">
             Direktori Sekolah Islam
           </h2>
           <p className="text-sm font-medium opacity-90 leading-relaxed mb-5">
             Cari referensi sekolah Islam dan bantu pengguna lain dengan menambahkan data sekolah baru.
           </p>
-          <div className="inline-flex items-center rounded-full bg-white/15 px-4 py-2 text-[11px] font-black uppercase tracking-widest">
+          <div className="inline-flex items-center rounded-full bg-white/15 px-4 py-2 text-[11px] font-bold tracking-wide">
             {schoolCountLabel}
           </div>
         </div>
@@ -213,11 +214,10 @@ export function SekolahIslamPageContent() {
         </div>
 
         {!canAddSchool && (
-          <Card className="glass p-5 rounded-[2rem] border-primary/10">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
-              Login untuk menambahkan sekolah baru.
-            </p>
-          </Card>
+          <GuestBanner
+            message="Masuk untuk menambahkan sekolah baru."
+            onLogin={() => router.push("/login?callbackUrl=/sekolah-islam")}
+          />
         )}
 
         {errorMessage && (
@@ -228,11 +228,11 @@ export function SekolahIslamPageContent() {
 
         <div className="space-y-4">
           {filteredSchools.length === 0 ? (
-            <Card className="glass p-10 rounded-[2rem] border-none text-center">
+            <Card className="glass p-10 rounded-3xl border-none text-center">
               <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
                 <School className="text-primary" size={28} />
               </div>
-              <p className="text-sm font-black uppercase tracking-widest text-foreground">
+              <p className="text-sm font-bold tracking-wide text-foreground">
                 {schools.length === 0 ? "Belum ada data sekolah" : "Tidak ada hasil yang cocok"}
               </p>
               <p className="text-xs font-medium text-muted-foreground mt-2">
@@ -245,11 +245,11 @@ export function SekolahIslamPageContent() {
             filteredSchools.map((school) => (
               <Card
                 key={school.id}
-                className="glass p-5 rounded-[2rem] border-transparent hover:border-primary/20 transition-all duration-300 border-none"
+                className="glass p-5 rounded-3xl border-transparent hover:border-primary/20 transition-all duration-300 border-none"
               >
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-black tracking-tight text-foreground">{school.name}</h3>
+                    <h3 className="text-lg font-bold tracking-tight text-foreground">{school.name}</h3>
                     <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground font-semibold">
                       <MapPinned size={14} className="text-primary" />
                       <span>{school.location}</span>
@@ -261,7 +261,7 @@ export function SekolahIslamPageContent() {
                       <Badge className="rounded-full bg-primary/10 text-primary border-transparent font-bold">
                         Jenjang {school.jenjang}
                       </Badge>
-                      <Badge variant="secondary" className="rounded-full font-bold uppercase tracking-wide">
+                      <Badge variant="secondary" className="rounded-full font-bold tracking-wide">
                         {school.statusSekolah}
                       </Badge>
                     </div>
@@ -293,7 +293,7 @@ export function SekolahIslamPageContent() {
                       href={school.mapUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center h-10 px-4 rounded-xl bg-primary/10 text-primary text-xs font-black uppercase tracking-widest hover:bg-primary/20 transition-colors"
+                      className="inline-flex items-center justify-center h-10 px-4 rounded-xl bg-primary/10 text-primary text-xs font-bold tracking-wide hover:bg-primary/20 transition-colors"
                     >
                       Buka Peta
                     </a>
@@ -310,10 +310,10 @@ export function SekolahIslamPageContent() {
           className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
           onClick={(event) => event.target === event.currentTarget && setModalOpen(false)}
         >
-          <div className="bg-card w-full max-w-sm rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl">
+          <div className="bg-card w-full max-w-sm rounded-3xl border border-white/10 overflow-hidden shadow-lg">
             <div className="p-8 space-y-5">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-black tracking-tight">Tambah Sekolah</h3>
+                <h3 className="text-xl font-bold tracking-tight">Tambah Sekolah</h3>
                 <button
                   onClick={() => setModalOpen(false)}
                   className="w-9 h-9 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors flex items-center justify-center"
@@ -400,7 +400,7 @@ export function SekolahIslamPageContent() {
               <Button
                 onClick={() => void handleCreateSchool()}
                 disabled={isSubmitting}
-                className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-xs"
+                className="w-full h-12 rounded-2xl font-bold tracking-wide text-xs"
               >
                 {isSubmitting ? "Menyimpan..." : "Simpan Sekolah"}
               </Button>

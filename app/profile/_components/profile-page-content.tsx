@@ -10,7 +10,6 @@ import { PageLoadingState } from "@/components/shared/page-loading-state";
 import { useProfilePageData } from "@/app/profile/_hooks/use-profile-page-data";
 import { ProfileHeader } from "@/app/profile/_components/sections/profile-header";
 import { ProfileSummaryCard } from "@/app/profile/_components/sections/profile-summary-card";
-import { ProfileGuestCtaCard } from "@/app/profile/_components/sections/profile-guest-cta-card";
 import { ProfileBookmarksCard } from "@/app/profile/_components/sections/profile-bookmarks-card";
 import { usePreferences } from "@/hooks/use-preferences";
 import { ProfileSettingsCard } from "@/app/profile/_components/sections/profile-settings-card";
@@ -74,7 +73,6 @@ export function ProfilePageContent() {
           onLogin={() => router.push("/login?callbackUrl=/profile")}
         />
 
-        {!isAuthenticated && <ProfileGuestCtaCard onLogin={() => router.push("/login?callbackUrl=/profile")} />}
 
         {isAuthenticated && bookmarks.length > 0 && (
           <ProfileBookmarksCard

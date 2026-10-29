@@ -84,7 +84,7 @@ export function PWAInstallPrompt() {
   if (isStandalone || !showPrompt) return null;
 
   return (
-    <div role="dialog" aria-label="Instal aplikasi Belajar Ngaji" className="fixed bottom-24 left-4 right-4 mx-auto max-w-md md:left-auto md:right-8 md:w-[400px] z-[100] flex flex-col animate-in slide-in-from-bottom-10 fade-in duration-700 bg-card/95 backdrop-blur-2xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] p-6">
+    <div role="dialog" aria-label="Instal aplikasi Belajar Ngaji" className="fixed bottom-24 left-4 right-4 mx-auto max-w-md md:left-auto md:right-8 md:w-[400px] z-[100] flex flex-col animate-in slide-in-from-bottom-10 fade-in duration-700 bg-card/95 backdrop-blur-2xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-3xl p-6">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -129,7 +129,7 @@ export function PWAInstallPrompt() {
             <div className="flex flex-col gap-2.5">
               <Button
                 onClick={handleInstallClick}
-                className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground active:scale-[0.98] transition-all rounded-2xl font-bold text-sm shadow-xl shadow-primary/10"
+                className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground active:scale-[0.98] transition-all rounded-2xl font-bold text-sm shadow-md shadow-primary/10"
               >
                 Install Sekarang
               </Button>

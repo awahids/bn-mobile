@@ -1,6 +1,5 @@
-import { ArrowLeft, Bookmark, BookmarkCheck } from "lucide-react";
-import { StickyPageHeader } from "@/components/shared/sticky-page-header";
-import { Button } from "@/components/ui/button";
+import { Bookmark, BookmarkCheck } from "lucide-react";
+import { HeaderIconButton, StickyPageHeader } from "@/components/shared/sticky-page-header";
 
 interface QuranHeaderProps {
   selectedSurah: number | null;
@@ -25,22 +24,17 @@ export function QuranHeader({
     <StickyPageHeader
       title={selectedSurah ? selectedSurahName : "Al-Qur'an"}
       subtitle={selectedSurah ? selectedSurahArabicName : "114 Surah"}
-      leftSlot={
-        <Button variant="ghost" size="icon" onClick={onBack} data-testid="back-button">
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-      }
+      onBack={onBack}
       rightSlot={
         selectedSurah ? (
-          <Button
-            variant="ghost"
-            size="icon"
+          <HeaderIconButton
             onClick={onToggleSurahBookmark}
             disabled={isBookmarkMutating}
+            aria-label={isBookmarked ? "Hapus bookmark surah" : "Bookmark surah"}
             data-testid="bookmark-surah"
           >
-            {isBookmarked ? <BookmarkCheck className="w-5 h-5 text-chart-2" /> : <Bookmark className="w-5 h-5" />}
-          </Button>
+            {isBookmarked ? <BookmarkCheck className="w-5 h-5 text-primary" /> : <Bookmark className="w-5 h-5" />}
+          </HeaderIconButton>
         ) : null
       }
     />

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     default: "Belajar Ngaji - Aplikasi Pembelajaran Hijaiyah",
     template: "%s | Belajar Ngaji",
   },
-  description: "Aplikasi pembelajaran huruf Hijaiyah, Al-Qur'an, Dhikr, dan Kuis interaktif",
+  description: "Aplikasi pembelajaran huruf Hijaiyah, Al-Qur'an, Dzikir, dan Kuis interaktif",
   keywords: [
     "belajar ngaji",
     "aplikasi ngaji",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     type: "website",
     url: siteUrl,
     title: "Belajar Ngaji - Aplikasi Pembelajaran Hijaiyah",
-    description: "Belajar Hijaiyah, Al-Qur'an, Dhikr, dan kuis interaktif dalam satu aplikasi.",
+    description: "Belajar Hijaiyah, Al-Qur'an, Dzikir, dan kuis interaktif dalam satu aplikasi.",
     siteName: "Belajar Ngaji",
     images: [
       {
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     site: "@belajarn_gaji",
     creator: "@belajarn_gaji",
     title: "Belajar Ngaji - Aplikasi Pembelajaran Hijaiyah",
-    description: "Belajar Hijaiyah, Al-Qur'an, Dhikr, dan kuis interaktif.",
+    description: "Belajar Hijaiyah, Al-Qur'an, Dzikir, dan kuis interaktif.",
     images: ["/images/logo/image.png"],
   },
   robots: {
@@ -152,7 +152,7 @@ export default function RootLayout({
               "@type": "WebSite",
               name: "Belajar Ngaji",
               url: siteUrl,
-              description: "Platform belajar Hijaiyah, Al-Qur'an, Dhikr, dan kuis interaktif.",
+              description: "Platform belajar Hijaiyah, Al-Qur'an, Dzikir, dan kuis interaktif.",
               inLanguage: "id-ID",
             }),
           }}

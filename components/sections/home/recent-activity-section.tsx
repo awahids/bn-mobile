@@ -1,7 +1,9 @@
 "use client";
 
-import { Check, BicepsFlexed, Brain, BookMarked, BookOpen, Languages } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { History } from "lucide-react";
+import { getModule } from "@/data/modules";
+import { SectionHeader } from "@/components/shared/section-header";
+import { cn } from "@/lib/utils";
 
 interface RecentActivityItem {
   id: string;
@@ -15,63 +17,38 @@ interface RecentActivitySectionProps {
 }
 
 export function RecentActivitySection({ activities }: RecentActivitySectionProps) {
-  const getIcon = (type: RecentActivityItem["type"]) => {
-    if (type === "hijaiyah") {
-      return <Languages className="text-chart-1 w-4 h-4" />
-    }
-    if (type === "quran") {
-      return <BookOpen className="text-chart-2 w-4 h-4" />
-    }
-    if (type === "dhikr") {
-      return <BicepsFlexed className="text-chart-3 w-4 h-4" />
-    }
-    if (type === "quiz") {
-      return <Brain className="text-chart-4 w-4 h-4" />
-    }
-    if (type === "hafalan") {
-      return <BookMarked className="text-chart-5 w-4 h-4" />
-    }
-    return <Check className="text-chart-1 w-4 h-4" />
-  }
-
-  const getIconBg = (type: RecentActivityItem["type"]) => {
-    if (type === "hijaiyah") return "bg-chart-1/20"
-    if (type === "quran") return "bg-chart-2/20"
-    if (type === "dhikr") return "bg-chart-3/20"
-    if (type === "quiz") return "bg-chart-4/20"
-    if (type === "hafalan") return "bg-chart-5/20"
-    return "bg-chart-1/20"
-  }
-
   return (
-    <section className="p-4">
-      <h3 className="text-lg font-semibold mb-4 text-foreground">Aktivitas Terbaru</h3>
+    <section className="px-4 pt-6">
+      <SectionHeader title="Aktivitas Terbaru" />
 
-      <div className="space-y-3">
+      <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
         {activities.length > 0 ? (
-          activities.map((activity) => (
-            <Card key={activity.id}>
-              <CardContent className="p-3">
-                <div className="flex items-center space-x-3">
-                  <div
-                    className={`w-8 h-8 ${getIconBg(activity.type)} rounded-full flex items-center justify-center`}
-                  >
-                    {getIcon(activity.type)}
+          <ul className="divide-y divide-border">
+            {activities.map((activity) => {
+              // Hafalan is part of the Qur'an module.
+              const moduleInfo = getModule(activity.type === "hafalan" ? "quran" : activity.type);
+              const Icon = moduleInfo.icon;
+              return (
+                <li key={activity.id} className="flex items-center gap-3 px-4 py-3">
+                  <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", moduleInfo.tileClass)}>
+                    <Icon className="h-4 w-4" />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-card-foreground">{activity.title}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{activity.title}</p>
                     <p className="text-xs text-muted-foreground">{activity.timeLabel}</p>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </li>
+              );
+            })}
+          </ul>
         ) : (
-          <Card>
-            <CardContent className="p-4 text-center text-sm text-muted-foreground">
-              Belum ada aktivitas terbaru
-            </CardContent>
-          </Card>
+          <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <History className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium">Belum ada aktivitas</p>
+            <p className="text-xs text-muted-foreground">Aktivitas belajarmu akan muncul di sini.</p>
+          </div>
         )}
       </div>
     </section>

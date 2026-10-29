@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bookmark, ChevronRight, Trophy } from "lucide-react";
-import { ProgressRing } from "@/components/ui/progress-ring";
-import { MODULES } from "@/data/modules";
+import { ChevronRight } from "lucide-react";
+import { getModule } from "@/data/modules";
+import { SectionHeader } from "@/components/shared/section-header";
 import { cn } from "@/lib/utils";
 
 interface LearningModulesSectionProps {
@@ -18,130 +18,76 @@ interface LearningModulesSectionProps {
   };
 }
 
-export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
-  const [hasHydrated, setHasHydrated] = useState(false);
+interface ModuleTile {
+  id: string;
+  stat: string;
+  progress: number | null;
+}
 
+export function LearningModulesSection({ stats }: LearningModulesSectionProps) {
+  // Stats come from client-only sources (API, localStorage); render neutral
+  // values on the server to avoid a hydration mismatch.
+  const [hasHydrated, setHasHydrated] = useState(false);
   useEffect(() => {
     setHasHydrated(true);
   }, []);
 
-  const topModules = MODULES.filter((module) =>
-    ["hijaiyah", "quran", "tajwid", "quiz"].includes(module.id)
-  ).slice(0, 4);
+  const tiles: ModuleTile[] = [
+    {
+      id: "hijaiyah",
+      stat: `${stats.hijaiyah.completed}/${stats.hijaiyah.total} huruf`,
+      progress: stats.hijaiyah.progress,
+    },
+    { id: "quran", stat: stats.quran.lastReadLabel, progress: null },
+    {
+      id: "tajwid",
+      stat: `${stats.tajwid.completed}/${stats.tajwid.total} aturan`,
+      progress: stats.tajwid.progress,
+    },
+    {
+      id: "quiz",
+      stat: stats.quiz.attempts > 0 ? `Skor terbaik ${stats.quiz.bestScore}%` : "Belum ada kuis",
+      progress: stats.quiz.attempts > 0 ? stats.quiz.bestScore : null,
+    },
+  ];
 
   return (
-    <section className="px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-foreground">Modul Pilihan</h3>
-        <Link
-          href="/modules"
-          className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-full uppercase tracking-tighter hover:bg-primary/20 active:scale-95 transition-all"
-        >
-          Explore All
-          <ChevronRight size={14} />
-        </Link>
-      </div>
+    <section className="px-4 pt-6">
+      <SectionHeader
+        title="Menu Belajar"
+        action={
+          <Link href="/modules" className="flex items-center gap-0.5 text-sm font-medium text-primary hover:underline">
+            Semua
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-4">
-        {topModules.map((module) => {
-          const Icon = module.icon;
+      <div className="grid grid-cols-2 gap-3">
+        {tiles.map((tile) => {
+          const moduleInfo = getModule(tile.id);
+          const Icon = moduleInfo.icon;
+          const progress = hasHydrated ? tile.progress : null;
 
           return (
-            <Link key={module.id} href={module.href} className="group" data-testid={`module-${module.id}`}>
-              <div className={cn(
-                "relative glass p-5 rounded-[2rem] transition-all duration-300 active:scale-95 flex flex-col h-full bg-card/40 dark:bg-card/20",
-                "border hover:shadow-xl",
-                module.borderAccentClass,
-                module.glowClass,
-                module.hoverGlowClass
-              )}>
-                <div className={cn(
-                  "w-14 h-14 bg-gradient-to-br rounded-2xl flex items-center justify-center p-3 mb-4 shadow-lg group-hover:animate-float",
-                  module.gradientClass,
-                  module.shadowClass
-                )}>
-                  <Icon className="text-white w-full h-full" />
-                </div>
-                <h4 className="font-black text-card-foreground text-lg mb-1 leading-none tracking-tighter">
-                  {module.title}
-                </h4>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter opacity-60 mb-4">{module.subtitle}</p>
-
-                {/* Bottom section with flex-grow to push to bottom */}
-                <div className="mt-auto">
-                    {/* Stats Rendering based on module type */}
-                    {module.id === "hijaiyah" && (
-                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
-                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
-                        {hasHydrated ? `${stats.hijaiyah.completed}/${stats.hijaiyah.total}` : "—"}
-                        </span>
-                        <ProgressRing
-                        progress={hasHydrated ? stats.hijaiyah.progress : 0}
-                        size={24}
-                        className={module.colorClass}
-                        />
-                    </div>
-                    )}
-
-                    {module.id === "quran" && (
-                    <div className={cn("flex items-center justify-between p-2 rounded-2xl min-h-[40px] border", module.bgAccentClass, module.borderAccentClass)}>
-                        <span className={cn("text-[10px] font-black uppercase leading-tight max-w-[70%] truncate", module.colorClass)}>
-                        {hasHydrated ? stats.quran.lastReadLabel : "Al-Qur'an"}
-                        </span>
-                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center p-1.5 shadow-sm shrink-0", module.colorClass.replace("text-", "bg-"))}>
-                        <Bookmark className="text-white w-full h-full" />
-                        </div>
-                    </div>
-                    )}
-
-                    {module.id === "dhikr" && (
-                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
-                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>{hasHydrated ? stats.dhikr.todayCount : 0}x</span>
-                        <ProgressRing
-                        progress={hasHydrated ? stats.dhikr.progress : 0}
-                        size={24}
-                        className={module.colorClass}
-                        />
-                    </div>
-                    )}
-
-                    {module.id === "tajwid" && (
-                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
-                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
-                        {hasHydrated ? `${stats.tajwid.completed}/${stats.tajwid.total}` : "—"}
-                        </span>
-                        <ProgressRing
-                        progress={hasHydrated ? stats.tajwid.progress : 0}
-                        size={24}
-                        className={module.colorClass}
-                        />
-                    </div>
-                    )}
-
-                    {module.id === "quiz" && (
-                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
-                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
-                        {hasHydrated ? `${stats.quiz.bestScore}%` : "0%"}
-                        </span>
-                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center p-1.5 shadow-sm", module.colorClass.replace("text-", "bg-"))}>
-                        <Trophy className="text-white w-full h-full" />
-                        </div>
-                    </div>
-                    )}
-
-                    {module.id === "habits" && stats.habits && (
-                    <div className={cn("flex items-center justify-between p-2 rounded-2xl border", module.bgAccentClass, module.borderAccentClass)}>
-                        <span className={cn("text-[10px] font-black uppercase", module.colorClass)}>
-                        {hasHydrated ? `${stats.habits.itemsDone}/${stats.habits.totalItems}` : "—"}
-                        </span>
-                        <ProgressRing
-                        progress={hasHydrated ? stats.habits.rate : 0}
-                        size={24}
-                        className={module.colorClass}
-                        />
-                    </div>
-                    )}
-                </div>
+            <Link
+              key={moduleInfo.id}
+              href={moduleInfo.href}
+              className="group flex flex-col rounded-3xl border border-border bg-card p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md active:scale-[0.98]"
+              data-testid={`module-${moduleInfo.id}`}
+            >
+              <div className={cn("flex h-10 w-10 items-center justify-center rounded-2xl", moduleInfo.tileClass)}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="mt-3 font-semibold tracking-tight">{moduleInfo.title}</h3>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                {hasHydrated ? tile.stat : moduleInfo.subtitle}
+              </p>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className={cn("h-full rounded-full transition-all duration-700", moduleInfo.barClass)}
+                  style={{ width: `${progress ?? 0}%` }}
+                />
               </div>
             </Link>
           );

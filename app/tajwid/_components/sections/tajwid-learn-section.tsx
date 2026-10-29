@@ -75,7 +75,7 @@ function HighlightedAyah({
   return (
     <span className="font-arabic text-3xl leading-[1.9] text-foreground" dir="rtl">
       {before}
-      <span className="rounded-md bg-chart-2/15 px-1.5 font-black text-chart-2">
+      <span className="rounded-md bg-chart-2/15 px-1.5 font-bold text-chart-2">
         {match}
       </span>
       {after}
@@ -112,7 +112,7 @@ export function TajwidLearnSection({
         </Button>
 
         <div className="text-center">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+          <p className="text-[11px] font-bold tracking-wide text-muted-foreground">
             Aturan {selectedIndex + 1}/{totalRules}
           </p>
           <Badge className="mt-2 rounded-full bg-chart-2/10 px-3 py-1 text-chart-2 hover:bg-chart-2/10">
@@ -134,7 +134,7 @@ export function TajwidLearnSection({
 
       <div
         key={selectedRule.id}
-        className="relative overflow-hidden rounded-[2.5rem] border border-chart-2/15 bg-gradient-to-br from-chart-2/12 via-background to-background p-6 shadow-xl shadow-chart-2/5"
+        className="relative overflow-hidden rounded-3xl border border-chart-2/15 bg-gradient-to-br from-chart-2/12 via-background to-background p-6 shadow-md shadow-chart-2/5"
       >
         <div className="absolute -right-10 top-[-30px] h-40 w-40 rounded-full bg-chart-2/10 blur-3xl" />
         <div className="absolute -left-8 bottom-[-40px] h-32 w-32 rounded-full bg-primary/8 blur-3xl" />
@@ -142,10 +142,10 @@ export function TajwidLearnSection({
         <div className="relative">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-chart-2">
+              <p className="text-[11px] font-bold tracking-wide text-chart-2">
                 Detail Belajar
               </p>
-              <h2 className="mt-2 text-3xl font-black tracking-tight text-foreground">
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
                 {selectedRule.name}
               </h2>
               <p className="mt-2 font-arabic text-4xl text-chart-2">
@@ -156,7 +156,7 @@ export function TajwidLearnSection({
             {isCompleted && (
               <div className="flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1.5 text-emerald-600">
                 <CheckCircle2 className="h-4 w-4" />
-                <span className="text-[11px] font-black uppercase tracking-[0.16em]">
+                <span className="text-[11px] font-bold tracking-wide">
                   Sudah dibuka
                 </span>
               </div>
@@ -168,7 +168,7 @@ export function TajwidLearnSection({
           </p>
 
           <div className="mt-5">
-            <p className="mb-2 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="mb-2 text-[11px] font-bold tracking-wide text-muted-foreground">
               Huruf Pemicu
             </p>
             <div className="flex flex-wrap gap-2">
@@ -207,13 +207,13 @@ export function TajwidLearnSection({
         </div>
       </div>
 
-      <div className="mt-6 rounded-[2rem] border border-border/60 bg-card/80 p-5">
+      <div className="mt-6 rounded-3xl border border-border/60 bg-card/80 p-5">
         <div className="mb-4 flex items-center gap-3">
           <div className="rounded-2xl bg-chart-2/10 p-2.5 text-chart-2">
             <BookAudio className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-lg font-black tracking-tight text-foreground">
+            <h3 className="text-lg font-bold tracking-tight text-foreground">
               Contoh Ayat
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -230,22 +230,22 @@ export function TajwidLearnSection({
             return (
               <div
                 key={`${selectedRule.id}-${example.surah_name}-${example.ayah_number}`}
-                className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4"
+                className="rounded-2xl border border-border/60 bg-background/70 p-4"
               >
-              <p className="mb-2 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="mb-2 text-[11px] font-bold tracking-wide text-muted-foreground">
                 Potongan Terkait
               </p>
-              <div className="rounded-[1.25rem] bg-muted/40 px-4 py-5 text-right">
+              <div className="rounded-2xl bg-muted/40 px-4 py-5 text-right">
                 <HighlightedAyah
                   full_text={getFocusedExcerpt(example.full_text, example.highlighted_text)}
                   highlighted_text={example.highlighted_text}
                 />
               </div>
 
-              <p className="mb-2 mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="mb-2 mt-4 text-[11px] font-bold tracking-wide text-muted-foreground">
                 Full Ayat
               </p>
-              <div className="rounded-[1.25rem] bg-muted/20 px-4 py-5 text-right">
+              <div className="rounded-2xl bg-muted/20 px-4 py-5 text-right">
                 <span className="font-arabic text-3xl leading-[1.9] text-foreground" dir="rtl">
                   {example.full_text}
                 </span>
