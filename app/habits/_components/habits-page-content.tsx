@@ -294,13 +294,16 @@ export function HabitsPageContent() {
 
             <div className="space-y-4">
               {habits.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-                  <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-4">
-                    <Leaf size={40} className="text-muted-foreground" />
+                <Card className="flex flex-col items-center px-6 py-10 text-center">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <Leaf size={28} />
                   </div>
-                  <p className="text-sm font-bold tracking-wide">Belum ada habit</p>
-                  <p className="text-xs text-muted-foreground font-medium mt-1">Mulai perjalanan anda sekarang!</p>
-                </div>
+                  <p className="font-semibold text-foreground">Belum ada habit</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Mulai dari satu kebiasaan kecil, misalnya tilawah 1 halaman.</p>
+                  <Button onClick={openAdd} size="sm" className="mt-5 rounded-full px-5 gap-2">
+                    <Plus size={16} /> Tambah Habit
+                  </Button>
+                </Card>
               ) : (
                 habits.map((h) => {
                   const done = !!completions[today()]?.[h.id];

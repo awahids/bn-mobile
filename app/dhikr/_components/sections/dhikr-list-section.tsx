@@ -329,7 +329,7 @@ export function DhikrListSection({
                         </AnimatePresence>
 
                         <motion.div 
-                          className={`relative z-10 text-4xl font-arabic leading-[1.8] text-center ${
+                          className={`relative z-10 text-[1.75rem] font-arabic leading-[2] text-center ${
                             counterData.completed ? "text-white" : "text-primary group-hover/arabic:scale-[1.02] transition-transform duration-500"
                           }`} 
                           dir="rtl"

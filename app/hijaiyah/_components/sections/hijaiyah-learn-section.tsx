@@ -126,14 +126,14 @@ export function HijaiyahLearnSection({
         <TabsList className="grid w-full grid-cols-2 rounded-3xl bg-primary/5 p-1.5 h-auto mb-6">
           <TabsTrigger
             value="writing"
-            className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+            className="rounded-2xl py-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
           >
             <PenTool className="w-4 h-4 mr-2" />
             <span className="font-bold tracking-tight">Menulis</span>
           </TabsTrigger>
           <TabsTrigger
             value="steps"
-            className="rounded-2xl py-3 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
+            className="rounded-2xl py-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg shadow-primary/5 transition-all duration-300"
           >
             <BookOpen className="w-4 h-4 mr-2" />
             <span className="font-bold tracking-tight">Panduan</span>
@@ -141,8 +141,8 @@ export function HijaiyahLearnSection({
         </TabsList>
 
         <TabsContent value="writing" className="mt-0 outline-none">
-          <div className="glass rounded-3xl p-6 border-primary/10">
-            <div className="mb-6">
+          <div>
+            <div className="mb-4 px-1">
               <h3 className="text-lg font-bold text-foreground tracking-tight">Latihan Menulis</h3>
               <p className="text-[11px] font-medium text-muted-foreground tracking-wide">Ikuti pola huruf di bawah ini</p>
             </div>
@@ -154,11 +154,9 @@ export function HijaiyahLearnSection({
                 onComplete={onWritingComplete}
                 completed={writingCompleted}
               />
-
-              <div className="absolute -inset-2 bg-primary/5 rounded-3xl -z-10 group-hover/canvas:bg-primary/10 transition-colors duration-500" />
             </div>
 
-            <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center justify-between mt-4">
               <Button
                 variant="ghost"
                 size="sm"
@@ -183,7 +181,7 @@ export function HijaiyahLearnSection({
         </TabsContent>
 
         <TabsContent value="steps" className="mt-0 outline-none">
-          <div className="glass rounded-3xl p-8 border-primary/10">
+          <div className="glass rounded-3xl p-5 border-primary/10">
             <div className="mb-8">
               <h3 className="text-lg font-bold text-foreground tracking-tight">Cara Menulis</h3>
               <p className="text-[11px] font-medium text-muted-foreground tracking-wide">
