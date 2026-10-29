@@ -24,7 +24,6 @@ export function useProfilePageData() {
   const queryClient = useQueryClient();
 
   const [notifications, setNotifications] = useState(true);
-  const [audioEnabled, setAudioEnabled] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
@@ -148,8 +147,6 @@ export function useProfilePageData() {
     deleteBookmarkMutation,
     notifications,
     setNotifications: onChangeNotifications,
-    audioEnabled,
-    setAudioEnabled,
     signOut,
   };
 }

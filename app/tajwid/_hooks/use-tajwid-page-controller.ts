@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useAudio } from "@/hooks/use-audio";
+import { usePreferences } from "@/hooks/use-preferences";
 import { useProgress, useUpdateProgress } from "@/hooks/use-progress";
 import { useTajwidRules } from "@/hooks/use-tajwid";
 import { fetchTajwidExampleAudioUrl } from "@/lib/tajwid-example-audio";
@@ -23,6 +24,8 @@ export function useTajwidPageController() {
   });
   const updateProgress = useUpdateProgress();
   const audio = useAudio();
+  const { preferences } = usePreferences();
+  const lastAutoPlayedRuleIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (rules.length > 0 && !selectedRule) {
@@ -125,6 +128,20 @@ export function useTajwidPageController() {
       setLoadingExampleAudioKey(null);
     }
   };
+
+  // Auto-play the rule demonstration when the user moves to another rule; the
+  // rule shown on page load is skipped so audio never starts unprompted.
+  useEffect(() => {
+    if (!selectedRule) return;
+    const previousId = lastAutoPlayedRuleIdRef.current;
+    lastAutoPlayedRuleIdRef.current = selectedRule.id;
+    if (previousId === null || previousId === selectedRule.id) return;
+    if (!preferences.autoPlayAudio || !preferences.audioEnabled) return;
+
+    openAudioPlayer(selectedRule);
+    // Only react to rule changes; audio/preferences identity must not replay it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRule?.id]);
 
   const completedCount = isAuthenticated
     ? progressData.filter((item) => item.completed).length

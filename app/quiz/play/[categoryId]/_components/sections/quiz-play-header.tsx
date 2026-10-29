@@ -8,6 +8,7 @@ interface QuizPlayHeaderProps {
   currentQuestionIndex: number;
   totalQuestions: number;
   timeLeft: number;
+  isTimed: boolean;
   onBack: () => void;
 }
 
@@ -22,6 +23,7 @@ export function QuizPlayHeader({
   currentQuestionIndex,
   totalQuestions,
   timeLeft,
+  isTimed,
   onBack,
 }: QuizPlayHeaderProps) {
   return (
@@ -44,10 +46,15 @@ export function QuizPlayHeader({
         </Button>
       }
       rightSlot={
-        quizState === "playing" ? (
-          <div className="flex items-center space-x-2">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium">{formatTime(timeLeft)}</span>
+        quizState === "playing" && isTimed ? (
+          <div
+            className="flex items-center space-x-2"
+            aria-label={`Sisa waktu ${formatTime(timeLeft)}`}
+          >
+            <Clock className={`w-4 h-4 ${timeLeft <= 60 ? "text-destructive" : "text-muted-foreground"}`} />
+            <span className={`text-sm font-medium tabular-nums ${timeLeft <= 60 ? "text-destructive" : ""}`}>
+              {formatTime(timeLeft)}
+            </span>
           </div>
         ) : null
       }

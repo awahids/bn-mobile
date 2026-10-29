@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUpdateProgress } from "@/hooks/use-progress";
+import { usePreferences } from "@/hooks/use-preferences";
 import { api, type CreateQuizAttemptData, type QuizAnswer } from "@/lib/api-client";
 import { fetchTajwidExampleAudioUrl } from "@/lib/tajwid-example-audio";
 import { Badge } from "@/components/ui/badge";
@@ -239,6 +240,7 @@ function getCorrectKey(question: MixedQuestion): string {
 export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { preferences } = usePreferences();
   const queryClient = useQueryClient();
   const updateProgress = useUpdateProgress();
 
@@ -391,6 +393,10 @@ export function TajwidQuizSection({ rules }: TajwidQuizSectionProps) {
   const playAudioPrompt = async () => {
     if (question.type !== "audio") return;
     if (!isAuthenticated && isGuestQuizLocked) return;
+    if (!preferences.audioEnabled) {
+      setAudioPromptError("Audio dimatikan. Aktifkan di Profil > Pengaturan > Audio.");
+      return;
+    }
 
     setIsAudioLoading(true);
     setAudioPromptError(null);

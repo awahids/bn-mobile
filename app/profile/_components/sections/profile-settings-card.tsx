@@ -35,7 +35,7 @@ export function ProfileSettingsCard({
           title="Pengaturan Tema"
           description="Mode gelap/terang"
           icon={isDarkTheme ? Moon : Sun}
-          action={<Switch checked={isDarkTheme} onCheckedChange={onToggleTheme} data-testid="theme-toggle" />}
+          action={<Switch checked={isDarkTheme} onCheckedChange={onToggleTheme} aria-label="Mode gelap" data-testid="theme-toggle" />}
         />
 
         <ProfileMenuRow
@@ -47,6 +47,7 @@ export function ProfileSettingsCard({
               checked={notifications}
               onCheckedChange={onChangeNotifications}
               disabled={!isAuthenticated}
+              aria-label="Notifikasi"
               data-testid="notifications-toggle"
             />
           }
@@ -60,7 +61,7 @@ export function ProfileSettingsCard({
             <Switch
               checked={audioEnabled}
               onCheckedChange={onChangeAudioEnabled}
-              disabled={!isAuthenticated}
+              aria-label="Audio"
               data-testid="audio-toggle"
             />
           }

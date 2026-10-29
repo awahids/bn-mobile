@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type CreateQuizAttemptData, type QuizQuestionAPI } from "@/lib/api-client";
 import { useQuizQuestions } from "@/hooks/use-quiz-content";
 import { useUpdateProgress } from "@/hooks/use-progress";
+import { usePreferences } from "@/hooks/use-preferences";
 import { type QuizCategoryId } from "@/data/quiz";
 
 export type QuizState = "material" | "playing" | "finished";
@@ -43,6 +44,9 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
 
   const queryClient = useQueryClient();
   const updateProgress = useUpdateProgress();
+  // "Mode Tantangan" in Profil: without it the quiz has no time limit.
+  const { preferences } = usePreferences();
+  const isTimed = preferences.challengeMode;
   // Guards against finishing the same run twice (timer expiry racing the last
   // "next" tap, or a double tap), which would submit duplicate attempts.
   const finishedRef = useRef(false);
@@ -123,7 +127,7 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
     setQuizState("finished");
   }, [answers, categoryId, isAuthenticated, questions.length, score, startTime, submitQuiz, updateProgress]);
 
-  const isTimerRunning = quizState === "playing" && timeLeft > 0;
+  const isTimerRunning = isTimed && quizState === "playing" && timeLeft > 0;
 
   useEffect(() => {
     if (!isTimerRunning) return;
@@ -138,10 +142,10 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
   // Finish from an effect rather than inside the state updater: updaters must
   // stay pure and may run twice, which would submit the attempt twice.
   useEffect(() => {
-    if (quizState === "playing" && timeLeft === 0) {
+    if (isTimed && quizState === "playing" && timeLeft === 0) {
       void finishQuiz();
     }
-  }, [finishQuiz, quizState, timeLeft]);
+  }, [finishQuiz, isTimed, quizState, timeLeft]);
 
   const proceedToQuestion = useCallback(() => {
     setQuizState("playing");
@@ -216,6 +220,7 @@ export function useQuizPlayController({ categoryId, isAuthenticated }: UseQuizPl
     showExplanation,
     score,
     timeLeft,
+    isTimed,
     saveSkippedForGuest,
     saveFailed,
     scorePercentage,
