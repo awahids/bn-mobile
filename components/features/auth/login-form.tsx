@@ -49,6 +49,23 @@ export function LoginForm({
   useEffect(() => {
     setHydrated(true)
     setGoogleClientId(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || null)
+    // The GIS script may already be loaded from an earlier visit to /login
+    // (client-side navigation); next/script does not fire onLoad again then.
+    if (window.google?.accounts?.oauth2) {
+      setScriptLoaded(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    // Coming back from Google with the browser back button restores this page
+    // from the back/forward cache with the button still stuck on "Mengalihkan".
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        setIsSubmitting(false)
+      }
+    }
+    window.addEventListener("pageshow", handlePageShow)
+    return () => window.removeEventListener("pageshow", handlePageShow)
   }, [])
 
   useEffect(() => {
@@ -103,7 +120,8 @@ export function LoginForm({
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={() => setScriptLoaded(true)}
+        onReady={() => setScriptLoaded(true)}
+        onError={() => setError("Gagal memuat layanan Google. Periksa koneksi internet lalu muat ulang halaman.")}
       />
 
       {title && (
