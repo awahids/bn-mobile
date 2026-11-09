@@ -132,12 +132,16 @@ function normalizeApiErrorMessage(
 }
 
 async function parseJsonResponse<T>(response: Response): Promise<ApiResponse<T>> {
+  const text = await response.text().catch(() => "")
   try {
-    return (await response.json()) as ApiResponse<T>
+    return JSON.parse(text) as ApiResponse<T>
   } catch {
+    // Non-JSON bodies come from a proxy or gateway (e.g. Vercel 502/504), so
+    // surface the status and the start of the body to make them diagnosable.
+    const snippet = text.replace(/\s+/g, " ").trim().slice(0, 160)
     throw new ApiError(
       response.status,
-      `Failed to parse response: ${response.statusText}`
+      `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ""}: ${snippet || "respons kosong"}`
     )
   }
 }
